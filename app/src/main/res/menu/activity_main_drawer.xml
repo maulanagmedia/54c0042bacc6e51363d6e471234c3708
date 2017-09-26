@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_order"
+            android:icon="@mipmap/ic_order"
+            android:title="Order" />
+        <item
+            android:id="@+id/nav_riwayat_pemesanan"
+            android:icon="@mipmap/ic_riwayat"
+            android:title="Riwayat Pemesanan" />
+        <item
+            android:id="@+id/nav_printer"
+            android:icon="@mipmap/ic_printer"
+            android:title="Pengaturan Printer" />
+    </group>
+
+    <item android:title="Akun">
+        <menu>
+            <item
+                android:id="@+id/nav_profile"
+                android:icon="@mipmap/ic_profile"
+                android:title="Profile" />
+
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@mipmap/ic_exit"
+                android:title="Logout" />
+        </menu>
+    </item>
+
+</menu>
