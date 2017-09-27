@@ -80,7 +80,7 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
         holder.tvItem2.setText(cli.getItem3());
         if(cli.getItem4().equals("")){
 
-            String firstWord = cli.getItem2().substring(0,0);
+            String firstWord = cli.getItem2().substring(0,1);
             holder.tvThumbnail.setText(firstWord.toUpperCase());
         }
     }

@@ -4,10 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,11 +22,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.maulana.custommodul.CustomItem;
+import com.maulana.custommodul.ItemValidation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import gmedia.net.id.restauranttakingorder.Order.Adapter.KategoriMenuAdapter;
+import gmedia.net.id.restauranttakingorder.Order.Adapter.MenuByKategoriAdapter;
 import gmedia.net.id.restauranttakingorder.R;
 
 /**
@@ -43,7 +51,7 @@ public class MainOrder extends Fragment {
     private View layout;
     private Context context;
     private ListView lvKategori;
-    private EditText edtSearchView;
+    private EditText edtSearchMenu;
     private RecyclerView rvListMenu;
     private EditText edtNamaPelanggan, edtNoMeja;
     private ListView lvOrder;
@@ -51,7 +59,10 @@ public class MainOrder extends Fragment {
     private Button btnCetak, btnSimpan;
     private List<CustomItem> listKategori;
     private List<CustomItem> listMenu;
+    private List<CustomItem> selectedMenu;
     private ProgressBar pbLoadMenu;
+    private boolean firstLoad = false;
+    private ItemValidation iv = new ItemValidation();
 
     public MainOrder() {
         // Required empty public constructor
@@ -97,7 +108,7 @@ public class MainOrder extends Fragment {
     private void initUI() {
 
         lvKategori = (ListView) layout.findViewById(R.id.lv_kategori);
-        edtSearchView = (EditText) layout.findViewById(R.id.edt_search_menu);
+        edtSearchMenu = (EditText) layout.findViewById(R.id.edt_search_menu);
         rvListMenu = (RecyclerView) layout.findViewById(R.id.rv_list_menu);
         pbLoadMenu = (ProgressBar) layout.findViewById(R.id.pb_load_menu);
         edtNamaPelanggan = (EditText) layout.findViewById(R.id.edt_nama_pelanggan);
@@ -119,7 +130,6 @@ public class MainOrder extends Fragment {
         listKategori.add(new CustomItem("2", "Semua"));
 
         setKategoriTable();
-
     }
 
     private void setKategoriTable() {
@@ -147,7 +157,76 @@ public class MainOrder extends Fragment {
 
     private void getMenuByKategori(CustomItem selected) {
 
+        listMenu = new ArrayList<>();
 
+        listMenu.add(new CustomItem("1", "Rawon Enak", "20000", ""));
+        listMenu.add(new CustomItem("2", "Rawon Goreng", "25000", ""));
+        listMenu.add(new CustomItem("3", "Rawon Balado", "25000", ""));
+        listMenu.add(new CustomItem("4", "Rawon Telur Puyuh", "25000", ""));
+
+        setManuSearchView();
+        setMenuTable(listMenu);
+    }
+
+    private void setMenuTable(List<CustomItem> listItem) {
+
+        rvListMenu.setAdapter(null);
+
+        if(listItem != null && listItem.size() > 0){
+
+            final MenuByKategoriAdapter menuAdapter = new MenuByKategoriAdapter(context, listItem);
+
+            final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
+            rvListMenu.setLayoutManager(mLayoutManager);
+//        rvListMenu.addItemDecoration(new NavMenu.GridSpacingItemDecoration(2, dpToPx(10), true));
+            rvListMenu.setItemAnimator(new DefaultItemAnimator());
+            rvListMenu.setAdapter(menuAdapter);
+        }
+    }
+
+    private void setManuSearchView() {
+
+        edtSearchMenu.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                if(edtSearchMenu.getText().length() == 0){
+
+                    setMenuTable(listMenu);
+                }
+            }
+        });
+
+        edtSearchMenu.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+
+                if(i == EditorInfo.IME_ACTION_SEARCH){
+
+                    List<CustomItem> items = new ArrayList<CustomItem>();
+                    String keyword = edtSearchMenu.getText().toString().toUpperCase();
+                    for(CustomItem item: listMenu){
+
+                        if(item.getItem2().toUpperCase().contains(keyword)) items.add(item);
+                    }
+
+                    setMenuTable(items);
+                    iv.hideSoftKey(context);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
 }
