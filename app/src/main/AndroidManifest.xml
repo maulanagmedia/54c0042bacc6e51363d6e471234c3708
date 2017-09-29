@@ -27,8 +27,9 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity android:name=".Order.ListPelanggan"></activity>
     </application>
 
 </manifest>

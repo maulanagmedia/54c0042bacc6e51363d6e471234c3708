@@ -86,29 +86,44 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:paddingTop="@dimen/margin_default"
                     android:weightSum="1">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.1"
-                        android:orientation="vertical"
-                        android:gravity="center"
+                        android:layout_marginTop="@dimen/margin_default"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
                         android:weightSum="1">
 
                         <EditText
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.8"
                             android:layout_height="match_parent"
                             android:hint="Nama Pelanggan"
                             android:id="@+id/edt_nama_pelanggan"
                             android:paddingLeft="@dimen/margin_default"
                             android:paddingRight="@dimen/margin_default"
                             android:background="@drawable/input_form"
+                            android:layout_marginTop="2dp"
                             android:layout_marginLeft="@dimen/margin_small"
                             android:layout_marginRight="@dimen/margin_small"
                             android:layout_marginBottom="@dimen/margin_small"
                             android:inputType="textPersonName"/>
+
+                        <ImageButton
+                            android:layout_width="0dp"
+                            android:layout_weight="0.2"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/button_form"
+                            android:textColor="@color/color_white"
+                            android:layout_marginTop="2dp"
+                            android:id="@+id/ib_pelanggan"
+                            android:layout_marginLeft="@dimen/margin_small"
+                            android:layout_marginRight="@dimen/margin_small"
+                            android:layout_marginBottom="@dimen/margin_small"
+                            android:src="@mipmap/ic_person_white"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -133,10 +148,43 @@
                             android:inputType="number"/>
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.05"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:text="Nama Menu"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.35"
+                            android:layout_height="match_parent"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="Harga"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.15"
+                            android:layout_height="match_parent"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:text="Jml"/>
+
+                    </LinearLayout>
+
                     <ListView
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="0.6"
+                        android:layout_weight="0.55"
                         android:id="@+id/lv_order"></ListView>
 
                     <LinearLayout

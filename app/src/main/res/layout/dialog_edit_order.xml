@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/input_form">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbarSize="3dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_default"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_form"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/margin_default"
+                    android:id="@+id/tv_title"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:padding="@dimen/margin_default"
+                    android:id="@+id/tv_harga"
+                    android:textSize="18sp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_width"
+                android:background="@color/color_grey"
+                android:layout_marginTop="@dimen/margin_default"></LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_default"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_form_disable"
+                    android:padding="@dimen/margin_default"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_weight="0.4"
+                        android:layout_height="wrap_content"
+                        android:background="@color/color_deactive"
+                        android:text="Harga"
+                        android:gravity="left"
+                        android:inputType="none"
+                        android:editable="false" />
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_weight="0.6"
+                        android:layout_height="wrap_content"
+                        android:hint="Harga"
+                        android:background="@color/color_deactive"
+                        android:gravity="right"
+                        android:id="@+id/edt_harga"
+                        android:inputType="none"
+                        android:editable="false" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_default"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_form_blue"
+                    android:hint="Jumlah"
+                    android:textColor="@color/color_blue"
+                    android:id="@+id/edt_jumlah"
+                    android:gravity="right"
+                    android:inputType="number"
+                    android:padding="@dimen/margin_default"/>
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/input_form_disable"
+                    android:gravity="center_vertical"
+                    android:hint="Satuan"
+                    android:inputType="none"
+                    android:editable="false"
+                    android:id="@+id/edt_satuan"
+                    android:layout_marginLeft="@dimen/margin_default"
+                    android:padding="@dimen/margin_default"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_default"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_form_blue"
+                    android:hint="Diskon"
+                    android:textColor="@color/color_blue"
+                    android:id="@+id/edt_diskon"
+                    android:gravity="right"
+                    android:inputType="number"
+                    android:padding="@dimen/margin_default"/>
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/input_form_disable"
+                    android:gravity="center_vertical"
+                    android:text="%"
+                    android:inputType="none"
+                    android:editable="false"
+                    android:id="@+id/edt_pesen"
+                    android:layout_marginLeft="@dimen/margin_default"
+                    android:padding="@dimen/margin_default"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_default"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_form_disable"
+                    android:padding="@dimen/margin_default"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <EditText
+                        android:layout_width="0dp"
+                        android:layout_weight="0.4"
+                        android:layout_height="wrap_content"
+                        android:background="@color/color_deactive"
+                        android:text="Harga Setelah Diskon"
+                        android:gravity="left"
+                        android:inputType="none"
+                        android:editable="false" />
+
+                    <EditText
+                        android:id="@+id/edt_harga_diskon"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.6"
+                        android:layout_height="wrap_content"
+                        android:background="@color/color_deactive"
+                        android:editable="false"
+                        android:gravity="right"
+                        android:hint="Harga Setelah Diskon"
+                        android:inputType="none"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_default"
+                android:layout_marginBottom="@dimen/margin_vertical"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="100dp"
+                    android:background="@drawable/input_form_blue"
+                    android:hint="Catatan"
+                    android:textColor="@color/color_blue"
+                    android:id="@+id/edt_catatan"
+                    android:gravity="left"
+                    android:inputType="textPersonName"
+                    android:padding="@dimen/margin_default"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_vertical"
+                android:layout_marginBottom="@dimen/margin_vertical"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ripple_selected_orange"
+                    android:text="Batal"
+                    android:id="@+id/btn_batal"
+                    android:layout_marginRight="@dimen/margin_default"
+                    android:textColor="@color/text_color_orange"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ripple_selected_red"
+                    android:text="Hapus"
+                    android:id="@+id/btn_hapus"
+                    android:layout_marginRight="@dimen/margin_default"
+                    android:textColor="@color/text_color_red"/>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ripple_selected_blue"
+                    android:text="Simpan"
+                    android:id="@+id/btn_simpan"
+                    android:textColor="@color/text_color_blue"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

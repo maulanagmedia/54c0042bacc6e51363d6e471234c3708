@@ -1,6 +1,8 @@
 package gmedia.net.id.restauranttakingorder;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -16,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.maulana.custommodul.SessionManager;
 
@@ -29,6 +32,10 @@ public class MainActivity extends AppCompatActivity
     private View headerView;
     private TextView tvUser;
     private SessionManager session;
+
+    private static boolean doubleBackToExitPressedOnce;
+    private boolean exitState = false;
+    private int timerClose = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +52,18 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Check close statement
+        doubleBackToExitPressedOnce = false;
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null){
+
+            if(bundle.getBoolean("exit", false)){
+                exitState = true;
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                finish();
+            }
+        }
 
         initUI();
 
@@ -73,7 +92,26 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+
+            if (doubleBackToExitPressedOnce) {
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                intent.putExtra("exit", true);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                //System.exit(0);
+            }
+
+            if(!exitState && !doubleBackToExitPressedOnce){
+                this.doubleBackToExitPressedOnce = true;
+                Toast.makeText(this, getResources().getString(R.string.app_exit), Toast.LENGTH_SHORT).show();
+            }
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce=false;
+                }
+            }, timerClose);
         }
     }
 

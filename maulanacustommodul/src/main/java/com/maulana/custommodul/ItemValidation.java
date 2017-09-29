@@ -574,7 +574,7 @@ public class ItemValidation {
 
     public Double parseNullDouble(String s){
         double result = 0;
-        if(s != null){
+        if(s != null && !s.equals("")){
             try {
                 result = Double.parseDouble(s);
             }catch (Exception e){
