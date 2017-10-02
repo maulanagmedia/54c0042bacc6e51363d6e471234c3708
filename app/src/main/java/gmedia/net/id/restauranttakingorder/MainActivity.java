@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.maulana.custommodul.SessionManager;
 
 import gmedia.net.id.restauranttakingorder.Order.MainOrder;
+import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.MainRiwayatPemesanan;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_order) {
             fragment = new MainOrder();
         } else if (id == R.id.nav_riwayat_pemesanan) {
-
+            fragment = new MainRiwayatPemesanan();
         } else if (id == R.id.nav_printer) {
 
         } else if (id == R.id.nav_profile) {
@@ -159,6 +160,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
 
         }
+
+        callFragment(fragment);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -9,11 +9,15 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -50,6 +54,14 @@ public class ListPelanggan extends AppCompatActivity {
         setTitle("Daftar Pelanggan");
 
         initUI();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.pelanggan_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void initUI() {
@@ -170,9 +182,74 @@ public class ListPelanggan extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
+            case R.id.nav_add:
+                showTambahPelanggan();
+
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showTambahPelanggan(){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(ListPelanggan.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_tambah_pelanggan, null);
+        builder.setView(view);
+        builder.setTitle("Tambah Pelanggan");
+
+        final EditText edtNamaPelanggan = (EditText) view.findViewById(R.id.edt_nama_pelanggan);
+        final EditText edtAlamat = (EditText) view.findViewById(R.id.edt_alamat);
+        final EditText edtKota= (EditText) view.findViewById(R.id.edt_kota);
+        final EditText edtTelepon= (EditText) view.findViewById(R.id.edt_telepon);
+        final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
+        final Button btnSimpan = (Button) view.findViewById(R.id.btn_simpan);
+
+        final AlertDialog alert = builder.create();
+        btnBatal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                alert.dismiss();
+            }
+        });
+
+        btnSimpan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Validasi
+                if(edtNamaPelanggan.getText().length() <= 0){
+                    edtNamaPelanggan.setError("Jumlah harus lebih dari 0");
+                    edtNamaPelanggan.requestFocus();
+                    return;
+                }else{
+                    edtNamaPelanggan.setError(null);
+                }
+
+                AlertDialog konfirmasiSimpan = new AlertDialog.Builder(ListPelanggan.this)
+                        .setTitle("Konfirmasi")
+                        .setMessage("Simpan pelanggan " + edtNamaPelanggan.getText().toString() + " ?")
+                        .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+
+                                alert.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .show();
+
+            }
+        });
+
+        alert.show();
     }
 
     @Override

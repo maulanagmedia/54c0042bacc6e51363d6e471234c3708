@@ -24,7 +24,10 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/margin_default"
+                    android:paddingTop="@dimen/margin_default"
+                    android:paddingLeft="@dimen/margin_default"
+                    android:paddingRight="@dimen/margin_default"
+                    android:paddingBottom="@dimen/margin_small"
                     android:id="@+id/tv_title"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -33,8 +36,10 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:padding="@dimen/margin_default"
+                    android:paddingTop="@dimen/margin_small"
+                    android:paddingLeft="@dimen/margin_default"
+                    android:paddingRight="@dimen/margin_default"
+                    android:paddingBottom="@dimen/margin_default"
                     android:id="@+id/tv_harga"
                     android:textSize="18sp"
                     />
