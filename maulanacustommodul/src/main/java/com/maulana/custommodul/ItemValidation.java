@@ -309,8 +309,16 @@ public class ItemValidation {
                 if(event.getAction() == MotionEvent.ACTION_UP) {
                     if(event.getRawX() >= (edt.getRight() - edt.getCompoundDrawables()[position].getBounds().width())) {
 
-                        /*Log.d(TAG, "onTouch: ");
-                        // set format date
+                        SimpleDateFormat sdf = new SimpleDateFormat(formatDate);
+
+                        Date dateValue = null;
+
+                        try {
+                            dateValue = sdf.parse(value);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
                         customDate = Calendar.getInstance();
                         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
                             @Override
@@ -324,37 +332,12 @@ public class ItemValidation {
                             }
                         };
 
-                        new DatePickerDialog(context,date,customDate.get(Calendar.YEAR),customDate.get(Calendar.MONTH),customDate.get(Calendar.DATE)).show();
-                        return true;*/
+
+                        SimpleDateFormat yearOnly = new SimpleDateFormat("yyyy");
+                        new DatePickerDialog(context,date, parseNullInteger(yearOnly.format(dateValue)),dateValue.getMonth(),dateValue.getDate()).show();
+                        return false;
                     }
-
-                    SimpleDateFormat sdf = new SimpleDateFormat(formatDate);
-
-                    Date dateValue = null;
-
-                    try {
-                        dateValue = sdf.parse(value);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    customDate = Calendar.getInstance();
-                    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker datePicker, int year, int month, int date) {
-                            customDate.set(Calendar.YEAR,year);
-                            customDate.set(Calendar.MONTH,month);
-                            customDate.set(Calendar.DATE,date);
-
-                            SimpleDateFormat sdFormat = new SimpleDateFormat(formatDate, Locale.US);
-                            edt.setText(sdFormat.format(customDate.getTime()));
-                        }
-                    };
-
-
-                    SimpleDateFormat yearOnly = new SimpleDateFormat("yyyy");
-                    new DatePickerDialog(context,date, parseNullInteger(yearOnly.format(dateValue)),dateValue.getMonth(),dateValue.getDate()).show();
-                    return true;
+                    return false;
                 }
                 return false;
             }

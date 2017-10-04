@@ -14,19 +14,25 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_weight="0.2"
                 android:layout_height="match_parent"
                 android:paddingTop="@dimen/margin_default"
-                android:paddingBottom="@dimen/margin_default"
-                android:orientation="vertical">
+                android:paddingBottom="@dimen/margin_default">
 
                 <ListView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/lv_kategori"></ListView>
-            </LinearLayout>
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/pb_load_kategori"
+                    android:visibility="gone"/>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="@dimen/line_width"
@@ -67,6 +73,17 @@
                     android:layout_centerInParent="true"
                     android:visibility="gone"
                     android:id="@+id/pb_load_menu"/>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_barcode"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginRight="@dimen/margin_vertical"
+                    android:layout_marginBottom="@dimen/margin_vertical"
+                    android:rotation="90"
+                    android:id="@+id/fab_scan"/>
 
             </RelativeLayout>
 

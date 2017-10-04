@@ -1,15 +1,24 @@
 package gmedia.net.id.restauranttakingorder;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.maulana.custommodul.ApiVolley;
+import com.maulana.custommodul.ItemValidation;
 import com.maulana.custommodul.SessionManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
 public class LoginScreen extends AppCompatActivity {
 
@@ -22,11 +31,15 @@ public class LoginScreen extends AppCompatActivity {
     private EditText edtPassword;
     private Button btnLogIn;
     private SessionManager session;
+    private ItemValidation iv = new ItemValidation();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_screen);
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
 
         //Check close statement
         doubleBackToExitPressedOnce = false;
@@ -88,12 +101,56 @@ public class LoginScreen extends AppCompatActivity {
             edtPassword.setError(null);
         }
 
-        session.createLoginSession("123","123",edtUsername.getText().toString(), edtUsername.getText().toString(), edtPassword.getText().toString(), "1","");
-        Toast.makeText(LoginScreen.this, getResources().getString(R.string.login_success) + session.getUserInfo(SessionManager.TAG_NAMA), Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(LoginScreen.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+        doLogin(edtUsername.getText().toString(),edtPassword.getText().toString());
+    }
+
+    private void doLogin(final String username, final String password) {
+
+        final ProgressDialog progressDialog = new ProgressDialog(LoginScreen.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
+
+        JSONObject jBody = new JSONObject();
+        try {
+            jBody.put("username", username);
+            jBody.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ApiVolley request = new ApiVolley(LoginScreen.this, jBody, "POST", ServerURL.login, "", "", 0, username, password, new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    String message = response.getJSONObject("metadata").getString("message");
+                    if(iv.parseNullInteger(status) == 200){
+
+                        progressDialog.dismiss();
+                        JSONObject jo = response.getJSONObject("response");
+                        session.createLoginSession(jo.getString("nik"),jo.getString("nik"),jo.getString("nama"), username, password, "1","");
+                        Toast.makeText(LoginScreen.this, message, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginScreen.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    }
+                    Toast.makeText(LoginScreen.this, message, Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(LoginScreen.this, "Terjadi kesalahan, mohon ulangi kembali", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+                Toast.makeText(LoginScreen.this, "Terjadi kesalahan, mohon ulangi kembali", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+        });
     }
 
     @Override

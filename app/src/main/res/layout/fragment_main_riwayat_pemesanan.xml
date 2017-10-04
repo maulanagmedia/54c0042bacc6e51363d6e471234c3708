@@ -35,6 +35,8 @@
                         android:background="@drawable/input_form"
                         android:padding="@dimen/margin_default"
                         android:hint="Nama Pelanggan"
+                        android:inputType="textPersonName"
+                        android:imeOptions="actionNext"
                         android:id="@+id/edt_nama_pelanggan"/>
 
                 </LinearLayout>
@@ -52,6 +54,8 @@
                         android:layout_height="@dimen/default_input_height"
                         android:background="@drawable/input_form"
                         android:padding="@dimen/margin_default"
+                        android:inputType="date"
+                        android:imeOptions="actionDone"
                         android:hint="Tanggal Transaksi"
                         android:drawableRight="@mipmap/ic_date_picker"
                         android:id="@+id/edt_tanggal" />
@@ -75,13 +79,25 @@
                         android:text="Cari"/>
                 </LinearLayout>
 
-                <ListView
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/margin_default"
-                    android:paddingLeft="@dimen/margin_default"
-                    android:paddingRight="@dimen/margin_default"
-                    android:id="@+id/lv_kategori"></ListView>
+                    android:layout_height="wrap_content">
+
+                    <ListView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/margin_default"
+                        android:paddingLeft="@dimen/margin_default"
+                        android:paddingRight="@dimen/margin_default"
+                        android:id="@+id/lv_transaksi"></ListView>
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:id="@+id/pb_load_transaksi"
+                        android:visibility="gone"/>
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -117,6 +133,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_weight="1"
+                        android:layout_marginRight="@dimen/margin_small"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
@@ -139,6 +156,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/margin_small"
                         android:orientation="vertical">
 
                         <TextView
@@ -159,6 +177,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_weight="0.6"
+                        android:layout_marginRight="@dimen/margin_small"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 

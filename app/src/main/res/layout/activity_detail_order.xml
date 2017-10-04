@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="gmedia.net.id.restauranttakingorder.Order.DetailOrder">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/margin_default"
+            android:paddingBottom="@dimen/margin_default">
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/lv_kategori"></ListView>
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:id="@+id/pb_load_kategori"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/line_width"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/color_grey"></LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ll_search"
+                android:padding="@dimen/margin_default"
+                android:orientation="vertical">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/CustomAutoComplete"
+                    android:hint="Nama Menu"
+                    android:id="@+id/edt_search_menu"/>
+
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/ll_search"
+                android:id="@+id/rv_list_menu"></android.support.v7.widget.RecyclerView>
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                android:id="@+id/pb_load_menu"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_barcode"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="@dimen/margin_vertical"
+                android:layout_marginBottom="@dimen/margin_vertical"
+                android:rotation="90"
+                android:id="@+id/fab_scan"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/line_width"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/color_grey"></LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.1"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/margin_default"
+                    android:gravity="center"
+                    android:weightSum="1">
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/input_form_disable"
+                        android:paddingTop="@dimen/margin_tiny"
+                        android:paddingLeft="@dimen/margin_default"
+                        android:paddingRight="@dimen/margin_default"
+                        android:paddingBottom="@dimen/margin_tiny"
+                        android:layout_marginLeft="@dimen/margin_small"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin_small">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/edt_no_bukti"
+                            android:hint="No Bukti"
+                            android:background="@color/color_deactive"
+                            android:focusable="false"
+                            android:inputType="none"/>
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.1"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/margin_default"
+                    android:weightSum="1">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:weightSum="1">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/input_form_disable"
+                            android:paddingTop="@dimen/margin_tiny"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:paddingBottom="@dimen/margin_tiny"
+                            android:layout_marginLeft="@dimen/margin_small"
+                            android:layout_marginRight="@dimen/margin_small"
+                            android:layout_marginBottom="@dimen/margin_small">
+
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/color_deactive"
+                                android:id="@+id/edt_no_meja"
+                                android:hint="Nomor Meja"
+                                android:focusable="false"
+                                android:inputType="none"/>
+                        </android.support.design.widget.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:weightSum="1">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/input_form_disable"
+                            android:paddingTop="@dimen/margin_tiny"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:paddingBottom="@dimen/margin_tiny"
+                            android:layout_marginLeft="@dimen/margin_small"
+                            android:layout_marginRight="@dimen/margin_small"
+                            android:layout_marginBottom="@dimen/margin_small">
+
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/color_deactive"
+                                android:id="@+id/edt_urutan"
+                                android:hint="Urutan"
+                                android:focusable="false"
+                                android:inputType="none"/>
+                        </android.support.design.widget.TextInputLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.08"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="0.5"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:text="Nama Menu"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="0.35"
+                        android:layout_height="match_parent"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:text="Harga"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="0.15"
+                        android:layout_height="match_parent"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:text="Jml"/>
+
+                </LinearLayout>
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.52"
+                    android:id="@+id/lv_order"></ListView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_width"
+                    android:background="@color/color_grey"
+                    android:orientation="vertical"></LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.2"
+                    android:orientation="vertical"
+                    android:weightSum="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.5"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.25"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="Total"
+                            android:textStyle="bold"
+                            android:textSize="20sp"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.75"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical|right"
+                            android:id="@+id/tv_total"
+                            android:text="Rp 0"
+                            android:textStyle="bold"
+                            android:textSize="20sp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.5"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="match_parent"
+                            android:layout_margin="@dimen/margin_small"
+                            android:background="@drawable/button_login"
+                            android:id="@+id/btn_cetak"
+                            android:text="Cetak"
+                            android:visibility="gone"
+                            android:textColor="@color/color_white"/>
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="match_parent"
+                            android:layout_margin="@dimen/margin_small"
+                            android:background="@drawable/button_form"
+                            android:id="@+id/btn_simpan"
+                            android:text="Proses"
+                            android:textColor="@color/color_white"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                android:id="@+id/pb_load_order"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

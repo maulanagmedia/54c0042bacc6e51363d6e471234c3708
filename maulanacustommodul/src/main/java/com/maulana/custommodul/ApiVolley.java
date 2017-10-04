@@ -106,7 +106,7 @@ public class ApiVolley {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Content-Type", "application/json");
                 params.put("Client-Service", "frontend-client");
-                params.put("Auth-Key", "gmedia_psp");
+                params.put("Auth-Key", "gmedia_resto");
                 params.put("user", user);
                 params.put("pass", pass);
                 return params;

@@ -1,6 +1,7 @@
 package gmedia.net.id.restauranttakingorder.Order;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
@@ -78,9 +79,9 @@ public class ListPelanggan extends AppCompatActivity {
         pbLoading.setVisibility(View.VISIBLE);
         listPelanggan = new ArrayList<>();
 
-        listPelanggan.add(new CustomItem("1", "Maulana", "081"));
-        listPelanggan.add(new CustomItem("2", "Test 2", "081"));
-        listPelanggan.add(new CustomItem("1", "Contoh 3", "081"));
+        listPelanggan.add(new CustomItem("1", "Maulana", "Jangli", "Semarang", "081"));
+        listPelanggan.add(new CustomItem("2", "Test 2", "Jangli", "Semarang", "081"));
+        listPelanggan.add(new CustomItem("1", "Contoh 3", "Jangli", "Semarang", "081"));
 
         pbLoading.setVisibility(View.GONE);
         getSearch();
@@ -250,6 +251,82 @@ public class ListPelanggan extends AppCompatActivity {
         });
 
         alert.show();
+
+        alert.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+    }
+
+    public static void showEditPelanggan(final Context context, CustomItem item){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_tambah_pelanggan, null);
+        builder.setView(view);
+        builder.setTitle("Pengaturan Pelanggan");
+
+        final EditText edtNamaPelanggan = (EditText) view.findViewById(R.id.edt_nama_pelanggan);
+        final EditText edtAlamat = (EditText) view.findViewById(R.id.edt_alamat);
+        final EditText edtKota= (EditText) view.findViewById(R.id.edt_kota);
+        final EditText edtTelepon= (EditText) view.findViewById(R.id.edt_telepon);
+        final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
+        final Button btnSimpan = (Button) view.findViewById(R.id.btn_simpan);
+
+        edtNamaPelanggan.setText(item.getItem2());
+        edtAlamat.setText(item.getItem3());
+        edtKota.setText(item.getItem4());
+        edtTelepon.setText(item.getItem5());
+
+        final AlertDialog alert = builder.create();
+        btnBatal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                alert.dismiss();
+            }
+        });
+
+        btnSimpan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Validasi
+                if(edtNamaPelanggan.getText().length() <= 0){
+                    edtNamaPelanggan.setError("Jumlah harus lebih dari 0");
+                    edtNamaPelanggan.requestFocus();
+                    return;
+                }else{
+                    edtNamaPelanggan.setError(null);
+                }
+
+                AlertDialog konfirmasiSimpan = new AlertDialog.Builder(context)
+                        .setTitle("Konfirmasi")
+                        .setMessage("Simpan pelanggan " + edtNamaPelanggan.getText().toString() + " ?")
+                        .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+
+                                alert.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .show();
+
+            }
+        });
+
+        alert.show();
+
+        alert.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+
     }
 
     @Override

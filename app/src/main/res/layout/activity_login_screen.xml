@@ -61,6 +61,8 @@
                     android:layout_height="wrap_content"
                     android:drawableLeft="@mipmap/ic_person"
                     android:hint="Username"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPersonName"
                     android:id="@+id/edt_username"
                     android:background="@drawable/input_form_top"/>
 
@@ -69,6 +71,8 @@
                     android:layout_height="wrap_content"
                     android:drawableLeft="@mipmap/ic_password"
                     android:hint="Password"
+                    android:inputType="textPassword"
+                    android:imeOptions="actionDone"
                     android:id="@+id/edt_password"
                     android:background="@drawable/input_form_bottom"
                     android:layout_marginBottom="@dimen/margin_vertical"/>

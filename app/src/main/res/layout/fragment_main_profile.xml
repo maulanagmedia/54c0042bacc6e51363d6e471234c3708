@@ -1,0 +1,174 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="gmedia.net.id.restauranttakingorder.Profile.MainProfile">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_default"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/input_form_disable"
+            android:gravity="center"
+            android:padding="@dimen/margin_default"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="wrap_content"
+                android:text="Nama"
+                android:textColor="@color/color_blue"
+                android:layout_marginRight="@dimen/margin_default"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.6"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tv_nama"
+                android:layout_marginRight="@dimen/margin_default"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/input_form_disable"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_default"
+            android:padding="@dimen/margin_default"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="wrap_content"
+                android:text="NIK"
+                android:textColor="@color/color_blue"
+                android:layout_marginRight="@dimen/margin_default"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.6"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tv_nik"
+                android:layout_marginRight="@dimen/margin_default"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/input_form_disable"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_default"
+            android:padding="@dimen/margin_default"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="wrap_content"
+                android:text="Alamat"
+                android:textColor="@color/color_blue"
+                android:layout_marginRight="@dimen/margin_default"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.6"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tv_alamat"
+                android:layout_marginRight="@dimen/margin_default"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/input_form_disable"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_default"
+            android:padding="@dimen/margin_default"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="wrap_content"
+                android:text="Kota"
+                android:textColor="@color/color_blue"
+                android:layout_marginRight="@dimen/margin_default"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.6"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tv_kota"
+                android:layout_marginRight="@dimen/margin_default"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/input_form_disable"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_default"
+            android:padding="@dimen/margin_default"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="wrap_content"
+                android:text="No Telepon"
+                android:textColor="@color/color_blue"
+                android:layout_marginRight="@dimen/margin_default"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.6"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tv_telepon"
+                android:layout_marginRight="@dimen/margin_default"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/input_form_disable"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_default"
+            android:padding="@dimen/margin_default"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="wrap_content"
+                android:text="Bagian"
+                android:textColor="@color/color_blue"
+                android:layout_marginRight="@dimen/margin_default"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.6"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/tv_bagian"
+                android:layout_marginRight="@dimen/margin_default"/>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

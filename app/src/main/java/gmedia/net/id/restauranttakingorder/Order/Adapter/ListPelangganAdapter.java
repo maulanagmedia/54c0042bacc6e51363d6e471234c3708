@@ -13,6 +13,7 @@ import com.maulana.custommodul.ItemValidation;
 
 import java.util.List;
 
+import gmedia.net.id.restauranttakingorder.Order.ListPelanggan;
 import gmedia.net.id.restauranttakingorder.R;
 
 
@@ -34,7 +35,7 @@ public class ListPelangganAdapter extends ArrayAdapter{
     }
 
     private static class ViewHolder {
-        private LinearLayout llContainer;
+        private LinearLayout llContainer, llEditContainer, llDeleteContainer;
         private TextView tvItem1, tvItem2;
     }
 
@@ -52,6 +53,8 @@ public class ListPelangganAdapter extends ArrayAdapter{
             LayoutInflater inflater = context.getLayoutInflater();
             convertView = inflater.inflate(R.layout.adapter_list_pelanggan, null);
             holder.llContainer = (LinearLayout) convertView.findViewById(R.id.ll_container);
+            holder.llEditContainer = (LinearLayout) convertView.findViewById(R.id.ll_edit_container);
+            holder.llDeleteContainer = (LinearLayout) convertView.findViewById(R.id.ll_delete_container);
             holder.tvItem1 = (TextView) convertView.findViewById(R.id.tv_item1);
             holder.tvItem2 = (TextView) convertView.findViewById(R.id.tv_item2);
             convertView.setTag(holder);
@@ -68,6 +71,21 @@ public class ListPelangganAdapter extends ArrayAdapter{
 
             }
         });*/
+
+        holder.llEditContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ListPelanggan.showEditPelanggan(context, itemSelected);
+            }
+        });
+
+        holder.llDeleteContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         return convertView;
 
     }

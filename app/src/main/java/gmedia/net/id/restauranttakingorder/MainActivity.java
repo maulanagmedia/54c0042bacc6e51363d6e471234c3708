@@ -3,10 +3,7 @@ package gmedia.net.id.restauranttakingorder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,15 +11,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.maulana.custommodul.SessionManager;
 
+import gmedia.net.id.restauranttakingorder.Order.MainOpenOrder;
 import gmedia.net.id.restauranttakingorder.Order.MainOrder;
+import gmedia.net.id.restauranttakingorder.Printer.MainPrinter;
+import gmedia.net.id.restauranttakingorder.Profile.MainProfile;
 import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.MainRiwayatPemesanan;
 
 public class MainActivity extends AppCompatActivity
@@ -72,7 +70,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_order);
             /*FrameLayout flContainer = (FrameLayout) findViewById(R.id.fl_main_container);
             flContainer.removeAllViews();*/
-            fragment = new MainOrder();
+            fragment = new MainOpenOrder();
             callFragment(fragment);
         }
     }
@@ -116,7 +114,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -136,7 +134,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -150,18 +148,21 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_order) {
-            fragment = new MainOrder();
+            fragment = new MainOpenOrder();
+            callFragment(fragment);
         } else if (id == R.id.nav_riwayat_pemesanan) {
             fragment = new MainRiwayatPemesanan();
+            callFragment(fragment);
         } else if (id == R.id.nav_printer) {
-
+            fragment = new MainPrinter();
+            callFragment(fragment);
         } else if (id == R.id.nav_profile) {
-
+            fragment = new MainProfile();
+            callFragment(fragment);
         } else if (id == R.id.nav_logout) {
-
+            Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+            session.logoutUser(intent);
         }
-
-        callFragment(fragment);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,6 +13,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +27,16 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import com.maulana.custommodul.ApiVolley;
 import com.maulana.custommodul.CustomItem;
 import com.maulana.custommodul.ItemValidation;
+import com.maulana.custommodul.SessionManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +45,13 @@ import gmedia.net.id.restauranttakingorder.Order.Adapter.KategoriMenuAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.MenuByKategoriAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.SelectedMenuAdapter;
 import gmedia.net.id.restauranttakingorder.R;
+import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class MainOrder extends Fragment {
 
+    private static final String TAG = "Order";
     private View layout;
     private Context context;
     private ListView lvKategori;
@@ -52,12 +64,15 @@ public class MainOrder extends Fragment {
     private List<CustomItem> listKategori;
     private static List<CustomItem> listMenu;
     public static List<CustomItem> listSelectedMenu;
-    private ProgressBar pbLoadMenu;
+    private ProgressBar pbLoadMenu, pbLoadKategori;
     private boolean firstLoad = true;
     private static ItemValidation iv = new ItemValidation();
     private static SelectedMenuAdapter selectedMenuAdapter;
     private ImageButton ibPelanggan;
     public static final int GET_PELANGGAN = 12;
+    private FloatingActionButton fabScanBarcode;
+    private String kategoriMenu = "";
+    private SessionManager session;
 
     public MainOrder() {
         // Required empty public constructor
@@ -83,6 +98,7 @@ public class MainOrder extends Fragment {
         lvKategori = (ListView) layout.findViewById(R.id.lv_kategori);
         edtSearchMenu = (EditText) layout.findViewById(R.id.edt_search_menu);
         rvListMenu = (RecyclerView) layout.findViewById(R.id.rv_list_menu);
+        pbLoadKategori = (ProgressBar) layout.findViewById(R.id.pb_load_kategori);
         pbLoadMenu = (ProgressBar) layout.findViewById(R.id.pb_load_menu);
         edtNamaPelanggan = (EditText) layout.findViewById(R.id.edt_nama_pelanggan);
         edtNoMeja = (EditText) layout.findViewById(R.id.edt_no_meja);
@@ -91,7 +107,9 @@ public class MainOrder extends Fragment {
         tvTotal = (TextView) layout.findViewById(R.id.tv_total);
         btnCetak = (Button) layout.findViewById(R.id.btn_cetak);
         btnSimpan = (Button) layout.findViewById(R.id.btn_simpan);
+        fabScanBarcode = (FloatingActionButton) layout.findViewById(R.id.fab_scan);
 
+        session = new SessionManager(context);
         setSelectedOrderEvent();
         getKategoriData();
 
@@ -107,9 +125,10 @@ public class MainOrder extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == GET_PELANGGAN) {
 
+            super.onActivityResult(requestCode, resultCode, data);
             if(resultCode == Activity.RESULT_OK){
                 String nama = data.getStringExtra("nama");
                 edtNamaPelanggan.setText(nama);
@@ -117,6 +136,19 @@ public class MainOrder extends Fragment {
 
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
+            }
+        }
+    }
+
+    public static void getBarcodeData(int requestCode, int resultCode, Intent data){
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null) {
+            if(result.getContents() == null) {
+
+                Log.d(TAG, "onActivityResult: Scan failed ");
+            } else {
+
+                Log.d(TAG, "barcode: "+result.getContents());
             }
         }
     }
@@ -133,17 +165,59 @@ public class MainOrder extends Fragment {
                 loadEditOrderDialog(i);
             }
         });
+
+        fabScanBarcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openScanBarcode();
+            }
+        });
+    }
+
+    private void openScanBarcode() {
+
+        IntentIntegrator integrator = new IntentIntegrator((Activity) context);
+        //integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
+        integrator.initiateScan();
     }
 
     //region setting kategori
     private void getKategoriData() {
 
+        pbLoadKategori.setVisibility(View.VISIBLE);
         listKategori = new ArrayList<>();
+        ApiVolley request = new ApiVolley(context, new JSONObject(), "GET", ServerURL.getKategori, "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+                try {
 
-        listKategori.add(new CustomItem("1", "Favorit"));
-        listKategori.add(new CustomItem("2", "Semua"));
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    if(iv.parseNullInteger(status) == 200){
 
-        setKategoriTable();
+                        JSONArray jsonArray = response.getJSONArray("response");
+                        listKategori.add(new CustomItem("", "Semua",""));
+                        for(int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+                            listKategori.add(new CustomItem(jo.getString("Kdmenu"), jo.getString("nmmenu"),jo.getString("type")));
+                        }
+
+                        setKategoriTable();
+                    }else{
+                        setKategoriTable();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    setKategoriTable();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+                setKategoriTable();
+            }
+        });
     }
 
     private void setKategoriTable() {
@@ -159,7 +233,9 @@ public class MainOrder extends Fragment {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+
                     CustomItem selected = (CustomItem) adapterView.getItemAtPosition(i);
+                    kategoriMenu = selected.getItem1();
                     adapter.selectedPosition = i;
                     adapter.notifyDataSetChanged();
 

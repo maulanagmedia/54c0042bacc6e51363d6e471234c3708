@@ -13,4 +13,17 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--Printer Utils-->
+    <string name="txt_start">Start</string>
+    <string name="txt_stop">Stop</string>
+    <string name="title_porttype">Port Type</string>
+    <string name="title_broadcast">Broadcast</string>
+    <string name="title_devicemodel">Device Model</string>
+    <string name="title_epsonfilter">Epson Filter</string>
+    <string name="title_devicetype">Device Type</string>
+    <string name="txt_broadcast">255.255.255.255</string>
+    <string name="title_err_code">Error Code</string>
+    <string name="title_err_method">Method</string>
+
 </resources>

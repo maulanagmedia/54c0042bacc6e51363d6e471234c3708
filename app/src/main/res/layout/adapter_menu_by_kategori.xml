@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="90dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -38,14 +38,14 @@
                     android:layout_centerInParent="true">
 
                     <TextView
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:layout_margin="@dimen/margin_default"
                         android:text="A"
                         android:gravity="center"
                         android:background="@drawable/circle_background_orange"
                         android:id="@+id/tv_text_thumbnail"
-                        android:textSize="40sp"
+                        android:textSize="34sp"
                         android:textStyle="bold"
                         android:textColor="@color/color_white"/>
                 </LinearLayout>
@@ -64,7 +64,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="0.6"
                     android:gravity="center_vertical"
-                    android:textSize="26sp"
+                    android:textSize="23sp"
                     android:textStyle="bold"
                     android:singleLine="true"
                     android:ellipsize="end"
@@ -74,7 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="0.4"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:gravity="center_vertical"
                     android:id="@+id/tv_item2"/>
             </LinearLayout>

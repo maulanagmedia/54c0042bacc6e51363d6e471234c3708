@@ -28,10 +28,20 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_default"
+            android:text="Tap nama pelanggan untuk memilih"
+            android:id="@+id/tv_footer"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical|right"/>
+
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/ll_search"
+            android:layout_above="@id/tv_footer"
             android:id="@+id/lv_list"></ListView>
     </RelativeLayout>
 

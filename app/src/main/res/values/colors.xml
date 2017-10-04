@@ -14,4 +14,6 @@
     <color name="color_orange">#ff8c00</color>
     <color name="color_orange_active">#ffb255</color>
     <color name="color_text">#767676</color>
+    <color name="color_table">#cecece</color>
+    <color name="color_table_active">#fc1d1d</color>
 </resources>

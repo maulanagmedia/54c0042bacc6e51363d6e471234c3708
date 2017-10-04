@@ -24,6 +24,7 @@ import com.maulana.custommodul.SessionManager;
 
 import java.util.List;
 
+import gmedia.net.id.restauranttakingorder.Order.DetailOrder;
 import gmedia.net.id.restauranttakingorder.Order.MainOrder;
 import gmedia.net.id.restauranttakingorder.R;
 
@@ -80,17 +81,24 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
         }
 
         holder.tvItem1.setText(cli.getItem2());
-        holder.tvItem2.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem3())));
+        holder.tvItem2.setText( "@ " + iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem3())));
         if(cli.getItem4().equals("")){
 
+            holder.llThumbnail.setVisibility(View.VISIBLE);
+            holder.ivThumbnail.setVisibility(View.GONE);
             String firstWord = cli.getItem2().substring(0,1);
             holder.tvThumbnail.setText(firstWord.toUpperCase());
+        }else{
+            holder.llThumbnail.setVisibility(View.GONE);
+            holder.ivThumbnail.setVisibility(View.VISIBLE);
+            ImageUtils iu = new ImageUtils();
+            iu.LoadRealImage(context, cli.getItem4(),holder.ivThumbnail);
         }
 
         holder.rlContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainOrder.addMoreSelectedMenu(cli);
+                DetailOrder.loadAddOrderDialog(context, cli);
             }
         });
     }
