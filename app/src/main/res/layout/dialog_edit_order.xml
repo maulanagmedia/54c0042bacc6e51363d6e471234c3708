@@ -254,7 +254,8 @@
                         android:textColor="@color/color_blue"
                         android:id="@+id/edt_catatan"
                         android:gravity="left"
-                        android:inputType="textPersonName"
+                        android:scrollHorizontally="false"
+                        android:inputType="textPersonName|textMultiLine"
                         android:padding="@dimen/margin_default"/>
                 </LinearLayout>
             </LinearLayout>

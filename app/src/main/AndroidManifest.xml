@@ -3,10 +3,12 @@
     package="gmedia.net.id.restauranttakingorder">
 
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -21,7 +23,6 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -42,8 +43,11 @@
             android:name=".Order.DetailOrder"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity android:name=".Printer.DiscoverPrinter"
-            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".Printer.DiscoverPrinter"
+            android:screenOrientation="landscape" />
+        <activity android:name=".PrinterUtils.TestPrinter">
+        </activity>
     </application>
 
 </manifest>

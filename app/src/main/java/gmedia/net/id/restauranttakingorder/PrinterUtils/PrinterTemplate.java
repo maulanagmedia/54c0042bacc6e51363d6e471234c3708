@@ -79,7 +79,7 @@ public class PrinterTemplate implements ReceiveListener{
             return false;
         }
 
-        mPrinter.setReceiveEventListener(PrinterTemplate.this);
+        mPrinter.setReceiveEventListener(this);
 
         return true;
     }
@@ -120,31 +120,40 @@ public class PrinterTemplate implements ReceiveListener{
             textData.append("No Meja  : "+ noMeja+"\n");
             textData.append("Tanggal  : "+ iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"\n");
             textData.append("Jam      : "+ iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
-            textData.append("------------------------------\n");
+            textData.append("----------------------------------------\n"); // 40 Line
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_LEFT);
+
+            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
+            int x = 1;
+            for(CustomItem item : pesanan){
+                String itemToPrint1 = x +". " + item.getItem2();
+                String itemToPrint = x +". "+ item.getItem2() +" "+ item.getItem5();
+                int sisaSpace = ((itemToPrint.length() % 40) == 0) ? 0 : (40 - (itemToPrint.length() % 40));
+                for(int i = 0; i < sisaSpace; i++){
+                    itemToPrint1 = itemToPrint1 + " ";
+                }
+
+                itemToPrint = itemToPrint1 + " " + item.getItem5();
+                textData.append( itemToPrint+"\n");
+                if(item.getItem8().length()>0){
+                    textData.append( "Note: "+item.getItem8()+"\n");
+                }
+                x++;
+            }
+
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
             method = "addTextAlign";
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
-
-            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
-            int x = 1;
-            for(CustomItem item : pesanan){
-                String itemToPrint = item.getItem5() +" "+ item.getItem2();
-                textData.append( itemToPrint+"\n");
-                if(item.getItem8().length()>0){
-                    textData.append( item.getItem8()+"\n");
-                }
-                x++;
-            }
-
             textData.append("------------------------------\n");
-            method = "addText";
-            mPrinter.addText(textData.toString());
-            textData.delete(0, textData.length());
-
-            textData.append("Print out for kitchen\n");
+            textData.append("Handout for Kitchen\n");
             textData.append(context.getResources().getString(R.string.restaurant_name)+"\n");
             method = "addText";
             mPrinter.addText(textData.toString());
@@ -333,7 +342,7 @@ public class PrinterTemplate implements ReceiveListener{
             warningsMsg += context.getResources().getString(R.string.handlingmsg_warn_battery_near_end);
         }
 
-        //Log.d(TAG, "dispPrinterWarnings: " + warningsMsg);
+        android.util.Log.d(TAG, "dispPrinterWarnings: " + warningsMsg);
     }
 
     @Override

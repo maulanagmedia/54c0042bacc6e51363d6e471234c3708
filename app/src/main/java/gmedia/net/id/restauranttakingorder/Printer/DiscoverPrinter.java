@@ -194,7 +194,7 @@ public class DiscoverPrinter extends AppCompatActivity {
                 public synchronized void run() {
 
                     String printerType = (deviceInfo.getDeviceName().toString().split("\\("))[0];
-                    CustomItem item = new CustomItem(deviceInfo.getIpAddress(), deviceInfo.getDeviceName(), printerType);
+                    CustomItem item = new CustomItem(deviceInfo.getTarget(), deviceInfo.getDeviceName(), printerType);
                     Log.d(TAG, "PrinterName: "+ printerType);
                     printerAdapter.addMoreData(item);
                     llRefreshContainer.setVisibility(View.GONE);

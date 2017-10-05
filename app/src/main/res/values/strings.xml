@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Resto Taking Order</string>
     <string name="title_name">@string/app_name</string>
-    <string name="restaurant_name">JAVE STROBIST</string>
+    <string name="restaurant_name">JAVA STROBIST</string>
     <string name="footer_text">Restaurant Taking Order</string>
     <string name="title_activity_main">MainActivity</string>
 
