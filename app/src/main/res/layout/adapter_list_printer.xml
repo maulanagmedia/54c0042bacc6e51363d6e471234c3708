@@ -1,28 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TwoLineListItem xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:mode="twoLine"
-    android:orientation="horizontal"
-    android:paddingBottom="2dip"
-    android:paddingTop="2dip" >
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/PrinterName"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:textSize="15sp"
-        android:textColor="#000000" />
+        android:orientation="horizontal"
+        android:background="@drawable/input_form_blue"
+        android:layout_margin="@dimen/margin_default"
+        android:weightSum="1">
 
-    <TextView
-        android:id="@+id/Target"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/PrinterName"
-        android:layout_below="@+id/PrinterName"
-        android:layout_margin="5dp"
-        android:textSize="10sp"
-        android:textColor="#000000" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center">
 
-</TwoLineListItem>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@mipmap/ic_wifi"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.85"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_default"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_blue"
+                android:id="@+id/tv_item1"
+                android:textSize="@dimen/font_value"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_blue"
+                android:id="@+id/tv_item2"
+                android:textSize="@dimen/font_title"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -31,6 +33,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.epson.epos2.Epos2Exception;
+import com.epson.epos2.printer.Printer;
+import com.epson.epos2.printer.PrinterStatusInfo;
+import com.epson.epos2.printer.ReceiveListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.maulana.custommodul.ApiVolley;
@@ -48,11 +54,14 @@ import java.util.List;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.KategoriMenuAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.MenuByKategoriAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.SelectedMenuAdapter;
+import gmedia.net.id.restauranttakingorder.PrinterUtils.PrinterTemplate;
+import gmedia.net.id.restauranttakingorder.PrinterUtils.ShowMsg;
 import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
+import gmedia.net.id.restauranttakingorder.Utils.SavedPrinterManager;
 import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
-public class DetailOrder extends AppCompatActivity {
+public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
     private static final String TAG = "DetailOrder";
     private ListView lvKategori;
@@ -78,6 +87,8 @@ public class DetailOrder extends AppCompatActivity {
     private boolean editMode = false;
     private ProgressBar pbLoadOrder;
     private boolean onProcess = false;
+    private Context context;
+    private SavedPrinterManager printerManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +98,7 @@ public class DetailOrder extends AppCompatActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
+        context = this;
         setTitle("Pilih Menu");
         initUI();
     }
@@ -108,6 +120,7 @@ public class DetailOrder extends AppCompatActivity {
         btnSimpan = (Button) findViewById(R.id.btn_simpan);
         fabScanBarcode = (FloatingActionButton) findViewById(R.id.fab_scan);
 
+        printerManager = new SavedPrinterManager(DetailOrder.this);
         session = new SessionManager(DetailOrder.this);
         Bundle bundle = getIntent().getExtras();
 
@@ -160,10 +173,10 @@ public class DetailOrder extends AppCompatActivity {
                     return;
                 }
 
-                if(onProcess){
+                if(!onProcess){
                     simpanData();
                 }else{
-
+                    Toast.makeText(DetailOrder.this, "Harap tunggu hingga proses selesai", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -172,8 +185,12 @@ public class DetailOrder extends AppCompatActivity {
 
     private void simpanData() {
 
+        onProcess = true;
         // penjualan_d
         JSONArray penjualanD = new JSONArray();
+
+        final String timestampNow = iv.getCurrentDate(FormatItem.formatTimestamp);
+        final String dateNow = iv.getCurrentDate(FormatItem.formatDate);
 
         double total = 0;
         for(CustomItem item: listSelectedMenu){
@@ -190,7 +207,7 @@ public class DetailOrder extends AppCompatActivity {
                 jo.put("diskon", item.getItem7());
                 total += (iv.parseNullDouble(item.getItem5()) * iv.parseNullDouble(item.getItem9()));
                 jo.put("total", iv.doubleToStringRound(iv.parseNullDouble(item.getItem5()) * iv.parseNullDouble(item.getItem9())));
-                jo.put("tglinput", iv.getCurrentDate(FormatItem.formatTimestamp));
+                jo.put("tglinput", timestampNow);
                 jo.put("nik", session.getUserInfo(SessionManager.TAG_NIK));
                 jo.put("catatan", item.getItem8());
             } catch (JSONException e) {
@@ -203,7 +220,7 @@ public class DetailOrder extends AppCompatActivity {
         JSONObject penjualan = new JSONObject();
         try {
             penjualan.put("nobukti", noBukti);
-            penjualan.put("tgl", iv.getCurrentDate(FormatItem.formatDate));
+            penjualan.put("tgl", dateNow);
             penjualan.put("kdcus", "");
             penjualan.put("nmplg", "");
             penjualan.put("kdmeja", kdMeja);
@@ -213,7 +230,7 @@ public class DetailOrder extends AppCompatActivity {
             penjualan.put("nik", session.getUserInfo(SessionManager.TAG_NIK));
             penjualan.put("total", iv.doubleToStringRound(total));
             penjualan.put("userid", session.getUserInfo(SessionManager.TAG_USERNAME));
-            penjualan.put("usertgl", iv.getCurrentDate(FormatItem.formatTimestamp));
+            penjualan.put("usertgl", timestampNow);
             penjualan.put("status", "1");
             penjualan.put("urutan", edtUrutan.getText().toString());
         } catch (JSONException e) {
@@ -236,19 +253,25 @@ public class DetailOrder extends AppCompatActivity {
                     JSONObject response = new JSONObject(result);
                     String status = response.getJSONObject("metadata").getString("status");
                     if(iv.parseNullInteger(status) == 200){
-
+                        printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenu);
                     }
-
+                    onProcess = false;
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    onProcess = false;
                 }
             }
 
             @Override
             public void onError(String result) {
-
+                onProcess = false;
             }
         });
+    }
+
+    private void printToKitchen(String nobukti, String timestamp, String nomeja, List<CustomItem> pesanan){
+
+        boolean printed = printKitchen(nobukti, timestamp, nomeja, pesanan);
     }
 
     private void getNoBukti() {
@@ -933,4 +956,374 @@ public class DetailOrder extends AppCompatActivity {
         overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
     }
 
+    //region printer setup
+    private Printer  mPrinter = null;
+
+    @Override
+    public void onPtrReceive(Printer printer, final int i, final PrinterStatusInfo printerStatusInfo, String s) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public synchronized void run() {
+                ShowMsg.showResult(i, makeErrorMessage(printerStatusInfo), context);
+
+                dispPrinterWarnings(printerStatusInfo);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        disconnectPrinter();
+                    }
+                }).start();
+            }
+        });
+    }
+
+    private String makeErrorMessage(PrinterStatusInfo status) {
+        String msg = "";
+
+        if (status.getOnline() == Printer.FALSE) {
+            msg += context.getString(R.string.handlingmsg_err_offline);
+        }
+        if (status.getConnection() == Printer.FALSE) {
+            msg += context.getString(R.string.handlingmsg_err_no_response);
+        }
+        if (status.getCoverOpen() == Printer.TRUE) {
+            msg += context.getString(R.string.handlingmsg_err_cover_open);
+        }
+        if (status.getPaper() == Printer.PAPER_EMPTY) {
+            msg += context.getString(R.string.handlingmsg_err_receipt_end);
+        }
+        if (status.getPaperFeed() == Printer.TRUE || status.getPanelSwitch() == Printer.SWITCH_ON) {
+            msg += context.getString(R.string.handlingmsg_err_paper_feed);
+        }
+        if (status.getErrorStatus() == Printer.MECHANICAL_ERR || status.getErrorStatus() == Printer.AUTOCUTTER_ERR) {
+            msg += context.getString(R.string.handlingmsg_err_autocutter);
+            msg += context.getString(R.string.handlingmsg_err_need_recover);
+        }
+        if (status.getErrorStatus() == Printer.UNRECOVER_ERR) {
+            msg += context.getString(R.string.handlingmsg_err_unrecover);
+        }
+        if (status.getErrorStatus() == Printer.AUTORECOVER_ERR) {
+            if (status.getAutoRecoverError() == Printer.HEAD_OVERHEAT) {
+                msg += context.getString(R.string.handlingmsg_err_overheat);
+                msg += context.getString(R.string.handlingmsg_err_head);
+            }
+            if (status.getAutoRecoverError() == Printer.MOTOR_OVERHEAT) {
+                msg += context.getString(R.string.handlingmsg_err_overheat);
+                msg += context.getString(R.string.handlingmsg_err_motor);
+            }
+            if (status.getAutoRecoverError() == Printer.BATTERY_OVERHEAT) {
+                msg += context.getString(R.string.handlingmsg_err_overheat);
+                msg += context.getString(R.string.handlingmsg_err_battery);
+            }
+            if (status.getAutoRecoverError() == Printer.WRONG_PAPER) {
+                msg += context.getString(R.string.handlingmsg_err_wrong_paper);
+            }
+        }
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_0) {
+            msg += context.getString(R.string.handlingmsg_err_battery_real_end);
+        }
+
+        return msg;
+    }
+
+    private boolean printKitchen(String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan){
+
+        try {
+            com.epson.epos2.Log.setLogSettings(context, com.epson.epos2.Log.PERIOD_TEMPORARY, com.epson.epos2.Log.OUTPUT_STORAGE, null, 0, 1, com.epson.epos2.Log.LOGLEVEL_LOW);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "setLogSettings", context);
+        }
+
+        return runPrintReceiptSequence(timestamp, noBukti, noMeja, pesanan);
+    }
+
+    private boolean runPrintReceiptSequence(String timestamp, String noBukti, String noMeja, List<CustomItem> pesanan) {
+        if (!initializeObject()) {
+            return false;
+        }
+
+        if (!createKitchenData(noBukti, timestamp, noMeja, pesanan)) {
+            finalizeObject();
+            return false;
+        }
+
+        if (!printData(SavedPrinterManager.TAG_IP2)) {
+            finalizeObject();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean initializeObject() {
+        try {
+            mPrinter = new Printer(Printer.TM_U220,
+                    Printer.MODEL_ANK,
+                    context);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "Printer", context);
+            return false;
+        }
+
+        mPrinter.setReceiveEventListener(this);
+
+        return true;
+    }
+
+    private boolean createKitchenData(String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan) {
+
+        // baris maks 30 char
+        int maxRow= 30;
+        String method = "";
+        Bitmap logoData = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+        StringBuilder textData = new StringBuilder();
+        final int barcodeWidth = 2;
+        final int barcodeHeight = 100;
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+
+            method = "addImage";
+            mPrinter.addImage(logoData, 0, 0,
+                    logoData.getWidth(),
+                    logoData.getHeight(),
+                    Printer.COLOR_1,
+                    Printer.MODE_MONO,
+                    Printer.HALFTONE_DITHER,
+                    Printer.PARAM_DEFAULT,
+                    Printer.COMPRESS_AUTO);
+
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_LEFT);
+            method = "addFeedLine";
+            mPrinter.addFeedLine(1);
+            textData.append("No Bukti : "+ noBukti+"\n");
+            textData.append("No Meja  : "+ noMeja+"\n");
+            textData.append("Tanggal  : "+ iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"\n");
+            textData.append("Jam      : "+ iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
+            textData.append("------------------------------\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+
+            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
+            int x = 1;
+            for(CustomItem item : pesanan){
+                String itemToPrint = item.getItem5() +" "+ item.getItem2();
+                textData.append( itemToPrint+"\n");
+                if(item.getItem8().length()>0){
+                    textData.append( item.getItem8()+"\n");
+                }
+                x++;
+            }
+
+            textData.append("------------------------------\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            textData.append("Print out for kitchen\n");
+            textData.append(context.getResources().getString(R.string.restaurant_name)+"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addFeedLine";
+            mPrinter.addFeedLine(2);
+
+            /*method = "addBarcode";
+            mPrinter.addBarcode("01209457",
+                    Printer.BARCODE_CODE39,
+                    Printer.HRI_BELOW,
+                    Printer.FONT_A,
+                    barcodeWidth,
+                    barcodeHeight);*/
+
+            method = "addCut";
+            mPrinter.addCut(Printer.CUT_FEED);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, method, context);
+            return false;
+        }
+
+        textData = null;
+
+        return true;
+    }
+
+    private void finalizeObject() {
+        if (mPrinter == null) {
+            return;
+        }
+
+        mPrinter.clearCommandBuffer();
+
+        mPrinter.setReceiveEventListener(null);
+
+        mPrinter = null;
+    }
+
+    private boolean printData(String key) {
+
+        String ip = printerManager.getData(key);
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        if (!connectPrinter(ip)) {
+            return false;
+        }
+
+        PrinterStatusInfo status = mPrinter.getStatus();
+
+        dispPrinterWarnings(status);
+
+        if (!isPrintable(status)) {
+            ShowMsg.showMsg(makeErrorMessage(status), context);
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+            return false;
+        }
+
+        try {
+            mPrinter.sendData(Printer.PARAM_DEFAULT);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "sendData", context);
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isPrintable(PrinterStatusInfo status) {
+
+        if (status == null) {
+            return false;
+        }
+
+        if (status.getConnection() == Printer.FALSE) {
+            return false;
+        }
+        else if (status.getOnline() == Printer.FALSE) {
+            return false;
+        }
+        else {
+            ;//print available
+        }
+
+        return true;
+    }
+
+    private void disconnectPrinter() {
+        if (mPrinter == null) {
+            return;
+        }
+
+        try {
+            mPrinter.endTransaction();
+        }
+        catch (final Exception e) {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public synchronized void run() {
+                    ShowMsg.showException(e, "endTransaction", context);
+                }
+            });
+        }
+
+        try {
+            mPrinter.disconnect();
+        }
+        catch (final Exception e) {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public synchronized void run() {
+                    ShowMsg.showException(e, "disconnect", context);
+                }
+            });
+        }
+
+        finalizeObject();
+    }
+
+    private boolean connectPrinter(String ip) {
+        boolean isBeginTransaction = false;
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            mPrinter.connect(ip, Printer.PARAM_DEFAULT);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "connect", context);
+            return false;
+        }
+
+        try {
+            mPrinter.beginTransaction();
+            isBeginTransaction = true;
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "beginTransaction", context);
+        }
+
+        if (isBeginTransaction == false) {
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Epos2Exception e) {
+                // Do nothing
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void dispPrinterWarnings(PrinterStatusInfo status) {
+
+        String warningsMsg = "";
+
+        if (status == null) {
+            return;
+        }
+
+        if (status.getPaper() == Printer.PAPER_NEAR_END) {
+            warningsMsg += context.getResources().getString(R.string.handlingmsg_warn_receipt_near_end);
+        }
+
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_1) {
+            warningsMsg += context.getResources().getString(R.string.handlingmsg_warn_battery_near_end);
+        }
+
+        //Log.d(TAG, "dispPrinterWarnings: " + warningsMsg);
+    }
+
+    //endregion
 }

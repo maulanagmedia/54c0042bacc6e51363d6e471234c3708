@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import com.epson.epos2.Epos2CallbackCode;
 import com.epson.epos2.Epos2Exception;
 
 import gmedia.net.id.restauranttakingorder.R;
@@ -91,6 +92,89 @@ public class ShowMsg {
                 break;
             case    Epos2Exception.ERR_FAILURE:
                 return_text = "ERR_FAILURE";
+                break;
+            default:
+                return_text = String.format("%d", state);
+                break;
+        }
+        return return_text;
+    }
+
+    public static void showResult(int code, String errMsg, Context context) {
+        String msg = "";
+        if (errMsg.isEmpty()) {
+            msg = String.format(
+                    "\t%s\n\t%s\n",
+                    context.getString(R.string.title_msg_result),
+                    getCodeText(code));
+        }
+        else {
+            msg = String.format(
+                    "\t%s\n\t%s\n\n\t%s\n\t%s\n",
+                    context.getString(R.string.title_msg_result),
+                    getCodeText(code),
+                    context.getString(R.string.title_msg_description),
+                    errMsg);
+        }
+        show(msg, context);
+    }
+
+    public static String getCodeText(int state) {
+        String return_text = "";
+        switch (state) {
+            case Epos2CallbackCode.CODE_SUCCESS:
+                return_text = "PRINT_SUCCESS";
+                break;
+            case Epos2CallbackCode.CODE_PRINTING:
+                return_text = "PRINTING";
+                break;
+            case Epos2CallbackCode.CODE_ERR_AUTORECOVER:
+                return_text = "ERR_AUTORECOVER";
+                break;
+            case Epos2CallbackCode.CODE_ERR_COVER_OPEN:
+                return_text = "ERR_COVER_OPEN";
+                break;
+            case Epos2CallbackCode.CODE_ERR_CUTTER:
+                return_text = "ERR_CUTTER";
+                break;
+            case Epos2CallbackCode.CODE_ERR_MECHANICAL:
+                return_text = "ERR_MECHANICAL";
+                break;
+            case Epos2CallbackCode.CODE_ERR_EMPTY:
+                return_text = "ERR_EMPTY";
+                break;
+            case Epos2CallbackCode.CODE_ERR_UNRECOVERABLE:
+                return_text = "ERR_UNRECOVERABLE";
+                break;
+            case Epos2CallbackCode.CODE_ERR_FAILURE:
+                return_text = "ERR_FAILURE";
+                break;
+            case Epos2CallbackCode.CODE_ERR_NOT_FOUND:
+                return_text = "ERR_NOT_FOUND";
+                break;
+            case Epos2CallbackCode.CODE_ERR_SYSTEM:
+                return_text = "ERR_SYSTEM";
+                break;
+            case Epos2CallbackCode.CODE_ERR_PORT:
+                return_text = "ERR_PORT";
+                break;
+            case Epos2CallbackCode.CODE_ERR_TIMEOUT:
+                return_text = "ERR_TIMEOUT";
+                break;
+            case Epos2CallbackCode.CODE_ERR_JOB_NOT_FOUND:
+                return_text = "ERR_JOB_NOT_FOUND";
+                break;
+            case Epos2CallbackCode.CODE_ERR_SPOOLER:
+                return_text = "ERR_SPOOLER";
+                break;
+            case Epos2CallbackCode.CODE_ERR_BATTERY_LOW:
+                return_text = "ERR_BATTERY_LOW";
+                break;
+            case Epos2CallbackCode.CODE_ERR_TOO_MANY_REQUESTS:
+                return_text = "ERR_TOO_MANY_REQUESTS";
+                break;
+            case Epos2CallbackCode.CODE_ERR_REQUEST_ENTITY_TOO_LARGE:
+                return_text = "ERR_REQUEST_ENTITY_TOO_LARGE";
                 break;
             default:
                 return_text = String.format("%d", state);

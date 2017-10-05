@@ -3,9 +3,10 @@
     package="gmedia.net.id.restauranttakingorder">
 
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -41,7 +42,7 @@
             android:name=".Order.DetailOrder"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity android:name=".Printer.DisCoverPrinter"
+        <activity android:name=".Printer.DiscoverPrinter"
             android:screenOrientation="landscape"></activity>
     </application>
 
