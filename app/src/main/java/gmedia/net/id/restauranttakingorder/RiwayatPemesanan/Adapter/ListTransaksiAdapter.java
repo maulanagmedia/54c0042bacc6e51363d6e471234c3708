@@ -34,7 +34,7 @@ public class ListTransaksiAdapter extends ArrayAdapter{
     }
 
     private static class ViewHolder {
-        private TextView tvItem1, tvItem2, tvItem3;
+        private TextView tvItem1, tvItem2, tvItem3, tvItem4;
     }
 
     public void addMoreData(List<CustomItem> moreData){
@@ -59,15 +59,17 @@ public class ListTransaksiAdapter extends ArrayAdapter{
             holder.tvItem1 = (TextView) convertView.findViewById(R.id.tv_item1);
             holder.tvItem2 = (TextView) convertView.findViewById(R.id.tv_item2);
             holder.tvItem3 = (TextView) convertView.findViewById(R.id.tv_item3);
+            holder.tvItem4 = (TextView) convertView.findViewById(R.id.tv_item4);
             convertView.setTag(holder);
         }else{
             holder = (ViewHolder) convertView.getTag();
         }
 
         final CustomItem itemSelected = items.get(position);
-        holder.tvItem1.setText(itemSelected.getItem3());
+        holder.tvItem1.setText(itemSelected.getItem6());
         holder.tvItem2.setText(iv.ChangeFormatDateString(itemSelected.getItem5(), FormatItem.formatTimestamp, FormatItem.formatDataAndTime));
         holder.tvItem3.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(itemSelected.getItem4())));
+        holder.tvItem4.setText(itemSelected.getItem2());
         return convertView;
     }
 }

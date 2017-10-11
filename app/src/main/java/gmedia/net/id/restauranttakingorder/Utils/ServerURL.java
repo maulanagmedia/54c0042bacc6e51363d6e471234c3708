@@ -26,4 +26,5 @@ public class ServerURL {
     public String getMeja(){ return baseURL + "order/get_meja/";}
     public String getNoBukti(){ return baseURL + "order/generate_nobukti/";}
     public String saveOrder(){ return baseURL + "order/save/";}
+    public String getRiwayatOrder(){ return baseURL + "riwayat/get_riwayat_transaksi/";}
 }

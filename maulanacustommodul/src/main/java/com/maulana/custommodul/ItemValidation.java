@@ -145,16 +145,19 @@ public class ItemValidation {
     public String ChangeFormatDateString(String date, String formatDateFrom, String formatDateTo){
 
         String result = date;
-        SimpleDateFormat sdf = new SimpleDateFormat(formatDateFrom);
-        SimpleDateFormat sdfCustom = new SimpleDateFormat(formatDateTo);
+        if(date.length() > 0){
+            SimpleDateFormat sdf = new SimpleDateFormat(formatDateFrom);
+            SimpleDateFormat sdfCustom = new SimpleDateFormat(formatDateTo);
 
-        Date date1 = null;
-        try {
-            date1 = sdf.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
+            Date date1 = null;
+            try {
+                date1 = sdf.parse(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            result = (sdfCustom.format(date1) == null) ? "" : sdfCustom.format(date1);
         }
-        return (sdfCustom.format(date1) == null) ? "" : sdfCustom.format(date1);
+        return result;
     }
 
     public int dpToPx(Context context, int dp) {

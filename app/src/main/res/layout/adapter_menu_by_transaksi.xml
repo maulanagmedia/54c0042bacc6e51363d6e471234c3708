@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
-    android:layout_height="80dp">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/rl_container"
         android:background="@drawable/ripple_selected"
         android:layout_marginLeft="@dimen/margin_default"
@@ -14,7 +14,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="?attr/selectableItemBackground"
             android:weightSum="1">
@@ -54,7 +54,8 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="0.85"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:padding="@dimen/margin_small"
                 android:orientation="horizontal"
                 android:weightSum="1">

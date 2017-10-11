@@ -2,26 +2,34 @@ package gmedia.net.id.restauranttakingorder.RiwayatPemesanan;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.maulana.custommodul.ApiVolley;
 import com.maulana.custommodul.CustomItem;
 import com.maulana.custommodul.ItemValidation;
+import com.maulana.custommodul.SessionManager;
 
-import java.text.Format;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,13 +37,14 @@ import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.Adapter.ListTransaksiAdapter;
 import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.Adapter.MenuByTransaksiAdapter;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
+import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
 public class MainRiwayatPemesanan extends Fragment {
 
     private View layout;
     private Context context;
     private ItemValidation iv = new ItemValidation();
-    private EditText edtNamaPelanggan;
+    private EditText edtNoMeja;
     private EditText edtTanggal;
     private Button btnCari;
     private ListView lvTransaksi;
@@ -48,6 +57,13 @@ public class MainRiwayatPemesanan extends Fragment {
     private List<CustomItem> listTransaksi, listMenu;
     private ProgressBar pbLoadTransaksi, pbLoadMenu;
     private boolean firstLoad = true;
+    private int startIndex = 0, count = 10;
+    private boolean isLoading = false;
+    private ServerURL serverURL;
+    private SessionManager session;
+    private View footerList;
+    private String TAG = "Rawayat";
+    private ListTransaksiAdapter adapterTransaction;
 
     public MainRiwayatPemesanan() {
         // Required empty public constructor
@@ -70,7 +86,7 @@ public class MainRiwayatPemesanan extends Fragment {
 
     private void initUI() {
 
-        edtNamaPelanggan = (EditText) layout.findViewById(R.id.edt_nama_pelanggan);
+        edtNoMeja = (EditText) layout.findViewById(R.id.edt_no_meja);
         edtTanggal = (EditText) layout.findViewById(R.id.edt_tanggal);
         btnCari = (Button) layout.findViewById(R.id.btn_cari);
         lvTransaksi = (ListView) layout.findViewById(R.id.lv_transaksi);
@@ -82,10 +98,15 @@ public class MainRiwayatPemesanan extends Fragment {
         tvTotal = (TextView) layout.findViewById(R.id.tv_total);
         pbLoadTransaksi = (ProgressBar) layout.findViewById(R.id.pb_load_transaksi);
         pbLoadMenu = (ProgressBar) layout.findViewById(R.id.pb_load_menu);
+        LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        footerList = li.inflate(R.layout.footer_list, null);
 
         listTransaksi = new ArrayList<>();
         listMenu = new ArrayList<>();
 
+        serverURL = new ServerURL(context);
+        session = new SessionManager(context);
+        isLoading = false;
         getDataTransaksi();
         setEvent();
     }
@@ -95,13 +116,50 @@ public class MainRiwayatPemesanan extends Fragment {
         pbLoadTransaksi.setVisibility(View.VISIBLE);
         listTransaksi = new ArrayList<>();
 
-        listTransaksi.add(new CustomItem("NOTA0001", "1", "Maulana", "215000", "2017-09-10 08:30:34", "3"));
-        listTransaksi.add(new CustomItem("NOTA0002", "", "Umum", "500000", "2017-09-10 14:21:34", "5"));
-        listTransaksi.add(new CustomItem("NOTA0003", "2", "Husni", "160000", "2017-09-11 10:43:34", "1"));
-        listTransaksi.add(new CustomItem("NOTA0004", "1", "Maulana", "350000", "2017-09-12 11:43:34", "2"));
+        JSONObject jBody = new JSONObject();
+        try {
+            jBody.put("nomeja", edtNoMeja.getText().toString());
+            jBody.put("tgl", iv.ChangeFormatDateString(edtTanggal.getText().toString(), FormatItem.formatDateDisplay, FormatItem.formatDate));
+            jBody.put("start_index", String.valueOf(startIndex));
+            jBody.put("count", String.valueOf(count));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        pbLoadTransaksi.setVisibility(View.GONE);
-        getListTransaksi(listTransaksi);
+        ApiVolley request = new ApiVolley(context, jBody, "POST", serverURL.getRiwayatOrder(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    if(iv.parseNullInteger(status) == 200){
+
+                        JSONArray jsonArray = response.getJSONArray("response");
+                        for(int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+                            listTransaksi.add(new CustomItem(jo.getString("nobukti"), jo.getString("urutan"), jo.getString("pelanggan"), jo.getString("total"), jo.getString("usertgl"), jo.getString("nomeja")));
+                        }
+                    }
+
+                    getListTransaksi(listTransaksi);
+                    pbLoadTransaksi.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    getListTransaksi(null);
+                    pbLoadTransaksi.setVisibility(View.GONE);
+                    Toast.makeText(context, "Terjadi kesalahan saat memuat data", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+                pbLoadTransaksi.setVisibility(View.GONE);
+                getListTransaksi(null);
+                Toast.makeText(context, "Terjadi kesalahan saat memuat data", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void getListTransaksi(List<CustomItem> listItem) {
@@ -110,8 +168,8 @@ public class MainRiwayatPemesanan extends Fragment {
 
         if(listItem != null && listItem.size() > 0){
 
-            ListTransaksiAdapter adapter = new ListTransaksiAdapter((Activity) context, listItem);
-            lvTransaksi.setAdapter(adapter);
+            adapterTransaction = new ListTransaksiAdapter((Activity) context, listItem);
+            lvTransaksi.setAdapter(adapterTransaction);
 
             lvTransaksi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -122,7 +180,77 @@ public class MainRiwayatPemesanan extends Fragment {
 
                 }
             });
+
+            lvTransaksi.setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView absListView, int i) {
+
+                }
+
+                @Override
+                public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+
+                    if(absListView.getLastVisiblePosition() == i2-1 && lvTransaksi.getCount() > (count-1) && !isLoading ){
+                        isLoading = true;
+                        lvTransaksi.addFooterView(footerList);
+                        startIndex += count;
+                        getMoreData();
+                        Log.i(TAG, "onScroll: last");
+                    }
+                }
+            });
         }
+    }
+
+    private void getMoreData() {
+
+        final List<CustomItem> moreList = new ArrayList<>();
+        JSONObject jBody = new JSONObject();
+
+        try {
+            jBody.put("nomeja", edtNoMeja.getText().toString());
+            jBody.put("tgl", iv.ChangeFormatDateString(edtTanggal.getText().toString(), FormatItem.formatDateDisplay, FormatItem.formatDate));
+            jBody.put("start_index", String.valueOf(startIndex));
+            jBody.put("count", String.valueOf(count));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ApiVolley request = new ApiVolley(context, jBody, "POST", serverURL.getRiwayatOrder(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+
+                    if(iv.parseNullInteger(status) == 200){
+
+                        JSONArray items = response.getJSONArray("response");
+                        for(int i  = 0; i < items.length(); i++){
+
+                            JSONObject jo = items.getJSONObject(i);
+                            moreList.add(new CustomItem(jo.getString("nobukti"), jo.getString("urutan"), jo.getString("pelanggan"), jo.getString("total"), jo.getString("usertgl"), jo.getString("nomeja")));
+                        }
+
+                        lvTransaksi.removeFooterView(footerList);
+                        if(adapterTransaction != null) adapterTransaction.addMoreData(moreList);
+                    }
+                    isLoading = false;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    isLoading = false;
+                    lvTransaksi.removeFooterView(footerList);
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+                isLoading = false;
+                lvTransaksi.removeFooterView(footerList);
+            }
+        });
     }
 
     private void getDetailTransaksi(CustomItem selectedItem) {
@@ -137,7 +265,7 @@ public class MainRiwayatPemesanan extends Fragment {
 
         listMenu = new ArrayList<>();
 
-        listMenu.add(new CustomItem("1", "Rawon Enak", "20000", "", "2", "40000")); // id, nama, harga, gambar, banyak, satuan, diskon, catatan, hargaDiskon
+        listMenu.add(new CustomItem("1", "Rawon Enak", "20000", "", "2", "40000"));
         listMenu.add(new CustomItem("2", "Rawon Goreng", "25000", "", "3", "75000"));
         listMenu.add(new CustomItem("3", "Rawon Balado", "25000", "", "2", "50000"));
         listMenu.add(new CustomItem("4", "Rawon Telur Puyuh", "25000", "", "2", "50000"));
@@ -171,35 +299,15 @@ public class MainRiwayatPemesanan extends Fragment {
             @Override
             public void onClick(View view) {
 
-                String namaPelanggan = edtNamaPelanggan.getText().toString();
                 String tanggalCari = edtTanggal.getText().toString();
                 if(!iv.isValidFormat(FormatItem.formatDateDisplay, tanggalCari)) {
                     tanggalCari = "";
                     edtTanggal.setText(tanggalCari);
                 }
 
-                List<CustomItem> items = new ArrayList<CustomItem>();
-
-                for (CustomItem item:listTransaksi){
-                    String tgl = iv.ChangeFormatDateString(item.getItem5(), FormatItem.formatTimestamp, FormatItem.formatDateDisplay);
-
-                    if(namaPelanggan.length() > 0 && tanggalCari.length() > 0){
-
-                        if((item.getItem3().toUpperCase().contains(namaPelanggan.toUpperCase()) && !namaPelanggan.equals("")) && tgl.equals(tanggalCari)){
-                            items.add(item);
-                        }
-                    }else{
-
-                        if((item.getItem3().toUpperCase().contains(namaPelanggan.toUpperCase()) && !namaPelanggan.equals("")) || tgl.equals(tanggalCari)){
-                            items.add(item);
-                        }else if(namaPelanggan.equals("") && tanggalCari.equals("")){
-                            items.add(item);
-                        }
-                    }
-
-                }
-
-                getListTransaksi(items);
+                startIndex = 0;
+                getDataTransaksi();
+                iv.hideSoftKey(context);
             }
         });
     }

@@ -101,6 +101,7 @@ public class DetailOrder extends AppCompatActivity{
     private static int maxIterFix = 30;
     private static int maxIter = 6;
     private static int delayTime = 1000;
+    private static AlertDialog dialogLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -329,6 +330,7 @@ public class DetailOrder extends AppCompatActivity{
         //printState = 3;
         //changePrintState(DetailOrder.this, 1, "Gagal mencetak");
         maxIter = maxIterFix;
+        loadPrintingDialog(DetailOrder.this, "Printing cashier label...");
         printToCashier(DetailOrder.this, noBukti, timestampNow, noMeja, listSelectedMenu);
         //printToKitchen(DetailOrder.this, noBukti, timestampNow, noMeja, listSelectedMenu);
 
@@ -349,6 +351,14 @@ public class DetailOrder extends AppCompatActivity{
                 break;
         }
 
+        if(dialogLoading != null){
+            try {
+                dialogLoading.dismiss();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
         maxIter = maxIterFix;
 
         if(code != Epos2CallbackCode.CODE_SUCCESS){
@@ -362,9 +372,11 @@ public class DetailOrder extends AppCompatActivity{
 
         if(printState == 1){
 
+            loadPrintingDialog(context, "Printing kitchen label...");
             printToKitchen(context, noBukti, timestampNow, noMeja, listSelectedMenu);
         }else if(printState == 2){
 
+            loadPrintingDialog(context, "Printing bar label...");
             printToBar(context, noBukti, timestampNow, noMeja, listSelectedMenu);
         }else if(printState == 3){
 
@@ -374,6 +386,35 @@ public class DetailOrder extends AppCompatActivity{
             context.startActivity(intent);
             ((Activity)context).finish();
         }
+    }
+
+    //region Selected Order Menu
+    public static void loadPrintingDialog(final Context context, String message){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_printer_loading, null);
+        builder.setView(view);
+
+        final TextView tvTitle = (TextView) view.findViewById(R.id.tv_loading);
+
+        //Load Data
+        tvTitle.setText(message);
+
+
+        dialogLoading = builder
+                .setPositiveButton("Skip", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        changePrintState(context, 1, "Printer belum di atur");
+                        dialogLoading.dismiss();
+                    }
+                })
+                .setCancelable(false)
+                .create();
+
+        dialogLoading.show();
+
     }
 
     // Bagian printing
