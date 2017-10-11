@@ -32,4 +32,9 @@
         <item name="android:drawableLeft">@mipmap/ic_search</item>
     </style>
 
+    <style name="AppTheme.Custom.Dialog" parent="Theme.AppCompat.Dialog">
+        <item name="colorAccent">@color/color_white</item>
+        <item name="android:textColorPrimary">@color/colorPrimary</item>
+        <item name="android:background">@color/color_blue_active</item>
+    </style>
 </resources>

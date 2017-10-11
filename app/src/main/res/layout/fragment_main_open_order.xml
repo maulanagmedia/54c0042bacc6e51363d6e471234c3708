@@ -71,6 +71,26 @@
                     android:layout_above="@id/ll_footer"
                     android:id="@+id/rv_list_meja"></android.support.v7.widget.RecyclerView>
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/color_white"
+                    android:id="@+id/rl_refresh_container"
+                    android:visibility="gone"
+                    android:layout_below="@id/tv_title2"
+                    android:layout_above="@id/ll_footer">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/ripple_selected_red"
+                        android:text="Refresh"
+                        android:id="@+id/btn_refresh"
+                        android:drawableLeft="@mipmap/ic_refresh_red"
+                        android:textColor="@color/text_color_red"/>
+                </RelativeLayout>
+
                 <ProgressBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

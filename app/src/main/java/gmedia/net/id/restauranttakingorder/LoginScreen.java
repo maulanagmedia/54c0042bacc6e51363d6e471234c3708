@@ -1,10 +1,16 @@
 package gmedia.net.id.restauranttakingorder;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -18,6 +24,7 @@ import com.maulana.custommodul.SessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import gmedia.net.id.restauranttakingorder.Utils.SavedServerManager;
 import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
 public class LoginScreen extends AppCompatActivity {
@@ -32,6 +39,8 @@ public class LoginScreen extends AppCompatActivity {
     private Button btnLogIn;
     private SessionManager session;
     private ItemValidation iv = new ItemValidation();
+    private SavedServerManager serverManager;
+    private ServerURL serverURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +49,10 @@ public class LoginScreen extends AppCompatActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
+
+        serverURL = new ServerURL(LoginScreen.this);
+        serverManager = new SavedServerManager(LoginScreen.this);
+        setTitle("Sign In");
 
         //Check close statement
         doubleBackToExitPressedOnce = false;
@@ -63,8 +76,18 @@ public class LoginScreen extends AppCompatActivity {
         edtPassword = (EditText) findViewById(R.id.edt_password);
         btnLogIn = (Button) findViewById(R.id.btn_login);
 
-        checkLogin();
+        String server = serverManager.getServer();
+        if(server.length() > 0){
 
+            setBtnClickOption(server);
+        }else{
+            loadChangeServer();
+        }
+
+    }
+
+    private void setBtnClickOption(String server){
+        checkLogin();
         btnLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,6 +95,31 @@ public class LoginScreen extends AppCompatActivity {
                 validateLogin();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            loadChangeServer();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void checkLogin() {
@@ -106,7 +154,8 @@ public class LoginScreen extends AppCompatActivity {
 
     private void doLogin(final String username, final String password) {
 
-        final ProgressDialog progressDialog = new ProgressDialog(LoginScreen.this);
+        serverURL = new ServerURL(LoginScreen.this);
+        final ProgressDialog progressDialog = new ProgressDialog(LoginScreen.this, R.style.AppTheme_Custom_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
@@ -118,7 +167,7 @@ public class LoginScreen extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        ApiVolley request = new ApiVolley(LoginScreen.this, jBody, "POST", ServerURL.login, "", "", 0, username, password, new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(LoginScreen.this, jBody, "POST", serverURL.login(), "", "", 0, username, password, new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
                 try {
@@ -176,4 +225,71 @@ public class LoginScreen extends AppCompatActivity {
             }
         }, timerClose);
     }
+
+    //region Change Server
+    private void loadChangeServer(){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(LoginScreen.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_change_server, null);
+        builder.setView(view);
+        builder.setCancelable(false);
+
+        final EditText edtServer = (EditText) view.findViewById(R.id.edt_server);
+        final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
+        final Button btnSimpan = (Button) view.findViewById(R.id.btn_simpan);
+
+        String ip = serverManager.getServer();
+        if(ip.length() > 0) edtServer.setText(ip);
+
+        final AlertDialog alert = builder.create();
+        btnBatal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                alert.dismiss();
+            }
+        });
+
+        btnSimpan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Validasi
+                if(edtServer.getText().toString().length() <= 0){
+                    edtServer.setError("Harap diisi");
+                    edtServer.requestFocus();
+                    return;
+                }
+
+                AlertDialog konfirmasiSimpan = new AlertDialog.Builder(LoginScreen.this)
+                        .setTitle("Konfirmasi")
+                        .setMessage("Simpan perubahan ?")
+                        .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                serverManager.saveLastServer(edtServer.getText().toString());
+                                setBtnClickOption(edtServer.getText().toString());
+                                alert.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .show();
+
+            }
+        });
+
+        alert.show();
+
+        alert.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+    }
+    //endregion
 }

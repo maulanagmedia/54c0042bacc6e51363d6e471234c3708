@@ -73,6 +73,7 @@ public class MainOrder extends Fragment {
     private FloatingActionButton fabScanBarcode;
     private String kategoriMenu = "";
     private SessionManager session;
+    private ServerURL serverURL;
 
     public MainOrder() {
         // Required empty public constructor
@@ -89,6 +90,7 @@ public class MainOrder extends Fragment {
         // Inflate the layout for this fragment
         layout = inflater.inflate(R.layout.fragment_main_order, container, false);
         context = getContext();
+        serverURL = new ServerURL(context);
         initUI();
         return layout;
     }
@@ -186,7 +188,7 @@ public class MainOrder extends Fragment {
 
         pbLoadKategori.setVisibility(View.VISIBLE);
         listKategori = new ArrayList<>();
-        ApiVolley request = new ApiVolley(context, new JSONObject(), "GET", ServerURL.getKategori, "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(context, new JSONObject(), "GET", serverURL.getKategori(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
                 try {

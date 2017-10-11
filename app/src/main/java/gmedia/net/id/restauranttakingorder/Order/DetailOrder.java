@@ -1,10 +1,12 @@
 package gmedia.net.id.restauranttakingorder.Order;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.IdRes;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,14 +28,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.epson.epos2.printer.Printer;
-import com.epson.epos2.printer.PrinterStatusInfo;
-import com.epson.epos2.printer.ReceiveListener;
+import com.epson.epos2.Epos2CallbackCode;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.maulana.custommodul.ApiVolley;
@@ -48,13 +46,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import gmedia.net.id.restauranttakingorder.MainActivity;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.KategoriMenuAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.MenuByKategoriAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.SelectedMenuAdapter;
+import gmedia.net.id.restauranttakingorder.PrinterUtils.PrinterChecker;
 import gmedia.net.id.restauranttakingorder.PrinterUtils.PrinterTemplate;
-import gmedia.net.id.restauranttakingorder.PrinterUtils.ShowMsg;
 import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
+import gmedia.net.id.restauranttakingorder.Utils.SavedPrinterManager;
 import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
 public class DetailOrder extends AppCompatActivity{
@@ -76,13 +76,31 @@ public class DetailOrder extends AppCompatActivity{
     private static SelectedMenuAdapter selectedMenuAdapter;
     public static final int GET_PELANGGAN = 12;
     private FloatingActionButton fabScanBarcode;
-    private String kategoriMenu = "", kdMeja = "", noMeja = "", statusMeja = "";
+    private String kategoriMenu = "", kdMeja = "", statusMeja = "";
     private SessionManager session;
     private EditText edtNoBukti, edtUrutan;
-    private String noBukti = "";
+    private static String noBukti = "";
+    private static String noMeja = "";
     private boolean editMode = false;
     private ProgressBar pbLoadOrder;
     private boolean onProcess = false;
+    private static int printState = 0;
+    private static boolean printCashierState = false;
+    private static boolean printKitchenState = false;
+    private static boolean printBarState = false;
+    private static String timestampNow = "";
+    private static PrinterTemplate printerTemplate;
+    private static ProgressDialog progressDialog;
+    private static SavedPrinterManager printerManager;
+    private String typeKategori = "";
+    public static String katMakanan = "MAKANAN";
+    public static String katMinuman = "MINUMAN";
+    private static int toastTimer = 2;
+    private static String urutan = "";
+    private ServerURL serverURL;
+    private static int maxIterFix = 30;
+    private static int maxIter = 6;
+    private static int delayTime = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +110,8 @@ public class DetailOrder extends AppCompatActivity{
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
+
+        serverURL = new ServerURL(DetailOrder.this);
         setTitle("Pilih Menu");
         initUI();
     }
@@ -113,6 +133,11 @@ public class DetailOrder extends AppCompatActivity{
         btnSimpan = (Button) findViewById(R.id.btn_simpan);
         fabScanBarcode = (FloatingActionButton) findViewById(R.id.fab_scan);
 
+        progressDialog = new ProgressDialog(DetailOrder.this, R.style.AppTheme_Custom_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Processing...");
+        printerManager = new SavedPrinterManager(DetailOrder.this);
+        printerTemplate = new PrinterTemplate(DetailOrder.this);
         session = new SessionManager(DetailOrder.this);
         Bundle bundle = getIntent().getExtras();
 
@@ -166,7 +191,22 @@ public class DetailOrder extends AppCompatActivity{
                 }
 
                 if(!onProcess){
-                    simpanData();
+                    AlertDialog dialog = new AlertDialog.Builder(DetailOrder.this)
+                            .setTitle("Konfirmasi")
+                            .setMessage("Proses pesanan "+ noBukti+ " ?")
+                            .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    simpanData();
+                                }
+                            })
+                            .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                }
+                            })
+                            .show();
                 }else{
                     Toast.makeText(DetailOrder.this, "Harap tunggu hingga proses selesai", Toast.LENGTH_LONG).show();
                 }
@@ -177,11 +217,12 @@ public class DetailOrder extends AppCompatActivity{
 
     private void simpanData() {
 
+        progressDialog.show();
         onProcess = true;
         // penjualan_d
         JSONArray penjualanD = new JSONArray();
 
-        final String timestampNow = iv.getCurrentDate(FormatItem.formatTimestamp);
+        timestampNow = iv.getCurrentDate(FormatItem.formatTimestamp);
         final String dateNow = iv.getCurrentDate(FormatItem.formatDate);
 
         double total = 0;
@@ -237,35 +278,363 @@ public class DetailOrder extends AppCompatActivity{
             e.printStackTrace();
         }
 
-        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", ServerURL.saveOrder, "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.saveOrder(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
 
                 try {
                     JSONObject response = new JSONObject(result);
                     String status = response.getJSONObject("metadata").getString("status");
+                    String message = response.getJSONObject("metadata").getString("message");
                     if(iv.parseNullInteger(status) == 200){
-                        printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenu);
+
+                        progressDialog.dismiss();
+                        String message1 = response.getJSONObject("response").getString("message");
+                        for(int i = 0; i < toastTimer; i++){
+                            Toast.makeText(DetailOrder.this, message1 + ".\n Tunggu hingga proses mencetak selesai, aplikasi akan menuju ke daftar transaksi", Toast.LENGTH_LONG).show();
+                        }
+
+                        printData();
+                    }else{
+                        Toast.makeText(DetailOrder.this, message, Toast.LENGTH_LONG).show();
                     }
+                    progressDialog.dismiss();
                     onProcess = false;
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    progressDialog.dismiss();
                     onProcess = false;
+                    Toast.makeText(DetailOrder.this, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onError(String result) {
                 onProcess = false;
+                progressDialog.dismiss();
+                Toast.makeText(DetailOrder.this, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void printToKitchen(String nobukti, String timestamp, String nomeja, List<CustomItem> pesanan){
+    //region =================================== Setting printer
+    private void printData() {
 
-        PrinterTemplate printerTemplate = new PrinterTemplate(DetailOrder.this);
-        boolean printed = printerTemplate.printKitchen(nobukti, timestamp, nomeja, pesanan);
+        printState = 1;
+        printCashierState = false;
+        printKitchenState = false;
+        printBarState = false;
+
+        //Print ke Cashier
+        //printState = 3;
+        //changePrintState(DetailOrder.this, 1, "Gagal mencetak");
+        maxIter = maxIterFix;
+        printToCashier(DetailOrder.this, noBukti, timestampNow, noMeja, listSelectedMenu);
+        //printToKitchen(DetailOrder.this, noBukti, timestampNow, noMeja, listSelectedMenu);
+
     }
+
+    public static void changePrintState(final Context context, int code, String status){
+
+        String state = "";
+        switch (printState){
+            case 1:
+                state = context.getString(R.string.printer_1);
+                break;
+            case 2:
+                state = context.getString(R.string.printer_2);
+                break;
+            case 3:
+                state = context.getString(R.string.printer_3);
+                break;
+        }
+
+        maxIter = maxIterFix;
+
+        if(code != Epos2CallbackCode.CODE_SUCCESS){
+
+            String message = status + " pada saat mencetak "+ state;
+            for (int i = 0; i < toastTimer; i++)
+            {
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            }
+        }
+
+        if(printState == 1){
+
+            printToKitchen(context, noBukti, timestampNow, noMeja, listSelectedMenu);
+        }else if(printState == 2){
+
+            printToBar(context, noBukti, timestampNow, noMeja, listSelectedMenu);
+        }else if(printState == 3){
+
+            //finish printing
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtra("riwayat", true);
+            context.startActivity(intent);
+            ((Activity)context).finish();
+        }
+    }
+
+    // Bagian printing
+    private static void printToCashier(final Context context, final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
+
+        if(printerManager.getData(SavedPrinterManager.TAG_IP1) == null){
+            changePrintState(context, 1, "Printer belum di atur");
+        }else{
+
+            printState = 1;
+
+            printCashierState = printerTemplate.printCashier(urutan, nobukti, timestamp, nomeja, pesanan);
+
+            if(!printCashierState){
+                //changePrintState(context, 1, "Gagal mencetak");
+                /*if(maxIter > 0){
+
+                    maxIter -= 1;
+
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    printToCashier(context, nobukti, timestamp, nomeja, pesanan);
+                                }
+                            }, delayTime);
+                        }
+                    });
+                }else{
+                    changePrintState(context, 1, "Gagal mencetak");
+                }*/
+                printToCashier(context, nobukti, timestamp, nomeja, pesanan);
+            }
+
+            /*PrinterChecker checker = new PrinterChecker(context);
+            boolean statusCheck = checker.checkPinter(printerManager.getData(SavedPrinterManager.TAG_IP1));
+            checker.clearPrinter(printerManager.getData(SavedPrinterManager.TAG_IP1));
+            if(statusCheck){
+                printState = 1;
+
+                printCashierState = printerTemplate.printCashier(urutan, nobukti, timestamp, nomeja, pesanan);
+
+                if(!printCashierState){
+                    changePrintState(context, 1, "Gagal mencetak");
+                }
+            }else if(maxIter > 0){
+
+                maxIter -= 1;
+
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                printToCashier(context, nobukti, timestamp, nomeja, pesanan);
+                            }
+                        }, delayTime);
+                    }
+                });
+            }else{
+                changePrintState(context, 1, "Gagal mencetak");
+            }*/
+        }
+    }
+
+    private static void printToKitchen(final Context context, final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
+
+        printState = 2;
+
+        if(printerManager.getData(SavedPrinterManager.TAG_IP2) == null){
+            changePrintState(context, 1, "Printer belum di atur");
+        }else{
+
+            boolean isKitchen = false;
+            List<CustomItem> listMakanan = new ArrayList<>();
+            for(CustomItem item: pesanan){
+                if(item.getItem11().equals(katMakanan)){
+                    isKitchen = true;
+                    listMakanan.add(item);
+                }
+            }
+
+            if(isKitchen){
+                printKitchenState = printerTemplate.printKitchen(urutan, nobukti, timestamp, nomeja, listMakanan);
+            }else{
+                changePrintState(context, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
+            }
+
+            if(!printKitchenState){
+                //changePrintState(context, 1, "Gagal mencetak");
+                /*if(maxIter > 0){
+
+                    maxIter -= 1;
+
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    printToKitchen(context, nobukti, timestamp, nomeja, pesanan);
+                                }
+                            }, delayTime);
+                        }
+                    });
+                }else{
+                    changePrintState(context, 1, "Gagal mencetak");
+                }*/
+                printToKitchen(context, nobukti, timestamp, nomeja, pesanan);
+            }
+
+            /*PrinterChecker checker = new PrinterChecker(context);
+            boolean statusCheck = checker.checkPinter(printerManager.getData(SavedPrinterManager.TAG_IP2));
+            checker.clearPrinter(printerManager.getData(SavedPrinterManager.TAG_IP2));
+            if(statusCheck){
+
+                boolean isKitchen = false;
+                List<CustomItem> listMakanan = new ArrayList<>();
+                for(CustomItem item: pesanan){
+                    if(item.getItem11().equals(katMakanan)){
+                        isKitchen = true;
+                        listMakanan.add(item);
+                    }
+                }
+
+                if(isKitchen){
+                    printKitchenState = printerTemplate.printKitchen(urutan, nobukti, timestamp, nomeja, listMakanan);
+                }else{
+                    changePrintState(context, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
+                }
+
+                if(!printKitchenState){
+                    changePrintState(context, 1, "Gagal mencetak");
+                }
+            }else if(maxIter > 0){
+
+                maxIter -= 1;
+
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                printToKitchen(context, nobukti, timestamp, nomeja, pesanan);
+                            }
+                        }, delayTime);
+                    }
+                });
+            }else{
+                changePrintState(context, 1, "Gagal mencetak");
+            }*/
+        }
+    }
+
+    private static void printToBar(final Context context, final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
+
+        printState = 3;
+        //printBarState = true;
+
+        if(printerManager.getData(SavedPrinterManager.TAG_IP3) == null){
+            changePrintState(context, 1, "Printer belum di atur");
+        }else{
+
+            boolean isBar = false;
+            List<CustomItem> listMinuman = new ArrayList<>();
+            for(CustomItem item: pesanan){
+                if(item.getItem11().equals(katMinuman)){
+                    isBar = true;
+                    listMinuman.add(item);
+                }
+            }
+
+            if(isBar){
+                printBarState = printerTemplate.printBar(urutan, nobukti, timestamp, nomeja, listMinuman);
+            }else{
+                changePrintState(context, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
+            }
+
+            if(!printBarState){
+                //changePrintState(context, 1, "Gagal mencetak");
+                /*if(maxIter > 0){
+
+                    maxIter -= 1;
+
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    printToBar(context, nobukti, timestamp, nomeja, pesanan);
+                                }
+                            }, delayTime);
+                        }
+                    });
+                }else{
+                    changePrintState(context, 1, "Gagal mencetak");
+                }*/
+                printToBar(context, nobukti, timestamp, nomeja, pesanan);
+            }
+
+            /*PrinterChecker checker = new PrinterChecker(context);
+            boolean statusCheck = checker.checkPinter(printerManager.getData(SavedPrinterManager.TAG_IP3));
+            checker.clearPrinter(printerManager.getData(SavedPrinterManager.TAG_IP3));
+            if(statusCheck){
+                boolean isBar = false;
+                List<CustomItem> listMinuman = new ArrayList<>();
+                for(CustomItem item: pesanan){
+                    if(item.getItem11().equals(katMinuman)){
+                        isBar = true;
+                        listMinuman.add(item);
+                    }
+                }
+
+                if(isBar){
+                    printBarState = printerTemplate.printBar(urutan, nobukti, timestamp, nomeja, listMinuman);
+                }else{
+                    changePrintState(context, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
+                }
+
+                if(!printBarState){
+                    changePrintState(context, 1, "Gagal mencetak");
+                }
+            }else if(maxIter > 0){
+
+                maxIter -= 1;
+
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                printToBar(context, nobukti, timestamp, nomeja, pesanan);
+                            }
+                        }, delayTime);
+                    }
+                });
+            }else{
+                changePrintState(context, 1, "Gagal mencetak");
+            }*/
+
+        }
+    }
+    //endregion
 
     private void getNoBukti() {
 
@@ -277,7 +646,7 @@ public class DetailOrder extends AppCompatActivity{
             e.printStackTrace();
         }
 
-        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", ServerURL.getNoBukti, "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.getNoBukti(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
                 try {
@@ -287,7 +656,7 @@ public class DetailOrder extends AppCompatActivity{
                     if(iv.parseNullInteger(status) == 200){
 
                         noBukti = response.getJSONObject("response").getString("nobukti");
-                        String urutan = response.getJSONObject("response").getString("urutan");
+                        urutan = response.getJSONObject("response").getString("urutan");
                         edtNoBukti.setText(noBukti);
                         edtUrutan.setText(urutan);
                     }
@@ -368,7 +737,7 @@ public class DetailOrder extends AppCompatActivity{
 
         pbLoadKategori.setVisibility(View.VISIBLE);
         listKategori = new ArrayList<>();
-        ApiVolley request = new ApiVolley(DetailOrder.this, new JSONObject(), "GET", ServerURL.getKategori, "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(DetailOrder.this, new JSONObject(), "GET", serverURL.getKategori(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
                 try {
@@ -423,6 +792,7 @@ public class DetailOrder extends AppCompatActivity{
 
                     CustomItem selected = (CustomItem) adapterView.getItemAtPosition(i);
                     kategoriMenu = selected.getItem1();
+                    typeKategori = selected.getItem3();
                     adapter.selectedPosition = i;
                     adapter.notifyDataSetChanged();
 
@@ -443,7 +813,7 @@ public class DetailOrder extends AppCompatActivity{
         pbLoadMenu.setVisibility(View.VISIBLE);
         listMenu = new ArrayList<>();
 
-        ApiVolley request = new ApiVolley(DetailOrder.this, new JSONObject(), "GET", ServerURL.getMenu + kategoriMenu, "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(DetailOrder.this, new JSONObject(), "GET", serverURL.getMenu() + kategoriMenu, "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
                 try {
@@ -456,7 +826,7 @@ public class DetailOrder extends AppCompatActivity{
                         for(int i = 0; i < jsonArray.length(); i++){
 
                             JSONObject jo = jsonArray.getJSONObject(i);
-                            listMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),"1",jo.getString("satuan"),jo.getString("diskon"),"",jo.getString("harga_diskon"),""));
+                            listMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),"1",jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),"",jo.getString("type")));
                             // id, nama, harga, gambar, banyak, satuan, diskon, catatan, hargaDiskon, tag meja
                         }
 
@@ -557,7 +927,7 @@ public class DetailOrder extends AppCompatActivity{
         View view = inflater.inflate(R.layout.dialog_edit_order, null);
         builder.setView(view);
 
-        final CustomItem[] newItem = {new CustomItem(item.getItem1(), item.getItem2(), item.getItem3(), item.getItem4(), item.getItem5(), item.getItem6(), item.getItem7(), item.getItem8(), item.getItem9())};
+        final CustomItem[] newItem = {new CustomItem(item.getItem1(), item.getItem2(), item.getItem3(), item.getItem4(), item.getItem5(), item.getItem6(), item.getItem7(), item.getItem8(), item.getItem9(),item.getItem10(), item.getItem11())};
 
         final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
         final TextView tvHarga = (TextView) view.findViewById(R.id.tv_harga);
@@ -756,7 +1126,7 @@ public class DetailOrder extends AppCompatActivity{
         builder.setView(view);
 
         final CustomItem item = listSelectedMenu.get(position);
-        final CustomItem[] newItem = {new CustomItem(item.getItem1(), item.getItem2(), item.getItem3(), item.getItem4(), item.getItem5(), item.getItem6(), item.getItem7(), item.getItem8(), item.getItem9())};
+        final CustomItem[] newItem = {new CustomItem(item.getItem1(), item.getItem2(), item.getItem3(), item.getItem4(), item.getItem5(), item.getItem6(), item.getItem7(), item.getItem8(), item.getItem9(), item.getItem10(), item.getItem11())};
 
         final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
         final TextView tvHarga = (TextView) view.findViewById(R.id.tv_harga);
@@ -927,7 +1297,7 @@ public class DetailOrder extends AppCompatActivity{
         double hargaDiskon = (diskon != 0) ? (harga - (harga * diskon / 100)): harga;
         edtHargaDiskon.setText(iv.ChangeToRupiahFormat(hargaDiskon));
         tvTotal.setText(iv.ChangeToRupiahFormat(jumlah*hargaDiskon));
-        CustomItem newItem = new CustomItem(item.getItem1(),item.getItem2(),item.getItem3(),item.getItem4(),edtJumlah.getText().toString(),item.getItem6(), edtDiskon.getText().toString(),item.getItem8(),iv.doubleToStringRound(hargaDiskon));
+        CustomItem newItem = new CustomItem(item.getItem1(),item.getItem2(),item.getItem3(),item.getItem4(),edtJumlah.getText().toString(),item.getItem6(), edtDiskon.getText().toString(),item.getItem8(),iv.doubleToStringRound(hargaDiskon), item.getItem10(), item.getItem11());
         return newItem;
     }
     //endregion

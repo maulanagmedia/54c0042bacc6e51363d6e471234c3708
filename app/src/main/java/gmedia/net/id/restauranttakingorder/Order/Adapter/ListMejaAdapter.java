@@ -88,7 +88,7 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
             public void onClick(View view) {
 
                 Intent intent = new Intent(context, DetailOrder.class);
-                intent.putExtra("kdmeja", cli.getItem2());
+                intent.putExtra("kdmeja", cli.getItem1());
                 intent.putExtra("nomeja", cli.getItem2());
                 intent.putExtra("statusmeja", cli.getItem3());
                 context.startActivity(intent);

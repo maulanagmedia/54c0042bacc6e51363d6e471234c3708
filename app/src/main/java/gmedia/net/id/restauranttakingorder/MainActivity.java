@@ -55,6 +55,9 @@ public class MainActivity extends AppCompatActivity
         //Check close statement
         doubleBackToExitPressedOnce = false;
         Bundle bundle = getIntent().getExtras();
+        boolean firstState = true;
+        initUI();
+
         if(bundle != null){
 
             if(bundle.getBoolean("exit", false)){
@@ -62,11 +65,17 @@ public class MainActivity extends AppCompatActivity
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 finish();
             }
+
+            if(bundle.getBoolean("riwayat", false)){
+
+                firstState = false;
+                navigationView.setCheckedItem(R.id.nav_riwayat_pemesanan);
+                fragment = new MainRiwayatPemesanan();
+                callFragment(fragment);
+            }
         }
 
-        initUI();
-
-        if(savedInstanceState == null){
+        if(savedInstanceState == null && firstState){
             navigationView.setCheckedItem(R.id.nav_order);
             /*FrameLayout flContainer = (FrameLayout) findViewById(R.id.fl_main_container);
             flContainer.removeAllViews();*/
@@ -80,9 +89,7 @@ public class MainActivity extends AppCompatActivity
         session = new SessionManager(MainActivity.this);
         headerView = navigationView.getHeaderView(0);
         tvUser = (TextView) headerView.findViewById(R.id.tv_user);
-
         tvUser.setText(session.getUserInfo(SessionManager.TAG_NAMA));
-
     }
 
     @Override
