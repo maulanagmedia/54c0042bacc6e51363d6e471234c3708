@@ -15,7 +15,6 @@ import com.epson.epos2.Log;
 
 import java.util.List;
 
-import gmedia.net.id.restauranttakingorder.Order.DetailOrder;
 import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
 import gmedia.net.id.restauranttakingorder.Utils.SavedPrinterManager;
@@ -482,6 +481,17 @@ public class PrinterTemplate implements ReceiveListener{
     //endregion
 
     private void finalizeObject() {
+
+        try {
+            mPrinter = new Printer(Printer.TM_U220,
+                    Printer.MODEL_ANK,
+                    context);
+        }
+        catch (Exception e) {
+            //ShowMsg.showException(e, "Printer", context);
+            android.util.Log.d(TAG, "initializeObject: " + e.toString());
+        }
+
         if (mPrinter == null) {
             return;
         }
@@ -491,6 +501,13 @@ public class PrinterTemplate implements ReceiveListener{
         mPrinter.setReceiveEventListener(null);
 
         mPrinter = null;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                disconnectPrinter();
+            }
+        }).start();
     }
 
     private boolean printData(String key) {
@@ -604,7 +621,7 @@ public class PrinterTemplate implements ReceiveListener{
         }
         catch (Exception e) {
             //ShowMsg.showException(e, "connect", context);
-            android.util.Log.d(TAG, "coonect : " + e.toString());
+            android.util.Log.d(TAG, "connect : " + e.toString());
             return false;
         }
 
@@ -669,7 +686,7 @@ public class PrinterTemplate implements ReceiveListener{
                     }
                 }).start();
 
-                DetailOrder.changePrintState(context, code, makeErrorMessage(status));
+                //DetailOrder.changePrintState(context, code, makeErrorMessage(status));
             }
         });
     }

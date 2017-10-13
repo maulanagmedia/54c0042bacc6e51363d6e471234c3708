@@ -264,14 +264,48 @@ public class MainRiwayatPemesanan extends Fragment {
         tvTotal.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(selectedItem.getItem4())));
 
         listMenu = new ArrayList<>();
+        JSONObject jBody = new JSONObject();
 
-        listMenu.add(new CustomItem("1", "Rawon Enak", "20000", "", "2", "40000"));
-        listMenu.add(new CustomItem("2", "Rawon Goreng", "25000", "", "3", "75000"));
-        listMenu.add(new CustomItem("3", "Rawon Balado", "25000", "", "2", "50000"));
-        listMenu.add(new CustomItem("4", "Rawon Telur Puyuh", "25000", "", "2", "50000"));
+        try {
+            jBody.put("nobukti", selectedItem.getItem1());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        pbLoadMenu.setVisibility(View.GONE);
-        setMenuTable(listMenu);
+        ApiVolley request = new ApiVolley(context, jBody, "POST", serverURL.getDetailRiwayatOrder(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    if(iv.parseNullInteger(status) == 200){
+
+                        JSONArray jsonArray = response.getJSONArray("response");
+                        for(int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+                            listMenu.add(new CustomItem(jo.getString("id"), jo.getString("nmbrg"), jo.getString("harga"), jo.getString("catatan"), jo.getString("jml"), jo.getString("total")));
+                        }
+                    }
+
+                    pbLoadMenu.setVisibility(View.GONE);
+                    setMenuTable(listMenu);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    pbLoadMenu.setVisibility(View.GONE);
+                    setMenuTable(null);
+                    Toast.makeText(context, "Terjadi kesalahan saat memuat data", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+                pbLoadMenu.setVisibility(View.GONE);
+                setMenuTable(null);
+                Toast.makeText(context, "Terjadi kesalahan saat memuat data", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void setMenuTable(List<CustomItem> listItem) {

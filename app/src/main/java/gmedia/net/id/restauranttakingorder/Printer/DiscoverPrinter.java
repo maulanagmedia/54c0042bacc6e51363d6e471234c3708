@@ -140,7 +140,7 @@ public class DiscoverPrinter extends AppCompatActivity {
                             }).show();
                 }
             });
-            startDiscovery();
+            //startDiscovery();
         }
     }
 
@@ -155,16 +155,14 @@ public class DiscoverPrinter extends AppCompatActivity {
         printerAdapter.notifyDataSetChanged();
 
         filterOption = new FilterOption();
-        filterOption.setPortType(Discovery.PORTTYPE_ALL);
+        filterOption.setPortType(Discovery.PORTTYPE_TCP);
         filterOption.setBroadcast("255.255.255.255");
         filterOption.setDeviceModel(Discovery.MODEL_ALL);
-        filterOption.setEpsonFilter(Discovery.FILTER_NAME);
+        filterOption.setEpsonFilter(Discovery.FILTER_NONE);
         filterOption.setDeviceType(Discovery.TYPE_ALL);
 
         try {
             Discovery.start(DiscoverPrinter.this, filterOption, mDiscoveryListener);
-
-
         }
         catch (Exception e) {
             //ShowMsg.showException(e, "start", DiscoverPrinter.this);

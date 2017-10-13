@@ -27,4 +27,6 @@ public class ServerURL {
     public String getNoBukti(){ return baseURL + "order/generate_nobukti/";}
     public String saveOrder(){ return baseURL + "order/save/";}
     public String getRiwayatOrder(){ return baseURL + "riwayat/get_riwayat_transaksi/";}
+    public String getDetailRiwayatOrder(){ return baseURL + "riwayat/get_detail_riwayat_transaksi/";}
+    public String getProfile(){ return baseURL + "profile/get_profile/";}
 }

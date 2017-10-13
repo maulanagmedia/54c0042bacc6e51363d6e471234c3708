@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
@@ -32,6 +34,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.epson.epos2.Epos2CallbackCode;
+import com.epson.epos2.Epos2Exception;
+import com.epson.epos2.printer.Printer;
+import com.epson.epos2.printer.PrinterStatusInfo;
+import com.epson.epos2.printer.ReceiveListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.maulana.custommodul.ApiVolley;
@@ -51,13 +57,13 @@ import gmedia.net.id.restauranttakingorder.Order.Adapter.KategoriMenuAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.MenuByKategoriAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.SelectedMenuAdapter;
 import gmedia.net.id.restauranttakingorder.PrinterUtils.PrinterChecker;
-import gmedia.net.id.restauranttakingorder.PrinterUtils.PrinterTemplate;
+import gmedia.net.id.restauranttakingorder.PrinterUtils.ShowMsg;
 import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
 import gmedia.net.id.restauranttakingorder.Utils.SavedPrinterManager;
 import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
-public class DetailOrder extends AppCompatActivity{
+public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
     private static final String TAG = "DetailOrder";
     private ListView lvKategori;
@@ -89,7 +95,7 @@ public class DetailOrder extends AppCompatActivity{
     private static boolean printKitchenState = false;
     private static boolean printBarState = false;
     private static String timestampNow = "";
-    private static PrinterTemplate printerTemplate;
+    //private static PrinterTemplate printerTemplate;
     private static ProgressDialog progressDialog;
     private static SavedPrinterManager printerManager;
     private String typeKategori = "";
@@ -102,6 +108,10 @@ public class DetailOrder extends AppCompatActivity{
     private static int maxIter = 6;
     private static int delayTime = 1000;
     private static AlertDialog dialogLoading;
+    private static Context mContext;
+    private Printer mPrinter;
+
+    private boolean printStatus = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,9 +122,17 @@ public class DetailOrder extends AppCompatActivity{
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
 
+        mContext = this;
         serverURL = new ServerURL(DetailOrder.this);
         setTitle("Pilih Menu");
         initUI();
+
+        try {
+            com.epson.epos2.Log.setLogSettings(mContext, com.epson.epos2.Log.PERIOD_TEMPORARY, com.epson.epos2.Log.OUTPUT_STORAGE, null, 0, 1, com.epson.epos2.Log.LOGLEVEL_LOW);
+        }
+        catch (Exception e) {
+            ShowMsg.showException(e, "setLogSettings", mContext);
+        }
     }
 
     private void initUI() {
@@ -138,7 +156,7 @@ public class DetailOrder extends AppCompatActivity{
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Processing...");
         printerManager = new SavedPrinterManager(DetailOrder.this);
-        printerTemplate = new PrinterTemplate(DetailOrder.this);
+        //printerTemplate = new PrinterTemplate(DetailOrder.this);
         session = new SessionManager(DetailOrder.this);
         Bundle bundle = getIntent().getExtras();
 
@@ -295,7 +313,12 @@ public class DetailOrder extends AppCompatActivity{
                             Toast.makeText(DetailOrder.this, message1 + ".\n Tunggu hingga proses mencetak selesai, aplikasi akan menuju ke daftar transaksi", Toast.LENGTH_LONG).show();
                         }
 
-                        printData();
+                        if(printStatus){
+
+                            printStatus = false;
+                            printDataAll();
+                        }
+
                     }else{
                         Toast.makeText(DetailOrder.this, message, Toast.LENGTH_LONG).show();
                     }
@@ -319,7 +342,7 @@ public class DetailOrder extends AppCompatActivity{
     }
 
     //region =================================== Setting printer
-    private void printData() {
+    private void printDataAll() {
 
         printState = 1;
         printCashierState = false;
@@ -330,13 +353,13 @@ public class DetailOrder extends AppCompatActivity{
         //printState = 3;
         //changePrintState(DetailOrder.this, 1, "Gagal mencetak");
         maxIter = maxIterFix;
-        loadPrintingDialog(DetailOrder.this, "Printing cashier label...");
-        printToCashier(DetailOrder.this, noBukti, timestampNow, noMeja, listSelectedMenu);
+        //loadPrintingDialog(DetailOrder.this, "Printing cashier label...");
+        printToCashier(noBukti, timestampNow, noMeja, listSelectedMenu);
         //printToKitchen(DetailOrder.this, noBukti, timestampNow, noMeja, listSelectedMenu);
 
     }
 
-    public static void changePrintState(final Context context, int code, String status){
+    public void changePrintState(final Context context, int code, String status){
 
         String state = "";
         switch (printState){
@@ -372,15 +395,16 @@ public class DetailOrder extends AppCompatActivity{
 
         if(printState == 1){
 
-            loadPrintingDialog(context, "Printing kitchen label...");
-            printToKitchen(context, noBukti, timestampNow, noMeja, listSelectedMenu);
+            //loadPrintingDialog(context, "Printing kitchen label...");
+            printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenu);
         }else if(printState == 2){
 
-            loadPrintingDialog(context, "Printing bar label...");
-            printToBar(context, noBukti, timestampNow, noMeja, listSelectedMenu);
+            //loadPrintingDialog(context, "Printing bar label...");
+            printToBar(noBukti, timestampNow, noMeja, listSelectedMenu);
         }else if(printState == 3){
 
             //finish printing
+            printStatus = true;
             Intent intent = new Intent(context, MainActivity.class);
             intent.putExtra("riwayat", true);
             context.startActivity(intent);
@@ -389,7 +413,7 @@ public class DetailOrder extends AppCompatActivity{
     }
 
     //region Selected Order Menu
-    public static void loadPrintingDialog(final Context context, String message){
+    private void loadPrintingDialog(final Context context, String message){
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -406,7 +430,7 @@ public class DetailOrder extends AppCompatActivity{
                 .setPositiveButton("Skip", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        changePrintState(context, 1, "Printer belum di atur");
+                        changePrintState(mContext, 1, "Printer belum di atur");
                         dialogLoading.dismiss();
                     }
                 })
@@ -418,15 +442,15 @@ public class DetailOrder extends AppCompatActivity{
     }
 
     // Bagian printing
-    private static void printToCashier(final Context context, final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
+    private void printToCashier(final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
+
+        printState = 1;
 
         if(printerManager.getData(SavedPrinterManager.TAG_IP1) == null){
-            changePrintState(context, 1, "Printer belum di atur");
+            changePrintState(mContext, 1, "Printer belum di atur");
         }else{
 
-            printState = 1;
-
-            printCashierState = printerTemplate.printCashier(urutan, nobukti, timestamp, nomeja, pesanan);
+            printCashierState = printCashier(urutan, nobukti, timestamp, nomeja, pesanan);
 
             if(!printCashierState){
                 //changePrintState(context, 1, "Gagal mencetak");
@@ -450,7 +474,39 @@ public class DetailOrder extends AppCompatActivity{
                 }else{
                     changePrintState(context, 1, "Gagal mencetak");
                 }*/
-                printToCashier(context, nobukti, timestamp, nomeja, pesanan);
+
+                AlertDialog dialog = new AlertDialog.Builder(mContext)
+                        .setTitle("Peringatan")
+                        .setIcon(R.mipmap.ic_warning)
+                        .setMessage("Tidak dapat mencetak printout untuk CASHIER.")
+                        .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                printToCashier(nobukti, timestamp, nomeja, pesanan);
+                            }
+                        }).setNegativeButton("Lewati", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                AlertDialog dialog1 = new AlertDialog.Builder(mContext)
+                                        .setTitle("Konfirmasi")
+                                        .setMessage("Printout CASHIER tidak akan tercetak")
+                                        .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                changePrintState(mContext, 1, "Gagal mencetak");
+                                            }
+                                        })
+                                        .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                printToCashier(nobukti, timestamp, nomeja, pesanan);
+                                            }
+                                        })
+                                        .show();
+                            }
+                        }).show();
             }
 
             /*PrinterChecker checker = new PrinterChecker(context);
@@ -487,12 +543,12 @@ public class DetailOrder extends AppCompatActivity{
         }
     }
 
-    private static void printToKitchen(final Context context, final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
+    private void printToKitchen( final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
 
         printState = 2;
 
         if(printerManager.getData(SavedPrinterManager.TAG_IP2) == null){
-            changePrintState(context, 1, "Printer belum di atur");
+            changePrintState(mContext, 1, "Printer belum di atur");
         }else{
 
             boolean isKitchen = false;
@@ -505,9 +561,9 @@ public class DetailOrder extends AppCompatActivity{
             }
 
             if(isKitchen){
-                printKitchenState = printerTemplate.printKitchen(urutan, nobukti, timestamp, nomeja, listMakanan);
+                printKitchenState = printKitchen(urutan, nobukti, timestamp, nomeja, listMakanan);
             }else{
-                changePrintState(context, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
+                changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
             }
 
             if(!printKitchenState){
@@ -532,7 +588,39 @@ public class DetailOrder extends AppCompatActivity{
                 }else{
                     changePrintState(context, 1, "Gagal mencetak");
                 }*/
-                printToKitchen(context, nobukti, timestamp, nomeja, pesanan);
+
+                AlertDialog dialog = new AlertDialog.Builder(mContext)
+                        .setTitle("Peringatan")
+                        .setIcon(R.mipmap.ic_warning)
+                        .setMessage("Tidak dapat mencetak printout untuk KITCHEN")
+                        .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                printToKitchen(nobukti, timestamp, nomeja, pesanan);
+                            }
+                        }).setNegativeButton("Lewati", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                AlertDialog dialog1 = new AlertDialog.Builder(mContext)
+                                        .setTitle("Konfirmasi")
+                                        .setMessage("Printout KITCHEN tidak akan tercetak")
+                                        .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                changePrintState(mContext, 1, "Gagal mencetak");
+                                            }
+                                        })
+                                        .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                printToKitchen(nobukti, timestamp, nomeja, pesanan);
+                                            }
+                                        })
+                                        .show();
+                            }
+                        }).show();
             }
 
             /*PrinterChecker checker = new PrinterChecker(context);
@@ -581,13 +669,13 @@ public class DetailOrder extends AppCompatActivity{
         }
     }
 
-    private static void printToBar(final Context context, final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
+    private void printToBar(final String nobukti, final String timestamp, final String nomeja, final List<CustomItem> pesanan){
 
         printState = 3;
         //printBarState = true;
 
         if(printerManager.getData(SavedPrinterManager.TAG_IP3) == null){
-            changePrintState(context, 1, "Printer belum di atur");
+            changePrintState(mContext, 1, "Printer belum di atur");
         }else{
 
             boolean isBar = false;
@@ -600,9 +688,9 @@ public class DetailOrder extends AppCompatActivity{
             }
 
             if(isBar){
-                printBarState = printerTemplate.printBar(urutan, nobukti, timestamp, nomeja, listMinuman);
+                printBarState = printBar(urutan, nobukti, timestamp, nomeja, listMinuman);
             }else{
-                changePrintState(context, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
+                changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
             }
 
             if(!printBarState){
@@ -627,7 +715,40 @@ public class DetailOrder extends AppCompatActivity{
                 }else{
                     changePrintState(context, 1, "Gagal mencetak");
                 }*/
-                printToBar(context, nobukti, timestamp, nomeja, pesanan);
+                final AlertDialog dialog = new AlertDialog.Builder(mContext)
+                        .setTitle("Peringatan")
+                        .setIcon(R.mipmap.ic_warning)
+                        .setMessage("Tidak dapat mencetak printout untuk BAR")
+                        .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                printToBar(nobukti, timestamp, nomeja, pesanan);
+                            }
+                        }).setNegativeButton("Lewati", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                AlertDialog dialog1 = new AlertDialog.Builder(mContext)
+                                        .setTitle("Konfirmasi")
+                                        .setMessage("Printout BAR tidak akan tercetak")
+                                        .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                changePrintState(mContext, 1, "Gagal mencetak");
+                                            }
+                                        })
+                                        .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                printToBar(nobukti, timestamp, nomeja, pesanan);
+                                            }
+                                        })
+                                        .show();
+                            }
+                        }).show();
+
+
             }
 
             /*PrinterChecker checker = new PrinterChecker(context);
@@ -1359,4 +1480,671 @@ public class DetailOrder extends AppCompatActivity{
         super.onBackPressed();
         overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
     }
+
+
+    //region Prinnter
+
+    //region cashier
+    public boolean printCashier(String urutan, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan){
+
+        return runPrintCashierSequence(urutan, timestamp, noBukti, noMeja, pesanan);
+    }
+
+    private boolean runPrintCashierSequence(String urutan, String timestamp, String noBukti, String noMeja, List<CustomItem> pesanan) {
+        if (!initializeObject()) {
+            return false;
+        }
+
+        if (!createCashierData(urutan, noBukti, timestamp, noMeja, pesanan)) {
+            finalizeObject();
+            return false;
+        }
+
+        if (!printData(SavedPrinterManager.TAG_IP1)) {
+            finalizeObject();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean createCashierData(String urutan, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan) {
+
+        // baris maks 30 char
+        int maxRow= 30;
+        int maxRow2= 16;
+        String method = "";
+        Bitmap logoData = BitmapFactory.decodeResource( getResources(), R.mipmap.ic_launcher);
+        StringBuilder textData = new StringBuilder();
+        final int barcodeWidth = 2;
+        final int barcodeHeight = 100;
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+            textData.append("SUMMARY ORDER\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.append(noBukti+"\n");
+            textData.delete(0, textData.length());
+
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+            textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"\n");
+            textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
+            textData.append(noMeja+ "-" + urutan +"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+            textData.append("------------------------------\n"); // 30 Line
+
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_LEFT);
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+
+            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
+            for(CustomItem item : pesanan){
+
+                String itemToPrint = item.getItem5() +" "+ item.getItem2();
+                textData.append( itemToPrint+"\n");
+
+                if(item.getItem8().length()>0){
+                    String[] s = item.getItem8().split("\\r?\\n");
+                    for(String note: s){
+                        textData.append( "   " + note +"\n");
+                    }
+                }
+            }
+
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            /*method = "addBarcode";
+            mPrinter.addBarcode("01209457",
+                    Printer.BARCODE_CODE39,
+                    Printer.HRI_BELOW,
+                    Printer.FONT_A,
+                    barcodeWidth,
+                    barcodeHeight);*/
+
+            method = "addCut";
+            mPrinter.addCut(Printer.CUT_FEED);
+        }
+        catch (Exception e) {
+            //ShowMsg.showException(e, method, context);
+            android.util.Log.d(TAG, method.toString()+ " " + e.toString());
+            return false;
+        }
+
+        textData = null;
+
+        return true;
+    }
+
+    //endregion
+
+    //region kitchen
+    public boolean printKitchen(String urutan, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan){
+
+        return runPrintKitchenSequence(urutan, timestamp, noBukti, noMeja, pesanan);
+    }
+
+    private boolean runPrintKitchenSequence(String urutan, String timestamp, String noBukti, String noMeja, List<CustomItem> pesanan) {
+        if (!initializeObject()) {
+            return false;
+        }
+
+        if (!createKitchenData(urutan, noBukti, timestamp, noMeja, pesanan)) {
+            finalizeObject();
+            return false;
+        }
+
+        if (!printData(SavedPrinterManager.TAG_IP2)) {
+            finalizeObject();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean initializeObject() {
+
+        try {
+            mPrinter = new Printer(Printer.TM_U220,
+                    Printer.MODEL_ANK,
+                    mContext);
+        }
+        catch (Exception e) {
+            //ShowMsg.showException(e, "Printer", context);
+            android.util.Log.d(TAG, "initializeObject: " + e.toString());
+            return false;
+        }
+
+        mPrinter.setReceiveEventListener(this);
+
+        return true;
+    }
+
+    private boolean createKitchenData(String urutan, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan) {
+
+        // baris maks 30 char
+        int maxRow= 30;
+        String method = "";
+        Bitmap logoData = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        StringBuilder textData = new StringBuilder();
+        final int barcodeWidth = 2;
+        final int barcodeHeight = 100;
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            /*method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+
+            method = "addImage";
+            mPrinter.addImage(logoData, 0, 0,
+                    logoData.getWidth(),
+                    logoData.getHeight(),
+                    Printer.COLOR_1,
+                    Printer.MODE_MONO,
+                    Printer.HALFTONE_DITHER,
+                    Printer.PARAM_DEFAULT,
+                    Printer.COMPRESS_AUTO);
+
+            method = "addTextAlign";*/
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            /*method = "addFeedLine";
+            mPrinter.addFeedLine(1);*/
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+            textData.append(noBukti+"\n");
+            textData.append(noMeja+"-"+urutan+"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(2, 2);
+            textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"\n");
+            textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+            textData.append("------------------------------\n"); // 40 Line
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_LEFT);
+            method = "addTextSize";
+            mPrinter.addTextSize(2, 2);
+
+            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
+
+            int x = 1;
+            for(CustomItem item : pesanan){
+
+                String itemToPrint = item.getItem5() +" "+ item.getItem2();
+                textData.append( itemToPrint+"\n");
+
+                if(item.getItem8().length()>0){
+                    String[] s = item.getItem8().split("\\r?\\n");
+                    int j = 0;
+                    for(String note: s){
+
+                        if(s.length == 1){
+                            textData.append( "  (" + note +")\n");
+                        }else{
+                            if(j == 0){
+                                textData.append( "  (" + note +"\n");
+                            }else if(j == s.length - 1){
+                                textData.append( "   " + note +")\n");
+                            }else{
+                                textData.append( "   " + note +"\n");
+                            }
+                        }
+                        j++;
+                    }
+                }
+
+                x++;
+            }
+
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            /*method = "addFeedLine";
+            mPrinter.addFeedLine(2);*/
+
+            /*method = "addBarcode";
+            mPrinter.addBarcode("01209457",
+                    Printer.BARCODE_CODE39,
+                    Printer.HRI_BELOW,
+                    Printer.FONT_A,
+                    barcodeWidth,
+                    barcodeHeight);*/
+
+            method = "addCut";
+            mPrinter.addCut(Printer.CUT_FEED);
+        }
+        catch (Exception e) {
+            //ShowMsg.showException(e, method, context);
+            android.util.Log.d(TAG, method.toString()+" " + e.toString());
+            return false;
+        }
+
+        textData = null;
+
+        return true;
+    }
+
+    //endregion
+
+    //region Bar
+    public boolean printBar(String urutan, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan){
+
+        return runPrintBarSequence(urutan, timestamp, noBukti, noMeja, pesanan);
+    }
+
+    private boolean runPrintBarSequence(String urutan, String timestamp, String noBukti, String noMeja, List<CustomItem> pesanan) {
+        if (!initializeObject()) {
+            return false;
+        }
+
+        if (!createBarData(urutan, noBukti, timestamp, noMeja, pesanan)) {
+            finalizeObject();
+            return false;
+        }
+
+        if (!printData(SavedPrinterManager.TAG_IP3)) {
+            finalizeObject();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean createBarData(String urutan, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan) {
+
+        // baris maks 30 char
+        int maxRow= 30;
+        String method = "";
+        Bitmap logoData = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+        StringBuilder textData = new StringBuilder();
+        final int barcodeWidth = 2;
+        final int barcodeHeight = 100;
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            /*method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+
+            method = "addImage";
+            mPrinter.addImage(logoData, 0, 0,
+                    logoData.getWidth(),
+                    logoData.getHeight(),
+                    Printer.COLOR_1,
+                    Printer.MODE_MONO,
+                    Printer.HALFTONE_DITHER,
+                    Printer.PARAM_DEFAULT,
+                    Printer.COMPRESS_AUTO);
+
+            method = "addTextAlign";*/
+            mPrinter.addTextAlign(Printer.ALIGN_CENTER);
+            /*method = "addFeedLine";
+            mPrinter.addFeedLine(1);*/
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+            textData.append(noBukti+"\n");
+            textData.append(noMeja+"-"+urutan+"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            mPrinter.addTextSize(2, 2);
+            textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"\n");
+            textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextSize";
+            mPrinter.addTextSize(1, 1);
+            textData.append("------------------------------\n"); // 40 Line
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextAlign";
+            mPrinter.addTextAlign(Printer.ALIGN_LEFT);
+            method = "addTextSize";
+            mPrinter.addTextSize(2, 2);
+
+            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
+
+            int x = 1;
+            for(CustomItem item : pesanan){
+
+                String itemToPrint = item.getItem5() +" "+ item.getItem2();
+                textData.append( itemToPrint+"\n");
+
+                if(item.getItem8().length()>0){
+                    String[] s = item.getItem8().split("\\r?\\n");
+                    int j = 0;
+                    for(String note: s){
+
+                        if(s.length == 1){
+                            textData.append( "  (" + note +")\n");
+                        }else{
+                            if(j == 0){
+                                textData.append( "  (" + note +"\n");
+                            }else if(j == s.length - 1){
+                                textData.append( "   " + note +")\n");
+                            }else{
+                                textData.append( "   " + note +"\n");
+                            }
+                        }
+                        j++;
+                    }
+                }
+
+                x++;
+            }
+
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            /*method = "addFeedLine";
+            mPrinter.addFeedLine(2);*/
+
+            /*method = "addBarcode";
+            mPrinter.addBarcode("01209457",
+                    Printer.BARCODE_CODE39,
+                    Printer.HRI_BELOW,
+                    Printer.FONT_A,
+                    barcodeWidth,
+                    barcodeHeight);*/
+
+            method = "addCut";
+            mPrinter.addCut(Printer.CUT_FEED);
+        }
+        catch (Exception e) {
+            //ShowMsg.showException(e, method, context);
+            android.util.Log.d(TAG, method.toString()+" " + e.toString());
+            return false;
+        }
+
+        textData = null;
+
+        return true;
+    }
+
+    //endregion
+
+    private void finalizeObject() {
+
+        if (mPrinter == null) {
+            return;
+        }
+
+        mPrinter.clearCommandBuffer();
+
+        mPrinter.setReceiveEventListener(null);
+
+        mPrinter = null;
+    }
+
+    private boolean printData(String key) {
+
+        String ip = printerManager.getData(key);
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        if (!connectPrinter(ip)) {
+            return false;
+        }
+
+        PrinterStatusInfo status = mPrinter.getStatus();
+
+        dispPrinterWarnings(status);
+
+        if (!isPrintable(status)) {
+            //ShowMsg.showMsg(makeErrorMessage(status), context);
+            android.util.Log.d(TAG, "error : " + makeErrorMessage(status));
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+            return false;
+        }
+
+        try {
+            mPrinter.sendData(Printer.PARAM_DEFAULT);
+        }
+        catch (Exception e) {
+            //ShowMsg.showException(e, "sendData", context);
+            android.util.Log.d(TAG, "sendData : " + e.toString());
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Exception ex) {
+                // Do nothing
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isPrintable(PrinterStatusInfo status) {
+
+        if (status == null) {
+            return false;
+        }
+
+        if (status.getConnection() == Printer.FALSE) {
+            return false;
+        }
+        else if (status.getOnline() == Printer.FALSE) {
+            return false;
+        }
+        else {
+            //print available
+        }
+
+        return true;
+    }
+
+    private void disconnectPrinter() {
+
+        if (mPrinter == null) {
+            return;
+        }
+
+        try {
+            mPrinter.endTransaction();
+        }
+        catch (final Exception e) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public synchronized void run() {
+                    ShowMsg.showException(e, "endTransaction", mContext);
+                }
+            });
+        }
+
+        try {
+            mPrinter.disconnect();
+        }
+        catch (final Exception e) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public synchronized void run() {
+                    ShowMsg.showException(e, "disconnect", mContext);
+                }
+            });
+        }
+
+        finalizeObject();
+    }
+
+    private boolean connectPrinter(String ip) {
+        boolean isBeginTransaction = false;
+
+        if (mPrinter == null) {
+            return false;
+        }
+
+        try {
+            mPrinter.connect(ip, Printer.PARAM_DEFAULT);
+        }
+        catch (Exception e) {
+            //ShowMsg.showException(e, "connect", context);
+            android.util.Log.d(TAG, "connect : " + e.toString());
+            return false;
+        }
+
+        try {
+            mPrinter.beginTransaction();
+            isBeginTransaction = true;
+        }
+        catch (Exception e) {
+            //ShowMsg.showException(e, "beginTransaction", context);
+            android.util.Log.d(TAG, "beginTransaction : " + e.toString());
+        }
+
+        if (isBeginTransaction == false) {
+            try {
+                mPrinter.disconnect();
+            }
+            catch (Epos2Exception e) {
+                // Do nothing
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void dispPrinterWarnings(PrinterStatusInfo status) {
+
+        String warningsMsg = "";
+
+        if (status == null) {
+            return;
+        }
+
+        if (status.getPaper() == Printer.PAPER_NEAR_END) {
+            warningsMsg += getResources().getString(R.string.handlingmsg_warn_receipt_near_end);
+        }
+
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_1) {
+            warningsMsg += getResources().getString(R.string.handlingmsg_warn_battery_near_end);
+        }
+
+        android.util.Log.d(TAG, "dispPrinterWarnings: " + warningsMsg);
+    }
+
+    @Override
+    public void onPtrReceive(final Printer printerObj, final int code, final PrinterStatusInfo status, final String printJobId) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public synchronized void run() {
+
+                /*if(code != Epos2CallbackCode.CODE_SUCCESS){
+                    ShowMsg.showResult(code, makeErrorMessage(status), context);
+                }*/
+
+                dispPrinterWarnings(status);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        disconnectPrinter();
+                        changePrintState(mContext, code, makeErrorMessage(status));
+                    }
+                }).start();
+            }
+        });
+    }
+
+    public String makeErrorMessage(PrinterStatusInfo status) {
+        String msg = "";
+
+        if (status.getOnline() == Printer.FALSE) {
+            msg += getString(R.string.handlingmsg_err_offline);
+        }
+        if (status.getConnection() == Printer.FALSE) {
+            msg += getString(R.string.handlingmsg_err_no_response);
+        }
+        if (status.getCoverOpen() == Printer.TRUE) {
+            msg += getString(R.string.handlingmsg_err_cover_open);
+        }
+        if (status.getPaper() == Printer.PAPER_EMPTY) {
+            msg += getString(R.string.handlingmsg_err_receipt_end);
+        }
+        if (status.getPaperFeed() == Printer.TRUE || status.getPanelSwitch() == Printer.SWITCH_ON) {
+            msg += getString(R.string.handlingmsg_err_paper_feed);
+        }
+        if (status.getErrorStatus() == Printer.MECHANICAL_ERR || status.getErrorStatus() == Printer.AUTOCUTTER_ERR) {
+            msg += getString(R.string.handlingmsg_err_autocutter);
+            msg += getString(R.string.handlingmsg_err_need_recover);
+        }
+        if (status.getErrorStatus() == Printer.UNRECOVER_ERR) {
+            msg += getString(R.string.handlingmsg_err_unrecover);
+        }
+        if (status.getErrorStatus() == Printer.AUTORECOVER_ERR) {
+            if (status.getAutoRecoverError() == Printer.HEAD_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_head);
+            }
+            if (status.getAutoRecoverError() == Printer.MOTOR_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_motor);
+            }
+            if (status.getAutoRecoverError() == Printer.BATTERY_OVERHEAT) {
+                msg += getString(R.string.handlingmsg_err_overheat);
+                msg += getString(R.string.handlingmsg_err_battery);
+            }
+            if (status.getAutoRecoverError() == Printer.WRONG_PAPER) {
+                msg += getString(R.string.handlingmsg_err_wrong_paper);
+            }
+        }
+        if (status.getBatteryLevel() == Printer.BATTERY_LEVEL_0) {
+            msg += getString(R.string.handlingmsg_err_battery_real_end);
+        }
+
+        return msg;
+    }
+
+    //endregion
 }
