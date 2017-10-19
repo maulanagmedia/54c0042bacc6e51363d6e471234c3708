@@ -1,6 +1,7 @@
 package gmedia.net.id.restauranttakingorder;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -81,6 +82,18 @@ public class MainActivity extends AppCompatActivity
             flContainer.removeAllViews();*/
             fragment = new MainOpenOrder();
             callFragment(fragment);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+
         }
     }
 
@@ -167,7 +180,7 @@ public class MainActivity extends AppCompatActivity
             fragment = new MainProfile();
             callFragment(fragment);
         } else if (id == R.id.nav_logout) {
-            Intent intent = new Intent(MainActivity.this, LoginScreen.class);
+            Intent intent = new Intent(MainActivity.this, AccountActivity.class);
             session.logoutUser(intent);
         }
 

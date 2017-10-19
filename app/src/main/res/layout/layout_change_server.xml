@@ -27,14 +27,14 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/input_form_blue"
+                    android:background="@drawable/input_form"
                     android:hint="IP Server *"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_red"
+                    android:textColorHint="@color/color_red"
                     android:id="@+id/edt_server"
                     android:gravity="left"
                     android:imeOptions="actionDone"
-                    android:inputType="number"
-                    android:digits="0123456789."
+                    android:inputType="textWebEmailAddress"
                     android:padding="@dimen/margin_default"/>
             </LinearLayout>
 
@@ -47,23 +47,23 @@
                 android:weightSum="2">
 
                 <Button
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ripple_selected_orange"
-                    android:text="Batal"
                     android:id="@+id/btn_batal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/margin_default"
-                    android:textColor="@color/text_color_orange"/>
+                    android:layout_weight="1"
+                    android:background="@drawable/ripple_selected_blue"
+                    android:text="Batal"
+                    android:textColor="@color/text_color_blue" />
 
                 <Button
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ripple_selected_blue"
+                    android:background="@drawable/ripple_selected_red"
                     android:text="Simpan"
                     android:id="@+id/btn_simpan"
-                    android:textColor="@color/text_color_blue"/>
+                    android:textColor="@color/text_color_red"/>
             </LinearLayout>
 
         </LinearLayout>

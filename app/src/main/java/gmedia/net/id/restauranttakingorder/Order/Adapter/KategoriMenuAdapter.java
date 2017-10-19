@@ -66,7 +66,7 @@ public class KategoriMenuAdapter extends ArrayAdapter{
         }
 
         if(position == selectedPosition){
-            holder.llContainer.setBackgroundColor(context.getResources().getColor(R.color.color_blue));
+            holder.llContainer.setBackgroundColor(context.getResources().getColor(R.color.color_red));
             holder.tvItem1.setTextColor(context.getResources().getColor(R.color.color_white));
             notifyDataSetChanged();
         }else{

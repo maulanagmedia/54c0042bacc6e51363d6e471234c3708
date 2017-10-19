@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:text="Nama"
                 android:textSize="@dimen/font_title"
-                android:textColor="@color/color_blue"/>
+                android:textColor="@color/color_red"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="NIK"
-                android:textColor="@color/color_blue"
+                android:textColor="@color/color_red"
                 android:textSize="@dimen/font_title"/>
 
             <TextView
@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:text="Alamat"
                 android:textSize="@dimen/font_title"
-                android:textColor="@color/color_blue"/>
+                android:textColor="@color/color_red"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:text="Kota"
                 android:textSize="@dimen/font_title"
-                android:textColor="@color/color_blue"/>
+                android:textColor="@color/color_red"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -122,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/font_title"
                 android:text="No Telepon"
-                android:textColor="@color/color_blue"/>
+                android:textColor="@color/color_red"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:text="Bagian"
                 android:textSize="@dimen/font_title"
-                android:textColor="@color/color_blue"/>
+                android:textColor="@color/color_red"/>
 
             <TextView
                 android:layout_width="match_parent"

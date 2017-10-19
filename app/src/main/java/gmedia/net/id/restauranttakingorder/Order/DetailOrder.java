@@ -27,7 +27,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -1094,12 +1096,21 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
         final TextView tvHarga = (TextView) view.findViewById(R.id.tv_harga);
         final EditText edtHarga = (EditText) view.findViewById(R.id.edt_harga);
+        final ImageView ivJmlPlus = (ImageView) view.findViewById(R.id.iv_jml_plus);
+        final ImageView ivJmlMin = (ImageView) view.findViewById(R.id.iv_jml_min);
         final EditText edtJumlah = (EditText) view.findViewById(R.id.edt_jumlah);
         final EditText edtSatuan = (EditText) view.findViewById(R.id.edt_satuan);
         final EditText edtDiskon = (EditText) view.findViewById(R.id.edt_diskon);
         final EditText edtHargaDiskon = (EditText) view.findViewById(R.id.edt_harga_diskon);
         final EditText edtCatatan = (EditText) view.findViewById(R.id.edt_catatan);
-        final EditText edtTagMeja = (EditText) view.findViewById(R.id.edt_tag_meja);
+        final CheckBox cbA = (CheckBox) view.findViewById(R.id.cb_a);
+        final CheckBox cbB = (CheckBox) view.findViewById(R.id.cb_b);
+        final CheckBox cbC = (CheckBox) view.findViewById(R.id.cb_c);
+        final CheckBox cbD = (CheckBox) view.findViewById(R.id.cb_d);
+        final CheckBox cbE = (CheckBox) view.findViewById(R.id.cb_e);
+        final CheckBox cbF = (CheckBox) view.findViewById(R.id.cb_f);
+        final CheckBox cbG = (CheckBox) view.findViewById(R.id.cb_g);
+        final CheckBox cbH = (CheckBox) view.findViewById(R.id.cb_h);
         final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
         final Button btnHapus = (Button) view.findViewById(R.id.btn_hapus);
         btnHapus.setVisibility(View.GONE);
@@ -1114,7 +1125,6 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         edtDiskon.setText(item.getItem7());
         edtCatatan.setText(item.getItem8());
         edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())));
-        edtTagMeja.setText("A");
 
         edtJumlah.addTextChangedListener(new TextWatcher() {
             @Override
@@ -1136,6 +1146,25 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }else{
                     edtJumlah.setError("Jumlah harus lebih dari 0");
                 }
+            }
+        });
+
+        ivJmlMin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String jml = edtJumlah.getText().toString();
+                if(iv.parseNullInteger(jml) > 1){
+                    int jmlBaru = iv.parseNullInteger(jml) - 1;
+                    edtJumlah.setText(String.valueOf(jmlBaru));
+                }
+            }
+        });
+
+        ivJmlPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int jmlBaru = iv.parseNullInteger(edtJumlah.getText().toString()) + 1;
+                edtJumlah.setText(String.valueOf(jmlBaru));
             }
         });
 
@@ -1200,7 +1229,30 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 newItem[0].setItem8(edtCatatan.getText().toString());
-                                newItem[0].setItem10(edtTagMeja.getText().toString());
+
+                                List<String> listTagMeja = new ArrayList<String>();
+
+                                if(cbA.isChecked())listTagMeja.add("A");
+                                if(cbB.isChecked())listTagMeja.add("B");
+                                if(cbC.isChecked())listTagMeja.add("C");
+                                if(cbD.isChecked())listTagMeja.add("D");
+                                if(cbE.isChecked())listTagMeja.add("E");
+                                if(cbF.isChecked())listTagMeja.add("F");
+                                if(cbG.isChecked())listTagMeja.add("G");
+                                if(cbH.isChecked())listTagMeja.add("H");
+
+                                String tagMeja = "";
+                                int x = 0;
+                                for(String tag : listTagMeja){
+                                    if(x == 0){
+                                        tagMeja = tag;
+                                    }else{
+                                        tagMeja = tagMeja + ", " + tag;
+                                    }
+                                    x++;
+                                }
+
+                                newItem[0].setItem10(tagMeja);
                                 addMoreSelectedMenu(newItem[0]);
                                 alert.dismiss();
                                 updateHargaTotal();
@@ -1293,12 +1345,21 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
         final TextView tvHarga = (TextView) view.findViewById(R.id.tv_harga);
         final EditText edtHarga = (EditText) view.findViewById(R.id.edt_harga);
+        final ImageView ivJmlPlus = (ImageView) view.findViewById(R.id.iv_jml_plus);
+        final ImageView ivJmlMin = (ImageView) view.findViewById(R.id.iv_jml_min);
         final EditText edtJumlah = (EditText) view.findViewById(R.id.edt_jumlah);
         final EditText edtSatuan = (EditText) view.findViewById(R.id.edt_satuan);
         final EditText edtDiskon = (EditText) view.findViewById(R.id.edt_diskon);
         final EditText edtHargaDiskon = (EditText) view.findViewById(R.id.edt_harga_diskon);
         final EditText edtCatatan = (EditText) view.findViewById(R.id.edt_catatan);
-        final EditText edtTagMeja = (EditText) view.findViewById(R.id.edt_tag_meja);
+        final CheckBox cbA = (CheckBox) view.findViewById(R.id.cb_a);
+        final CheckBox cbB = (CheckBox) view.findViewById(R.id.cb_b);
+        final CheckBox cbC = (CheckBox) view.findViewById(R.id.cb_c);
+        final CheckBox cbD = (CheckBox) view.findViewById(R.id.cb_d);
+        final CheckBox cbE = (CheckBox) view.findViewById(R.id.cb_e);
+        final CheckBox cbF = (CheckBox) view.findViewById(R.id.cb_f);
+        final CheckBox cbG = (CheckBox) view.findViewById(R.id.cb_g);
+        final CheckBox cbH = (CheckBox) view.findViewById(R.id.cb_h);
         final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
         final Button btnHapus = (Button) view.findViewById(R.id.btn_hapus);
         final Button btnSimpan = (Button) view.findViewById(R.id.btn_simpan);
@@ -1311,7 +1372,37 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         edtSatuan.setText(item.getItem6());
         edtDiskon.setText(item.getItem7());
         edtCatatan.setText(item.getItem8());
-        edtTagMeja.setText(item.getItem10());
+        String[] listTag = item.getItem10().split(",");
+        for(int i = 0; i < listTag.length; i++){
+
+            switch (listTag[i].trim()){
+                case "A":
+                    cbA.setChecked(true);
+                    break;
+                case "B":
+                    cbB.setChecked(true);
+                    break;
+                case "C":
+                    cbC.setChecked(true);
+                    break;
+                case "D":
+                    cbD.setChecked(true);
+                    break;
+                case "E":
+                    cbE.setChecked(true);
+                    break;
+                case "F":
+                    cbF.setChecked(true);
+                    break;
+                case "G":
+                    cbG.setChecked(true);
+                    break;
+                case "H":
+                    cbH.setChecked(true);
+                    break;
+            }
+        }
+
         edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())));
 
         edtJumlah.addTextChangedListener(new TextWatcher() {
@@ -1334,6 +1425,25 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }else{
                     edtJumlah.setError("Jumlah harus lebih dari 0");
                 }
+            }
+        });
+
+        ivJmlMin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String jml = edtJumlah.getText().toString();
+                if(iv.parseNullInteger(jml) > 1){
+                    int jmlBaru = iv.parseNullInteger(jml) - 1;
+                    edtJumlah.setText(String.valueOf(jmlBaru));
+                }
+            }
+        });
+
+        ivJmlPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int jmlBaru = iv.parseNullInteger(edtJumlah.getText().toString()) + 1;
+                edtJumlah.setText(String.valueOf(jmlBaru));
             }
         });
 
@@ -1417,8 +1527,6 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     }
                 }
 
-                String tagMeja = edtTagMeja.getText().toString();
-                newItem[0].setItem10(tagMeja);
                 AlertDialog konfirmasiSimpan = new AlertDialog.Builder(DetailOrder.this)
                         .setTitle("Konfirmasi")
                         .setMessage("Simpan perubahan " + item.getItem2() + " ?")
@@ -1427,6 +1535,31 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 newItem[0].setItem8(edtCatatan.getText().toString());
+
+                                List<String> listTagMeja = new ArrayList<String>();
+
+                                if(cbA.isChecked())listTagMeja.add("A");
+                                if(cbB.isChecked())listTagMeja.add("B");
+                                if(cbC.isChecked())listTagMeja.add("C");
+                                if(cbD.isChecked())listTagMeja.add("D");
+                                if(cbE.isChecked())listTagMeja.add("E");
+                                if(cbF.isChecked())listTagMeja.add("F");
+                                if(cbG.isChecked())listTagMeja.add("G");
+                                if(cbH.isChecked())listTagMeja.add("H");
+
+                                String tagMeja = "";
+                                int x = 0;
+                                for(String tag : listTagMeja){
+                                    if(x == 0){
+                                        tagMeja = tag;
+                                    }else{
+                                        tagMeja = tagMeja + ", " + tag;
+                                    }
+                                    x++;
+                                }
+
+                                newItem[0].setItem10(tagMeja);
+
                                 listSelectedMenu.set(position, newItem[0]);
                                 selectedMenuAdapter.notifyDataSetChanged();
                                 alert.dismiss();

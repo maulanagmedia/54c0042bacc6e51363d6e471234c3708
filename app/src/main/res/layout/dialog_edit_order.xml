@@ -101,13 +101,36 @@
                 android:orientation="horizontal"
                 android:weightSum="1">
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:weightSum="2">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/ic_minus"
+                        android:id="@+id/iv_jml_min"/>
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/ic_plus"
+                        android:id="@+id/iv_jml_plus"/>
+                </LinearLayout>
+
                 <EditText
                     android:layout_width="0dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="0.6"
                     android:layout_height="wrap_content"
                     android:background="@drawable/input_form_blue"
                     android:hint="Jumlah"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_red"
                     android:id="@+id/edt_jumlah"
                     android:gravity="right"
                     android:inputType="number"
@@ -143,7 +166,7 @@
                     android:textColor="@color/color_blue"
                     android:id="@+id/edt_diskon"
                     android:gravity="right"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:padding="@dimen/margin_default"/>
 
                 <EditText
@@ -217,24 +240,86 @@
                     android:layout_marginTop="@dimen/margin_small"
                     android:orientation="vertical">
 
-                    <RadioGroup
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_marginTop="@dimen/margin_small"
                         android:weightSum="4">
 
-                        <EditText
-                            android:layout_width="match_parent"
+                        <CheckBox
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:background="@color/color_white"
-                            android:hint="Tag Meja"
-                            android:paddingLeft="@dimen/margin_small"
-                            android:paddingRight="@dimen/margin_small"
-                            android:paddingBottom="@dimen/margin_small"
-                            android:textColor="@color/color_blue"
-                            android:id="@+id/edt_tag_meja"/>
-                    </RadioGroup>
+                            android:text="A"
+                            android:textSize="@dimen/tag_meja"
+                            android:id="@+id/cb_a"/>
+
+                        <CheckBox
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="B"
+                            android:textSize="@dimen/tag_meja"
+                            android:id="@+id/cb_b"/>
+
+                        <CheckBox
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="C"
+                            android:textSize="@dimen/tag_meja"
+                            android:id="@+id/cb_c"/>
+
+                        <CheckBox
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="D"
+                            android:textSize="@dimen/tag_meja"
+                            android:id="@+id/cb_d"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/margin_default"
+                        android:weightSum="4">
+
+                        <CheckBox
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="E"
+                            android:textSize="@dimen/tag_meja"
+                            android:id="@+id/cb_e"/>
+
+                        <CheckBox
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="F"
+                            android:textSize="@dimen/tag_meja"
+                            android:id="@+id/cb_f"/>
+
+                        <CheckBox
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="G"
+                            android:textSize="@dimen/tag_meja"
+                            android:id="@+id/cb_g"/>
+
+                        <CheckBox
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="H"
+                            android:textSize="@dimen/tag_meja"
+                            android:id="@+id/cb_h"/>
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -252,7 +337,7 @@
                     android:minHeight="100dp"
                     android:background="@drawable/input_form_blue"
                     android:hint="Catatan"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_red"
                     android:id="@+id/edt_catatan"
                     android:gravity="left"
                     android:scrollHorizontally="false"
@@ -291,20 +376,20 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ripple_selected_red"
+                    android:background="@drawable/ripple_selected_blue"
                     android:text="Hapus"
                     android:id="@+id/btn_hapus"
                     android:layout_marginRight="@dimen/margin_default"
-                    android:textColor="@color/text_color_red"/>
+                    android:textColor="@color/text_color_blue"/>
 
                 <Button
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ripple_selected_blue"
+                    android:background="@drawable/ripple_selected_red"
                     android:text="Simpan"
                     android:id="@+id/btn_simpan"
-                    android:textColor="@color/text_color_blue"/>
+                    android:textColor="@color/text_color_red"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

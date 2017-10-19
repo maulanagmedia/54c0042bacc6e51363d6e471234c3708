@@ -43,7 +43,7 @@
                         android:layout_margin="@dimen/margin_default"
                         android:text="A"
                         android:gravity="center"
-                        android:background="@drawable/circle_background_orange"
+                        android:background="@drawable/circle_background_red"
                         android:id="@+id/tv_text_thumbnail"
                         android:textSize="34sp"
                         android:textStyle="bold"

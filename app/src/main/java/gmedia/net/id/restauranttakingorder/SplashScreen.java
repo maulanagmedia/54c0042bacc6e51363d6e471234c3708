@@ -20,7 +20,7 @@ public class SplashScreen extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 public void run() {
                     //startActivity(new Intent(SplashScreen.this, DaftarVideo.class));
-                    startActivity(new Intent(SplashScreen.this, LoginScreen.class));
+                    startActivity(new Intent(SplashScreen.this, AccountActivity.class));
                     finish();
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
@@ -31,7 +31,7 @@ public class SplashScreen extends AppCompatActivity {
         else {
 
             //Intent goToMainActivity = new Intent(SplashScreen.this, DaftarVideo.class);
-            Intent goToMainActivity = new Intent(SplashScreen.this, LoginScreen.class);
+            Intent goToMainActivity = new Intent(SplashScreen.this, AccountActivity.class);
             goToMainActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(goToMainActivity);
             finish();

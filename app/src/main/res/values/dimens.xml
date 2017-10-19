@@ -22,4 +22,7 @@
     <dimen name="text_subtitle">10sp</dimen>
     <dimen name="font_title">16sp</dimen>
     <dimen name="font_value">18sp</dimen>
+    <dimen name="font_number">20sp</dimen>
+    <dimen name="min_number">70sp</dimen>
+    <dimen name="tag_meja">20sp</dimen>
 </resources>

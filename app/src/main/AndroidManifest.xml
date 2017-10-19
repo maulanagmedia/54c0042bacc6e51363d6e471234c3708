@@ -19,34 +19,36 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".SplashScreen"
-            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".LoginScreen"
-            android:screenOrientation="landscape" />
+            android:configChanges="orientation|keyboardHidden" />
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_main"
-            android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".Order.ListPelanggan"
-            android:screenOrientation="landscape" />
+            android:configChanges="orientation|keyboardHidden" />
         <activity
             android:name=".Order.DetailOrder"
-            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".Printer.DiscoverPrinter"
-            android:screenOrientation="landscape" />
-        <activity android:name=".PrinterUtils.TestPrinter">
-        </activity>
+            android:configChanges="orientation|keyboardHidden" />
+        <activity android:name=".PrinterUtils.TestPrinter"></activity>
+        <activity android:name=".AccountActivity"
+            android:configChanges="orientation|keyboardHidden"></activity>
     </application>
 
 </manifest>
