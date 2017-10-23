@@ -17,7 +17,7 @@
             android:layout_weight="0.5"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:textColor="@color/color_black"
+            android:textColor="@color/color_blue"
             android:layout_marginLeft="@dimen/margin_small"
             android:textStyle="bold"
             android:padding="@dimen/margin_small"
