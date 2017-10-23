@@ -38,21 +38,21 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textColor="@color/text_color_blue"
+                android:textColor="@color/color_black"
                 android:text="Pemindaian Printer"
                 android:textSize="@dimen/font_value"
                 android:gravity="center"/>
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/default_input_height"
-                android:background="@drawable/ripple_selected_blue"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_selected_red"
                 android:layout_marginTop="@dimen/margin_default"
                 android:text="Pindai Ulang"
                 android:id="@+id/btn_refresh"
-                android:drawableLeft="@mipmap/ic_refresh"
+                android:drawableLeft="@mipmap/ic_find"
                 android:padding="@dimen/margin_default"
-                android:textColor="@color/text_color_blue"/>
+                android:textColor="@color/text_color_red"/>
         </LinearLayout>
     </LinearLayout>
 

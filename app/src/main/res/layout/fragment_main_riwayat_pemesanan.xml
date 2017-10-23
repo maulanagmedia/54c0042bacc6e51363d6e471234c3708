@@ -73,8 +73,8 @@
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/default_input_height"
-                        android:background="@drawable/ripple_selected_blue"
-                        android:textColor="@color/text_color_blue"
+                        android:background="@drawable/ripple_selected_red"
+                        android:textColor="@color/text_color_red"
                         android:id="@+id/btn_cari"
                         android:text="Cari"/>
                 </LinearLayout>

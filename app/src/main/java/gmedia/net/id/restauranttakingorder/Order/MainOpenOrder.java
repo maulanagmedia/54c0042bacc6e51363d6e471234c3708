@@ -1,6 +1,7 @@
 package gmedia.net.id.restauranttakingorder.Order;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -61,6 +62,17 @@ public class MainOpenOrder extends Fragment {
         serverURL = new ServerURL(context);
         initUI();
         return layout;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+
+        }
     }
 
     private void initUI() {
@@ -146,8 +158,15 @@ public class MainOpenOrder extends Fragment {
 
             final ListMejaAdapter menuAdapter = new ListMejaAdapter(context, listItem);
 
-            final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 3);
-            rvMeja.setLayoutManager(mLayoutManager);
+            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            if(!tabletSize){
+                final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
+                rvMeja.setLayoutManager(mLayoutManager);
+            }else{
+                final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 3);
+                rvMeja.setLayoutManager(mLayoutManager);
+
+            }
 //        rvListMenu.addItemDecoration(new NavMenu.GridSpacingItemDecoration(2, dpToPx(10), true));
             rvMeja.setItemAnimator(new DefaultItemAnimator());
             rvMeja.setAdapter(menuAdapter);

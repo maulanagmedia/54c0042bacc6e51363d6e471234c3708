@@ -21,7 +21,7 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_weight="0.15"
+                android:layout_weight="0.2"
                 android:layout_height="match_parent">
 
                 <ImageView
@@ -38,14 +38,14 @@
                     android:layout_centerInParent="true">
 
                     <TextView
-                        android:layout_width="55dp"
-                        android:layout_height="55dp"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
                         android:layout_margin="@dimen/margin_default"
                         android:text="R"
                         android:gravity="center"
                         android:background="@drawable/circle_background_red"
                         android:id="@+id/tv_text_thumbnail"
-                        android:textSize="30sp"
+                        android:textSize="28sp"
                         android:textStyle="bold"
                         android:textColor="@color/color_white"/>
                 </LinearLayout>
@@ -53,7 +53,7 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="0.85"
+                android:layout_weight="0.8"
                 android:layout_height="wrap_content"
                 android:minHeight="80dp"
                 android:padding="@dimen/margin_small"

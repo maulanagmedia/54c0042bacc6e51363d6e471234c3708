@@ -46,7 +46,7 @@
 
     <style name="AppTheme.Custom.Dialog.Number" parent="Theme.AppCompat.Dialog">
         <item name="colorPrimary">@color/color_white</item>
-        <item name="colorAccent">@color/color_red_active</item>
+        <item name="colorAccent">@color/color_white</item>
         <item name="android:background">@color/color_red</item>
     </style>
 </resources>

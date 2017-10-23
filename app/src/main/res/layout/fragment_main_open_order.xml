@@ -33,6 +33,7 @@
                     android:layout_alignParentBottom="true"
                     android:id="@+id/ll_footer"
                     android:orientation="horizontal"
+                    android:paddingTop="@dimen/margin_default"
                     android:gravity="center_vertical|right">
 
                     <ImageView

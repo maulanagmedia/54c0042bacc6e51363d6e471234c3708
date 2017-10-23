@@ -2,6 +2,7 @@ package gmedia.net.id.restauranttakingorder.RiwayatPemesanan;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -77,8 +78,22 @@ public class MainRiwayatPemesanan extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        layout = inflater.inflate(R.layout.fragment_main_riwayat_pemesanan, container, false);
+
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // Landscape
+            layout = inflater.inflate(R.layout.fragment_main_riwayat_pemesanan, container, false);
+        }
+        else {
+            // Portrait
+            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            if(!tabletSize){
+                layout = inflater.inflate(R.layout.fragment_main_riwayat_pemesanan_phone, container, false);
+            }else{
+                layout = inflater.inflate(R.layout.fragment_main_riwayat_pemesanan, container, false);
+            }
+        }
+
         context = getContext();
         initUI();
         return layout;
@@ -345,4 +360,5 @@ public class MainRiwayatPemesanan extends Fragment {
             }
         });
     }
+
 }

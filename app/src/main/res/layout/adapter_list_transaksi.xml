@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/input_form_blue"
+        android:background="@drawable/input_form_red"
         android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
         android:paddingLeft="@dimen/margin_default"
@@ -32,14 +32,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="No Meja"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_red"
                     android:textSize="@dimen/text_subtitle"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_item1"
-                    android:textColor="@color/color_blue"
+                    android:gravity="center"
+                    android:textColor="@color/color_black"
                     android:layout_marginTop="@dimen/margin_small"
                     />
             </LinearLayout>
@@ -54,14 +55,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="No Urut"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_red"
                     android:textSize="@dimen/text_subtitle"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_item4"
-                    android:textColor="@color/color_blue"
+                    android:gravity="center"
+                    android:textColor="@color/color_black"
                     android:layout_marginTop="@dimen/margin_small"
                     />
             </LinearLayout>
@@ -70,7 +72,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/line_width"
-            android:background="@color/color_blue"
+            android:background="@color/color_red"
             android:layout_marginTop="@dimen/margin_small"
             ></LinearLayout>
 
@@ -92,14 +94,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Waktu Transaki"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_red"
                     android:textSize="@dimen/text_subtitle"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_item2"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_black"
                     android:layout_marginTop="@dimen/margin_small"
                     />
             </LinearLayout>
@@ -114,14 +116,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Total"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_red"
                     android:textSize="@dimen/text_subtitle"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_item3"
-                    android:textColor="@color/color_blue"
+                    android:textColor="@color/color_black"
                     android:gravity="center_vertical|right"
                     android:layout_marginTop="@dimen/margin_small"
                     />

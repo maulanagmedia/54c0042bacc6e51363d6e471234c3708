@@ -38,14 +38,14 @@
                     android:layout_centerInParent="true">
 
                     <TextView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
                         android:layout_margin="@dimen/margin_default"
                         android:text="A"
                         android:gravity="center"
                         android:background="@drawable/circle_background_red"
                         android:id="@+id/tv_text_thumbnail"
-                        android:textSize="34sp"
+                        android:textSize="28sp"
                         android:textStyle="bold"
                         android:textColor="@color/color_white"/>
                 </LinearLayout>

@@ -3,6 +3,7 @@ package gmedia.net.id.restauranttakingorder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.Image;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +59,11 @@ public class AccountActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
+
+        /*boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+        if (!tabletSize) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }*/
 
         serverURL = new ServerURL(AccountActivity.this);
         serverManager = new SavedServerManager(AccountActivity.this);
@@ -209,6 +215,8 @@ public class AccountActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 serverManager.saveLastServer(edtServer.getText().toString());
+                                tvServer.setText(edtServer.getText().toString());
+                                serverURL = new ServerURL(AccountActivity.this);
                                 getAccountList();
                                 alert.dismiss();
                             }

@@ -1,10 +1,12 @@
 package gmedia.net.id.restauranttakingorder;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -36,11 +38,18 @@ public class MainActivity extends AppCompatActivity
     private static boolean doubleBackToExitPressedOnce;
     private boolean exitState = false;
     private int timerClose = 2000;
+    private static String title = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+        if (!tabletSize) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }*/
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -71,6 +80,8 @@ public class MainActivity extends AppCompatActivity
 
                 firstState = false;
                 navigationView.setCheckedItem(R.id.nav_riwayat_pemesanan);
+                title = navigationView.getMenu().getItem(1).getTitle().toString();
+                setTitle(title);
                 fragment = new MainRiwayatPemesanan();
                 callFragment(fragment);
             }
@@ -78,11 +89,15 @@ public class MainActivity extends AppCompatActivity
 
         if(savedInstanceState == null && firstState){
             navigationView.setCheckedItem(R.id.nav_order);
+            title = navigationView.getMenu().getItem(0).getTitle().toString();
+            setTitle(title);
             /*FrameLayout flContainer = (FrameLayout) findViewById(R.id.fl_main_container);
             flContainer.removeAllViews();*/
             fragment = new MainOpenOrder();
             callFragment(fragment);
         }
+
+        setTitle(title);
     }
 
     @Override
@@ -162,8 +177,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         /*FrameLayout flContainer = (FrameLayout) findViewById(R.id.fl_main_container);
         flContainer.removeAllViews();*/
-
-        setTitle(item.getTitle());
+        title = item.getTitle().toString();
+        setTitle(title);
 
         int id = item.getItemId();
 

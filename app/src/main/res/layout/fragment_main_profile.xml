@@ -29,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:textSize="@dimen/font_value"
+                android:textColor="@color/color_black"
                 android:id="@+id/tv_nama"/>
         </LinearLayout>
 
@@ -54,6 +55,7 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:layout_marginTop="@dimen/margin_small"
+                android:textColor="@color/color_black"
                 android:textSize="@dimen/font_value"
                 android:id="@+id/tv_nik"/>
         </LinearLayout>
@@ -79,6 +81,7 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_height="wrap_content"
                 android:text=""
+                android:textColor="@color/color_black"
                 android:textSize="@dimen/font_value"
                 android:id="@+id/tv_alamat"/>
         </LinearLayout>
@@ -104,6 +107,7 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:layout_marginTop="@dimen/margin_small"
+                android:textColor="@color/color_black"
                 android:textSize="@dimen/font_value"
                 android:id="@+id/tv_kota"/>
         </LinearLayout>
@@ -129,6 +133,7 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="@dimen/font_value"
+                android:textColor="@color/color_black"
                 android:id="@+id/tv_telepon"
                 android:layout_marginTop="@dimen/margin_small"/>
         </LinearLayout>
@@ -154,6 +159,7 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="@dimen/font_value"
+                android:textColor="@color/color_black"
                 android:layout_marginTop="@dimen/margin_small"
                 android:id="@+id/tv_bagian"/>
         </LinearLayout>

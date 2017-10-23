@@ -5,11 +5,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -32,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +46,7 @@ import com.epson.epos2.printer.ReceiveListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.maulana.custommodul.ApiVolley;
+import com.maulana.custommodul.CustomEvent.OnSwipeTouchListener;
 import com.maulana.custommodul.CustomItem;
 import com.maulana.custommodul.ItemValidation;
 import com.maulana.custommodul.SessionManager;
@@ -58,7 +62,6 @@ import gmedia.net.id.restauranttakingorder.MainActivity;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.KategoriMenuAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.MenuByKategoriAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.SelectedMenuAdapter;
-import gmedia.net.id.restauranttakingorder.PrinterUtils.PrinterChecker;
 import gmedia.net.id.restauranttakingorder.PrinterUtils.ShowMsg;
 import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
@@ -114,11 +117,64 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     private Printer mPrinter;
 
     private boolean printStatus = true;
+    private static boolean phoneMode = false;
+    private static RelativeLayout tabContainer, tab1, tab2, tab3;
+    private static TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_order);
+
+        phoneMode = false;
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // Landscape
+
+        }
+        else {
+            // Portrait
+            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            if(!tabletSize){
+                setContentView(R.layout.activity_detail_order_phone);
+                tabLayout = (TabLayout) findViewById(R.id.tab_top);
+                /*tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.add_live));
+                tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.calendar_live));
+                tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.group_live));*/
+                tabLayout.addTab(tabLayout.newTab().setText("Kategori"));
+                tabLayout.addTab(tabLayout.newTab().setText("Menu"));
+                tabLayout.addTab(tabLayout.newTab().setText("Selected Menu"));
+
+                tabContainer = (RelativeLayout) findViewById(R.id.tab_container);
+                tab1 = (RelativeLayout) findViewById(R.id.tab_1);
+                tab2 = (RelativeLayout) findViewById(R.id.tab_2);
+                tab3 = (RelativeLayout) findViewById(R.id.tab_3);
+                phoneMode = true;
+
+                tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+
+                        setTabPosition(tab.getPosition());
+                    }
+
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
+
+                    }
+
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
+
+                    }
+                });
+
+                TabLayout.Tab tab = tabLayout.getTabAt(0);
+                tab.select();
+                setTabPosition(0);
+            }
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
@@ -134,6 +190,33 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         }
         catch (Exception e) {
             ShowMsg.showException(e, "setLogSettings", mContext);
+        }
+    }
+
+    private static void setTabPosition(int position){
+
+        if(phoneMode){
+
+            if(tab1 != null && tab2 != null && tab3 != null){
+
+                switch (position){
+                    case 0:
+                        tab1.setVisibility(View.VISIBLE);
+                        tab2.setVisibility(View.GONE);
+                        tab3.setVisibility(View.GONE);
+                        break;
+                    case 1:
+                        tab1.setVisibility(View.GONE);
+                        tab2.setVisibility(View.VISIBLE);
+                        tab3.setVisibility(View.GONE);
+                        break;
+                    case 2:
+                        tab1.setVisibility(View.GONE);
+                        tab2.setVisibility(View.GONE);
+                        tab3.setVisibility(View.VISIBLE);
+                        break;
+                }
+            }
         }
     }
 
@@ -564,12 +647,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
             if(isKitchen){
                 printKitchenState = printKitchen(urutan, nobukti, timestamp, nomeja, listMakanan);
-            }else{
-                changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
-            }
 
-            if(!printKitchenState){
-                //changePrintState(context, 1, "Gagal mencetak");
+                if(!printKitchenState){
+                    //changePrintState(context, 1, "Gagal mencetak");
                 /*if(maxIter > 0){
 
                     maxIter -= 1;
@@ -591,38 +671,41 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     changePrintState(context, 1, "Gagal mencetak");
                 }*/
 
-                AlertDialog dialog = new AlertDialog.Builder(mContext)
-                        .setTitle("Peringatan")
-                        .setIcon(R.mipmap.ic_warning)
-                        .setMessage("Tidak dapat mencetak printout untuk KITCHEN")
-                        .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                    AlertDialog dialog = new AlertDialog.Builder(mContext)
+                            .setTitle("Peringatan")
+                            .setIcon(R.mipmap.ic_warning)
+                            .setMessage("Tidak dapat mencetak printout untuk KITCHEN")
+                            .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                                printToKitchen(nobukti, timestamp, nomeja, pesanan);
-                            }
-                        }).setNegativeButton("Lewati", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                                    printToKitchen(nobukti, timestamp, nomeja, pesanan);
+                                }
+                            }).setNegativeButton("Lewati", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                                AlertDialog dialog1 = new AlertDialog.Builder(mContext)
-                                        .setTitle("Konfirmasi")
-                                        .setMessage("Printout KITCHEN tidak akan tercetak")
-                                        .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                changePrintState(mContext, 1, "Gagal mencetak");
-                                            }
-                                        })
-                                        .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                printToKitchen(nobukti, timestamp, nomeja, pesanan);
-                                            }
-                                        })
-                                        .show();
-                            }
-                        }).show();
+                                    AlertDialog dialog1 = new AlertDialog.Builder(mContext)
+                                            .setTitle("Konfirmasi")
+                                            .setMessage("Printout KITCHEN tidak akan tercetak")
+                                            .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    changePrintState(mContext, 1, "Gagal mencetak");
+                                                }
+                                            })
+                                            .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    printToKitchen(nobukti, timestamp, nomeja, pesanan);
+                                                }
+                                            })
+                                            .show();
+                                }
+                            }).show();
+                }
+            }else{
+                changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
             }
 
             /*PrinterChecker checker = new PrinterChecker(context);
@@ -691,12 +774,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
             if(isBar){
                 printBarState = printBar(urutan, nobukti, timestamp, nomeja, listMinuman);
-            }else{
-                changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
-            }
 
-            if(!printBarState){
-                //changePrintState(context, 1, "Gagal mencetak");
+                if(!printBarState){
+                    //changePrintState(context, 1, "Gagal mencetak");
                 /*if(maxIter > 0){
 
                     maxIter -= 1;
@@ -717,40 +797,44 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }else{
                     changePrintState(context, 1, "Gagal mencetak");
                 }*/
-                final AlertDialog dialog = new AlertDialog.Builder(mContext)
-                        .setTitle("Peringatan")
-                        .setIcon(R.mipmap.ic_warning)
-                        .setMessage("Tidak dapat mencetak printout untuk BAR")
-                        .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                    final AlertDialog dialog = new AlertDialog.Builder(mContext)
+                            .setTitle("Peringatan")
+                            .setIcon(R.mipmap.ic_warning)
+                            .setMessage("Tidak dapat mencetak printout untuk BAR")
+                            .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                                printToBar(nobukti, timestamp, nomeja, pesanan);
-                            }
-                        }).setNegativeButton("Lewati", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                                    printToBar(nobukti, timestamp, nomeja, pesanan);
+                                }
+                            }).setNegativeButton("Lewati", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                                AlertDialog dialog1 = new AlertDialog.Builder(mContext)
-                                        .setTitle("Konfirmasi")
-                                        .setMessage("Printout BAR tidak akan tercetak")
-                                        .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                changePrintState(mContext, 1, "Gagal mencetak");
-                                            }
-                                        })
-                                        .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                printToBar(nobukti, timestamp, nomeja, pesanan);
-                                            }
-                                        })
-                                        .show();
-                            }
-                        }).show();
+                                    AlertDialog dialog1 = new AlertDialog.Builder(mContext)
+                                            .setTitle("Konfirmasi")
+                                            .setMessage("Printout BAR tidak akan tercetak")
+                                            .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    changePrintState(mContext, 1, "Gagal mencetak");
+                                                }
+                                            })
+                                            .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    printToBar(nobukti, timestamp, nomeja, pesanan);
+                                                }
+                                            })
+                                            .show();
+                                }
+                            }).show();
 
 
+                }
+
+            }else{
+                changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
             }
 
             /*PrinterChecker checker = new PrinterChecker(context);
@@ -861,6 +945,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 } else {
 
                     Log.d(TAG, "barcode: "+result.getContents());
+                    getMenuByBarcode(result.getContents());
                 }
             }else{
                 super.onActivityResult(requestCode, resultCode, data);
@@ -877,7 +962,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         lvOrder.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                loadEditOrderDialog(i);
+                loadEditOrderDialog(DetailOrder.this, i, false);
             }
         });
 
@@ -959,6 +1044,11 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     typeKategori = selected.getItem3();
                     adapter.selectedPosition = i;
                     adapter.notifyDataSetChanged();
+                    //setTabPosition(1);
+                    if(phoneMode){
+                        TabLayout.Tab tab = tabLayout.getTabAt(1);
+                        tab.select();
+                    }
 
                     getMenuByKategori(selected);
                 }
@@ -998,18 +1088,78 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                         setManuSearchView();
                         setMenuTable(listMenu);
                     }else{
+                        pbLoadMenu.setVisibility(View.GONE);
                         setManuSearchView();
                         setMenuTable(null);
                     }
                 } catch (JSONException e) {
+                    pbLoadMenu.setVisibility(View.GONE);
                     e.printStackTrace();
                     setManuSearchView();
                     setMenuTable(null);
                 }
+                pbLoadMenu.setVisibility(View.GONE);
             }
 
             @Override
             public void onError(String result) {
+                pbLoadMenu.setVisibility(View.GONE);
+                setManuSearchView();
+                setMenuTable(null);
+            }
+        });
+
+    }
+
+    private void getMenuByBarcode(String barcode) {
+
+        pbLoadMenu.setVisibility(View.VISIBLE);
+        listMenu = new ArrayList<>();
+
+        JSONObject jBody = new JSONObject();
+        try {
+            jBody.put("barcode", barcode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.getMenuBarcode(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    if(iv.parseNullInteger(status) == 200){
+
+                        JSONArray jsonArray = response.getJSONArray("response");
+                        for(int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+                            listMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),"1",jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),"",jo.getString("type")));
+                            // id, nama, harga, gambar, banyak, satuan, diskon, catatan, hargaDiskon, tag meja
+                        }
+
+                        pbLoadMenu.setVisibility(View.GONE);
+                        setManuSearchView();
+                        setMenuTable(listMenu);
+                    }else{
+                        pbLoadMenu.setVisibility(View.GONE);
+                        setManuSearchView();
+                        setMenuTable(null);
+                    }
+                } catch (JSONException e) {
+                    pbLoadMenu.setVisibility(View.GONE);
+                    e.printStackTrace();
+                    setManuSearchView();
+                    setMenuTable(null);
+                }
+                pbLoadMenu.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(String result) {
+                pbLoadMenu.setVisibility(View.GONE);
                 setManuSearchView();
                 setMenuTable(null);
             }
@@ -1086,194 +1236,206 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     //region Selected Order Menu
     public static void loadAddOrderDialog(final Context context, final CustomItem item){
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.dialog_edit_order, null);
-        builder.setView(view);
+        int checkPosition = 0;
+        boolean editMode = false;
+        for(CustomItem listMenu: listSelectedMenu){
 
-        final CustomItem[] newItem = {new CustomItem(item.getItem1(), item.getItem2(), item.getItem3(), item.getItem4(), item.getItem5(), item.getItem6(), item.getItem7(), item.getItem8(), item.getItem9(),item.getItem10(), item.getItem11())};
-
-        final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
-        final TextView tvHarga = (TextView) view.findViewById(R.id.tv_harga);
-        final EditText edtHarga = (EditText) view.findViewById(R.id.edt_harga);
-        final ImageView ivJmlPlus = (ImageView) view.findViewById(R.id.iv_jml_plus);
-        final ImageView ivJmlMin = (ImageView) view.findViewById(R.id.iv_jml_min);
-        final EditText edtJumlah = (EditText) view.findViewById(R.id.edt_jumlah);
-        final EditText edtSatuan = (EditText) view.findViewById(R.id.edt_satuan);
-        final EditText edtDiskon = (EditText) view.findViewById(R.id.edt_diskon);
-        final EditText edtHargaDiskon = (EditText) view.findViewById(R.id.edt_harga_diskon);
-        final EditText edtCatatan = (EditText) view.findViewById(R.id.edt_catatan);
-        final CheckBox cbA = (CheckBox) view.findViewById(R.id.cb_a);
-        final CheckBox cbB = (CheckBox) view.findViewById(R.id.cb_b);
-        final CheckBox cbC = (CheckBox) view.findViewById(R.id.cb_c);
-        final CheckBox cbD = (CheckBox) view.findViewById(R.id.cb_d);
-        final CheckBox cbE = (CheckBox) view.findViewById(R.id.cb_e);
-        final CheckBox cbF = (CheckBox) view.findViewById(R.id.cb_f);
-        final CheckBox cbG = (CheckBox) view.findViewById(R.id.cb_g);
-        final CheckBox cbH = (CheckBox) view.findViewById(R.id.cb_h);
-        final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
-        final Button btnHapus = (Button) view.findViewById(R.id.btn_hapus);
-        btnHapus.setVisibility(View.GONE);
-        final Button btnSimpan = (Button) view.findViewById(R.id.btn_simpan);
-
-        //Load Data
-        tvTitle.setText(item.getItem2());
-        tvHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())*iv.parseNullDouble(item.getItem5())));
-        edtHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem3())));
-        edtJumlah.setText(item.getItem5());
-        edtSatuan.setText(item.getItem6());
-        edtDiskon.setText(item.getItem7());
-        edtCatatan.setText(item.getItem8());
-        edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())));
-
-        edtJumlah.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+            if(listMenu.getItem1().equals(item.getItem1())) {
+                editMode = true;
+                break;
             }
+            checkPosition++;
+        }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        if(editMode){
 
-            }
+            loadEditOrderDialog(context, checkPosition, true);
+        }else{
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            View view = inflater.inflate(R.layout.dialog_edit_order, null);
+            builder.setView(view);
 
-            @Override
-            public void afterTextChanged(Editable editable) {
+            final CustomItem[] newItem = {new CustomItem(item.getItem1(), item.getItem2(), item.getItem3(), item.getItem4(), item.getItem5(), item.getItem6(), item.getItem7(), item.getItem8(), item.getItem9(),item.getItem10(), item.getItem11())};
 
-                if(iv.parseNullDouble(edtJumlah.getText().toString()) > 0){
-                    edtJumlah.setError(null);
-                    newItem[0] = hitungHargaDiskon(item, edtJumlah, edtDiskon, edtHargaDiskon, tvHarga);
-                }else{
-                    edtJumlah.setError("Jumlah harus lebih dari 0");
+            final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
+            final TextView tvHarga = (TextView) view.findViewById(R.id.tv_harga);
+            final EditText edtHarga = (EditText) view.findViewById(R.id.edt_harga);
+            final ImageView ivJmlPlus = (ImageView) view.findViewById(R.id.iv_jml_plus);
+            final ImageView ivJmlMin = (ImageView) view.findViewById(R.id.iv_jml_min);
+            final EditText edtJumlah = (EditText) view.findViewById(R.id.edt_jumlah);
+            final EditText edtSatuan = (EditText) view.findViewById(R.id.edt_satuan);
+            final EditText edtDiskon = (EditText) view.findViewById(R.id.edt_diskon);
+            final EditText edtHargaDiskon = (EditText) view.findViewById(R.id.edt_harga_diskon);
+            final EditText edtCatatan = (EditText) view.findViewById(R.id.edt_catatan);
+            final CheckBox cbA = (CheckBox) view.findViewById(R.id.cb_a);
+            final CheckBox cbB = (CheckBox) view.findViewById(R.id.cb_b);
+            final CheckBox cbC = (CheckBox) view.findViewById(R.id.cb_c);
+            final CheckBox cbD = (CheckBox) view.findViewById(R.id.cb_d);
+            final CheckBox cbE = (CheckBox) view.findViewById(R.id.cb_e);
+            final CheckBox cbF = (CheckBox) view.findViewById(R.id.cb_f);
+            final CheckBox cbG = (CheckBox) view.findViewById(R.id.cb_g);
+            final CheckBox cbH = (CheckBox) view.findViewById(R.id.cb_h);
+            final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
+            final Button btnHapus = (Button) view.findViewById(R.id.btn_hapus);
+            btnHapus.setVisibility(View.GONE);
+            final Button btnSimpan = (Button) view.findViewById(R.id.btn_simpan);
+
+            //Load Data
+            tvTitle.setText(item.getItem2());
+            tvHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())*iv.parseNullDouble(item.getItem5())));
+            edtHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem3())));
+            edtJumlah.setText(item.getItem5());
+            edtSatuan.setText(item.getItem6());
+            edtDiskon.setText(item.getItem7());
+            edtCatatan.setText(item.getItem8());
+            edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())));
+
+            edtJumlah.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
                 }
-            }
-        });
 
-        ivJmlMin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String jml = edtJumlah.getText().toString();
-                if(iv.parseNullInteger(jml) > 1){
-                    int jmlBaru = iv.parseNullInteger(jml) - 1;
-                    edtJumlah.setText(String.valueOf(jmlBaru));
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
                 }
-            }
-        });
 
-        ivJmlPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int jmlBaru = iv.parseNullInteger(edtJumlah.getText().toString()) + 1;
-                edtJumlah.setText(String.valueOf(jmlBaru));
-            }
-        });
+                @Override
+                public void afterTextChanged(Editable editable) {
 
-        edtDiskon.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-                if(iv.parseNullDouble(edtDiskon.getText().toString()) >= 0){
-                    if(iv.parseNullDouble(edtDiskon.getText().toString()) <= 100){
-                        edtDiskon.setError(null);
+                    if(iv.parseNullDouble(edtJumlah.getText().toString()) > 0){
+                        edtJumlah.setError(null);
                         newItem[0] = hitungHargaDiskon(item, edtJumlah, edtDiskon, edtHargaDiskon, tvHarga);
                     }else{
-                        edtDiskon.setError("Jumlah harus kurang dari 100");
+                        edtJumlah.setError("Jumlah harus lebih dari 0");
                     }
                 }
-            }
-        });
+            });
 
-        final AlertDialog alert = builder.create();
-        btnBatal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            edtJumlah.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                alert.dismiss();
-            }
-        });
+                    loadJumlahEditor(context, edtJumlah, edtJumlah.getText().toString());
+                }
+            });
 
-        btnSimpan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            ivJmlMin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String jml = edtJumlah.getText().toString();
+                    if(iv.parseNullInteger(jml) > 1){
+                        int jmlBaru = iv.parseNullInteger(jml) - 1;
+                        edtJumlah.setText(String.valueOf(jmlBaru));
+                    }
+                }
+            });
 
-                // Validasi
-                if(iv.parseNullDouble(edtJumlah.getText().toString()) <= 0){
-                    edtJumlah.setError("Jumlah harus lebih dari 0");
-                    edtJumlah.requestFocus();
-                    return;
+            ivJmlPlus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int jmlBaru = iv.parseNullInteger(edtJumlah.getText().toString()) + 1;
+                    edtJumlah.setText(String.valueOf(jmlBaru));
+                }
+            });
+
+            edtDiskon.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
                 }
 
-                if(iv.parseNullDouble(edtDiskon.getText().toString()) > 0){
-                    if(iv.parseNullDouble(edtDiskon.getText().toString()) > 100){
-                        edtDiskon.setError("Jumlah harus kurang dari 100");
-                        edtDiskon.requestFocus();
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                    if(iv.parseNullDouble(edtDiskon.getText().toString()) >= 0){
+                        if(iv.parseNullDouble(edtDiskon.getText().toString()) <= 100){
+                            edtDiskon.setError(null);
+                            newItem[0] = hitungHargaDiskon(item, edtJumlah, edtDiskon, edtHargaDiskon, tvHarga);
+                        }else{
+                            edtDiskon.setError("Jumlah harus kurang dari 100");
+                        }
+                    }
+                }
+            });
+
+            final AlertDialog alert = builder.create();
+            btnBatal.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    alert.dismiss();
+                }
+            });
+
+            btnSimpan.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    // Validasi
+                    if(iv.parseNullDouble(edtJumlah.getText().toString()) <= 0){
+                        edtJumlah.setError("Jumlah harus lebih dari 0");
+                        edtJumlah.requestFocus();
                         return;
                     }
+
+                    if(iv.parseNullDouble(edtDiskon.getText().toString()) > 0){
+                        if(iv.parseNullDouble(edtDiskon.getText().toString()) > 100){
+                            edtDiskon.setError("Jumlah harus kurang dari 100");
+                            edtDiskon.requestFocus();
+                            return;
+                        }
+                    }
+
+                    newItem[0].setItem8(edtCatatan.getText().toString());
+                    List<String> listTagMeja = new ArrayList<String>();
+
+                    if(cbA.isChecked())listTagMeja.add("A");
+                    if(cbB.isChecked())listTagMeja.add("B");
+                    if(cbC.isChecked())listTagMeja.add("C");
+                    if(cbD.isChecked())listTagMeja.add("D");
+                    if(cbE.isChecked())listTagMeja.add("E");
+                    if(cbF.isChecked())listTagMeja.add("F");
+                    if(cbG.isChecked())listTagMeja.add("G");
+                    if(cbH.isChecked())listTagMeja.add("H");
+
+                    String tagMeja = "";
+                    int x = 0;
+                    for(String tag : listTagMeja){
+                        if(x == 0){
+                            tagMeja = tag;
+                        }else{
+                            tagMeja = tagMeja + ", " + tag;
+                        }
+                        x++;
+                    }
+
+                    newItem[0].setItem10(tagMeja);
+                    addMoreSelectedMenu(newItem[0]);
+                    alert.dismiss();
+                    updateHargaTotal();
+                    //setTabPosition(2);
+                    if(phoneMode){
+                        TabLayout.Tab tab = tabLayout.getTabAt(2);
+                        tab.select();
+                    }
+
                 }
+            });
 
-                AlertDialog konfirmasiSimpan = new AlertDialog.Builder(context)
-                        .setTitle("Konfirmasi")
-                        .setMessage("Simpan " + item.getItem2() + " ?")
-                        .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+            alert.show();
 
-                                newItem[0].setItem8(edtCatatan.getText().toString());
-
-                                List<String> listTagMeja = new ArrayList<String>();
-
-                                if(cbA.isChecked())listTagMeja.add("A");
-                                if(cbB.isChecked())listTagMeja.add("B");
-                                if(cbC.isChecked())listTagMeja.add("C");
-                                if(cbD.isChecked())listTagMeja.add("D");
-                                if(cbE.isChecked())listTagMeja.add("E");
-                                if(cbF.isChecked())listTagMeja.add("F");
-                                if(cbG.isChecked())listTagMeja.add("G");
-                                if(cbH.isChecked())listTagMeja.add("H");
-
-                                String tagMeja = "";
-                                int x = 0;
-                                for(String tag : listTagMeja){
-                                    if(x == 0){
-                                        tagMeja = tag;
-                                    }else{
-                                        tagMeja = tagMeja + ", " + tag;
-                                    }
-                                    x++;
-                                }
-
-                                newItem[0].setItem10(tagMeja);
-                                addMoreSelectedMenu(newItem[0]);
-                                alert.dismiss();
-                                updateHargaTotal();
-                            }
-                        })
-                        .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        })
-                        .show();
-
-            }
-        });
-
-        alert.show();
-
-        alert.getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );
+            alert.getWindow().setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+            );
+        }
     }
 
     private static void addMoreSelectedMenu(CustomItem selectedMenu){
@@ -1330,12 +1492,137 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         tvTotal.setText(iv.ChangeToRupiahFormat(total));
     }
 
+    //region Change Server
+    private static void loadJumlahEditor(final Context context, final EditText edtJumlah, final String jml){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AppTheme_Custom_Dialog_Number);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_number, null);
+        builder.setView(view);
+
+        final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        final TextView tvPin = (TextView) view.findViewById(R.id.tv_pin);
+        final TextView tv1 = (TextView) view.findViewById(R.id.tv_1);
+        final TextView tv2 = (TextView) view.findViewById(R.id.tv_2);
+        final TextView tv3 = (TextView) view.findViewById(R.id.tv_3);
+        final TextView tv4 = (TextView) view.findViewById(R.id.tv_4);
+        final TextView tv5 = (TextView) view.findViewById(R.id.tv_5);
+        final TextView tv6 = (TextView) view.findViewById(R.id.tv_6);
+        final TextView tv7 = (TextView) view.findViewById(R.id.tv_7);
+        final TextView tv8 = (TextView) view.findViewById(R.id.tv_8);
+        final TextView tv9 = (TextView) view.findViewById(R.id.tv_9);
+        final TextView tv0 = (TextView) view.findViewById(R.id.tv_0);
+        final ImageView ivClear = (ImageView) view.findViewById(R.id.iv_clear);
+        tvTitle.setText("JUMLAH");
+        tvPin.setText(jml);
+        pinButtonListener(tvPin,tv1);
+        pinButtonListener(tvPin,tv2);
+        pinButtonListener(tvPin,tv3);
+        pinButtonListener(tvPin,tv4);
+        pinButtonListener(tvPin,tv5);
+        pinButtonListener(tvPin,tv6);
+        pinButtonListener(tvPin,tv7);
+        pinButtonListener(tvPin,tv8);
+        pinButtonListener(tvPin,tv9);
+        pinButtonListener(tvPin,tv0);
+
+        builder.setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        ivClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(tvPin.getText().length() > 0) {
+
+                    tvPin.setText(tvPin.getText().toString().substring(0, tvPin.getText().length()-1));
+
+                    if(tvPin.getText().length() == 0){
+                        tvPin.setText("0");
+                    }
+                }
+            }
+        });
+
+        builder.setPositiveButton("Simpan", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                edtJumlah.setText(tvPin.getText().toString());
+            }
+        });
+
+
+        final AlertDialog alert = builder.create();
+        alert.show();
+
+        alert.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+    }
+
+    private static void pinButtonListener(final TextView tvTarget, final TextView tv){
+
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                switch (tv.getId()){
+                    case R.id.tv_1:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"1");
+                        break;
+                    case R.id.tv_2:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"2");
+                        break;
+                    case R.id.tv_3:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"3");
+                        break;
+                    case R.id.tv_4:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"4");
+                        break;
+                    case R.id.tv_5:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"5");
+                        break;
+                    case R.id.tv_6:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"6");
+                        break;
+                    case R.id.tv_7:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"7");
+                        break;
+                    case R.id.tv_8:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"8");
+                        break;
+                    case R.id.tv_9:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"9");
+                        break;
+                    case R.id.tv_0:
+                        if(tvTarget.getText().toString().equals("0")) tvTarget.setText("");
+                        tvTarget.setText(tvTarget.getText()+"0");
+                        break;
+                }
+            }
+        });
+    }
+    //endregion
+
     //region dialogEdit
 
-    private void loadEditOrderDialog(final int position){
+    private static void loadEditOrderDialog(final Context context, final int position, boolean fromInserted){
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(DetailOrder.this);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_edit_order, null);
         builder.setView(view);
 
@@ -1428,6 +1715,20 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             }
         });
 
+        edtJumlah.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (MotionEvent.ACTION_UP == motionEvent.getAction())
+                {
+                    loadJumlahEditor(context, edtJumlah, edtJumlah.getText().toString());
+                    return true;
+                }
+                return true;
+            }
+        });
+
+        if(fromInserted) edtJumlah.setText(String.valueOf(iv.parseNullLong(item.getItem5()) + 1));
+
         ivJmlMin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1485,7 +1786,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             @Override
             public void onClick(View view) {
 
-                AlertDialog konfirmasiDelete = new AlertDialog.Builder(DetailOrder.this)
+                AlertDialog konfirmasiDelete = new AlertDialog.Builder(context)
                         .setTitle("Konfirmasi")
                         .setMessage("Anda yakin ingin menghapus " + item.getItem2() + " dari daftar ?")
                         .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
@@ -1527,52 +1828,41 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     }
                 }
 
-                AlertDialog konfirmasiSimpan = new AlertDialog.Builder(DetailOrder.this)
-                        .setTitle("Konfirmasi")
-                        .setMessage("Simpan perubahan " + item.getItem2() + " ?")
-                        .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                // Simpan data
+                newItem[0].setItem8(edtCatatan.getText().toString());
+                List<String> listTagMeja = new ArrayList<String>();
 
-                                newItem[0].setItem8(edtCatatan.getText().toString());
+                if(cbA.isChecked())listTagMeja.add("A");
+                if(cbB.isChecked())listTagMeja.add("B");
+                if(cbC.isChecked())listTagMeja.add("C");
+                if(cbD.isChecked())listTagMeja.add("D");
+                if(cbE.isChecked())listTagMeja.add("E");
+                if(cbF.isChecked())listTagMeja.add("F");
+                if(cbG.isChecked())listTagMeja.add("G");
+                if(cbH.isChecked())listTagMeja.add("H");
 
-                                List<String> listTagMeja = new ArrayList<String>();
+                String tagMeja = "";
+                int x = 0;
+                for(String tag : listTagMeja){
+                    if(x == 0){
+                        tagMeja = tag;
+                    }else{
+                        tagMeja = tagMeja + ", " + tag;
+                    }
+                    x++;
+                }
 
-                                if(cbA.isChecked())listTagMeja.add("A");
-                                if(cbB.isChecked())listTagMeja.add("B");
-                                if(cbC.isChecked())listTagMeja.add("C");
-                                if(cbD.isChecked())listTagMeja.add("D");
-                                if(cbE.isChecked())listTagMeja.add("E");
-                                if(cbF.isChecked())listTagMeja.add("F");
-                                if(cbG.isChecked())listTagMeja.add("G");
-                                if(cbH.isChecked())listTagMeja.add("H");
+                newItem[0].setItem10(tagMeja);
 
-                                String tagMeja = "";
-                                int x = 0;
-                                for(String tag : listTagMeja){
-                                    if(x == 0){
-                                        tagMeja = tag;
-                                    }else{
-                                        tagMeja = tagMeja + ", " + tag;
-                                    }
-                                    x++;
-                                }
-
-                                newItem[0].setItem10(tagMeja);
-
-                                listSelectedMenu.set(position, newItem[0]);
-                                selectedMenuAdapter.notifyDataSetChanged();
-                                alert.dismiss();
-                                updateHargaTotal();
-                            }
-                        })
-                        .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        })
-                        .show();
+                listSelectedMenu.set(position, newItem[0]);
+                selectedMenuAdapter.notifyDataSetChanged();
+                alert.dismiss();
+                updateHargaTotal();
+                //setTabPosition(2);
+                if(phoneMode){
+                    TabLayout.Tab tab = tabLayout.getTabAt(2);
+                    tab.select();
+                }
 
             }
         });
@@ -1663,13 +1953,13 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             mPrinter.addTextSize(1, 1);
             textData.append("SUMMARY ORDER\n");
             method = "addText";
-            mPrinter.addText(textData.toString());
             textData.append(noBukti+"\n");
+            mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
             method = "addTextSize";
             mPrinter.addTextSize(1, 1);
-            textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"\n");
+            textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"-");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
             textData.append(noMeja+ "-" + urutan +"\n");
             method = "addText";
@@ -1693,6 +1983,10 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
                 String itemToPrint = item.getItem5() +" "+ item.getItem2();
                 textData.append( itemToPrint+"\n");
+
+                if(item.getItem10().length()>0){
+                    textData.append( "   " + item.getItem10() +"\n");
+                }
 
                 if(item.getItem8().length()>0){
                     String[] s = item.getItem8().split("\\r?\\n");
