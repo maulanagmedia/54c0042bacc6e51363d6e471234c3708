@@ -31,4 +31,5 @@ public class ServerURL {
     public String getDetailRiwayatOrder(){ return baseURL + "riwayat/get_detail_riwayat_transaksi/";}
     public String getProfile(){ return baseURL + "profile/get_profile/";}
     public String getAccount(){ return baseURL + "auth/get_account/";}
+    public String updatePrinterStatus(){ return baseURL + "order/update_printer_status/";}
 }

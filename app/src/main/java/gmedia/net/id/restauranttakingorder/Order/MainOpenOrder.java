@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.maulana.custommodul.ApiVolley;
 import com.maulana.custommodul.CustomItem;
@@ -43,6 +44,7 @@ public class MainOpenOrder extends Fragment {
     private ServerURL serverURL;
     private RelativeLayout rlRefresh;
     private Button btnRefresh;
+    private TextView tvTitle;
 
     public MainOpenOrder() {
         // Required empty public constructor
@@ -77,12 +79,14 @@ public class MainOpenOrder extends Fragment {
 
     private void initUI() {
 
+        tvTitle = (TextView) layout.findViewById(R.id.tv_title1);
         rvMeja = (RecyclerView) layout.findViewById(R.id.rv_list_meja);
         pbLoad = (ProgressBar) layout.findViewById(R.id.pb_load_meja);
         rlRefresh = (RelativeLayout) layout.findViewById(R.id.rl_refresh_container);
         btnRefresh = (Button) layout.findViewById(R.id.btn_refresh);
 
         session = new SessionManager(context);
+        tvTitle.setText(session.getUserInfo(SessionManager.TAG_NAMA));
         listMeja = new ArrayList<>();
         //getData();
 

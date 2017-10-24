@@ -19,11 +19,38 @@
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_default">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/ll_header"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@mipmap/ic_account_black"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/color_black"
+                        android:textSize="24sp"
+                        android:gravity="center"
+                        android:id="@+id/tv_title1"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"/>
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Meja"
+                    android:layout_below="@id/ll_header"
+                    android:layout_marginTop="@dimen/margin_small"
                     android:id="@+id/tv_title2"
+                    android:textColor="@color/color_black"
                     android:textStyle="bold"
                     android:textAllCaps="true"/>
 
@@ -86,6 +113,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:background="@drawable/ripple_selected_red"
+                        android:paddingRight="@dimen/margin_default"
                         android:text="Refresh"
                         android:id="@+id/btn_refresh"
                         android:drawableLeft="@mipmap/ic_refresh_red"

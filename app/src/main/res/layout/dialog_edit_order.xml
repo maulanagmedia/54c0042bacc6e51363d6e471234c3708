@@ -503,7 +503,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:background="@drawable/ripple_selected_orange"
-                    android:text="Batal"
+                    android:text="Tutup"
                     android:id="@+id/btn_batal"
                     android:layout_marginRight="@dimen/margin_default"
                     android:textColor="@color/text_color_orange"/>

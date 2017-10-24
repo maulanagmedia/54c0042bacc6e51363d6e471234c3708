@@ -62,6 +62,7 @@ import gmedia.net.id.restauranttakingorder.MainActivity;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.KategoriMenuAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.MenuByKategoriAdapter;
 import gmedia.net.id.restauranttakingorder.Order.Adapter.SelectedMenuAdapter;
+import gmedia.net.id.restauranttakingorder.Order.Adapter.SummaryAdapter;
 import gmedia.net.id.restauranttakingorder.PrinterUtils.ShowMsg;
 import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
@@ -72,7 +73,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
     private static final String TAG = "DetailOrder";
     private ListView lvKategori;
-    private EditText edtSearchMenu;
+    private static EditText edtSearchMenu;
     private RecyclerView rvListMenu;
     private EditText edtNoMeja;
     private ListView lvOrder;
@@ -295,22 +296,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }
 
                 if(!onProcess){
-                    AlertDialog dialog = new AlertDialog.Builder(DetailOrder.this)
-                            .setTitle("Konfirmasi")
-                            .setMessage("Proses pesanan "+ noBukti+ " ?")
-                            .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    simpanData();
-                                }
-                            })
-                            .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                                }
-                            })
-                            .show();
+                    loadSaveDialog(listSelectedMenu);
                 }else{
                     Toast.makeText(DetailOrder.this, "Harap tunggu hingga proses selesai", Toast.LENGTH_LONG).show();
                 }
@@ -319,8 +306,49 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         });
     }
 
+    private void loadSaveDialog(List<CustomItem> listItem){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DetailOrder.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_summary, null);
+        builder.setTitle("Konfirmasi");
+        builder.setView(view);
+
+        final TextView tvSummary = (TextView) view.findViewById(R.id.tv_summary);
+        final ListView lvSummary = (ListView) view.findViewById(R.id.lv_summary);
+
+        tvSummary.setText("Proses pesanan ini (" + noBukti+") ?");
+
+        lvSummary.setAdapter(null);
+
+        if(listItem != null && listItem.size() > 0){
+
+            SummaryAdapter adapter = new SummaryAdapter(DetailOrder.this, listItem);
+            lvSummary.setAdapter(adapter);
+        }
+
+        dialogLoading = builder
+                .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        simpanData();
+                    }
+                })
+                .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .create();
+
+        dialogLoading.show();
+
+    }
+
     private void simpanData() {
 
+        btnSimpan.setEnabled(false);
         progressDialog.show();
         onProcess = true;
         // penjualan_d
@@ -413,6 +441,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     e.printStackTrace();
                     progressDialog.dismiss();
                     onProcess = false;
+                    btnSimpan.setEnabled(true);
                     Toast.makeText(DetailOrder.this, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
                 }
             }
@@ -422,6 +451,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 onProcess = false;
                 progressDialog.dismiss();
                 Toast.makeText(DetailOrder.this, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
+                btnSimpan.setEnabled(true);
             }
         });
     }
@@ -490,11 +520,50 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
             //finish printing
             printStatus = true;
-            Intent intent = new Intent(context, MainActivity.class);
-            intent.putExtra("riwayat", true);
-            context.startActivity(intent);
-            ((Activity)context).finish();
+            updatePrinter();
         }
+    }
+
+    private void updatePrinter() {
+
+
+        JSONObject penjualanJSON = new JSONObject();
+
+        try {
+            penjualanJSON.put("cashier_status", (printCashierState) ? "1": "0");
+            penjualanJSON.put("kitchen_status", (printKitchenState) ? "1": "0");
+            penjualanJSON.put("cashier_status", (printBarState) ? "1": "0");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jBody = new JSONObject();
+        try {
+            jBody.put("nobukti", noBukti);
+            jBody.put("penjualan", penjualanJSON);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.updatePrinterStatus(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                Intent intent = new Intent(DetailOrder.this, MainActivity.class);
+                intent.putExtra("riwayat", true);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onError(String result) {
+
+                Intent intent = new Intent(DetailOrder.this, MainActivity.class);
+                intent.putExtra("riwayat", true);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     //region Selected Order Menu
@@ -564,6 +633,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                         .setTitle("Peringatan")
                         .setIcon(R.mipmap.ic_warning)
                         .setMessage("Tidak dapat mencetak printout untuk CASHIER.")
+                        .setCancelable(false)
                         .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -576,14 +646,15 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
                                 AlertDialog dialog1 = new AlertDialog.Builder(mContext)
                                         .setTitle("Konfirmasi")
+                                        .setCancelable(false)
                                         .setMessage("Printout CASHIER tidak akan tercetak")
-                                        .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+                                        .setPositiveButton("Lanjutkan Tanpa Mencetak", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 changePrintState(mContext, 1, "Gagal mencetak");
                                             }
                                         })
-                                        .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                                        .setNegativeButton("Coba Cetak Kembali", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 printToCashier(nobukti, timestamp, nomeja, pesanan);
@@ -673,6 +744,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
                     AlertDialog dialog = new AlertDialog.Builder(mContext)
                             .setTitle("Peringatan")
+                            .setCancelable(false)
                             .setIcon(R.mipmap.ic_warning)
                             .setMessage("Tidak dapat mencetak printout untuk KITCHEN")
                             .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
@@ -687,14 +759,15 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
                                     AlertDialog dialog1 = new AlertDialog.Builder(mContext)
                                             .setTitle("Konfirmasi")
+                                            .setCancelable(false)
                                             .setMessage("Printout KITCHEN tidak akan tercetak")
-                                            .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+                                            .setPositiveButton("Lanjutkan Tanpa Mencetak", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     changePrintState(mContext, 1, "Gagal mencetak");
                                                 }
                                             })
-                                            .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                                            .setNegativeButton("Coba Ulangi Mencetak", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     printToKitchen(nobukti, timestamp, nomeja, pesanan);
@@ -800,6 +873,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     final AlertDialog dialog = new AlertDialog.Builder(mContext)
                             .setTitle("Peringatan")
                             .setIcon(R.mipmap.ic_warning)
+                            .setCancelable(false)
                             .setMessage("Tidak dapat mencetak printout untuk BAR")
                             .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
                                 @Override
@@ -814,13 +888,14 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                                     AlertDialog dialog1 = new AlertDialog.Builder(mContext)
                                             .setTitle("Konfirmasi")
                                             .setMessage("Printout BAR tidak akan tercetak")
-                                            .setPositiveButton("Lanjutkan", new DialogInterface.OnClickListener() {
+                                            .setCancelable(false)
+                                            .setPositiveButton("Lanjutkan Tanpa Mencetak", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     changePrintState(mContext, 1, "Gagal mencetak");
                                                 }
                                             })
-                                            .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                                            .setNegativeButton("Coba Ulangi Mencetak", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     printToBar(nobukti, timestamp, nomeja, pesanan);
@@ -1427,6 +1502,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                         tab.select();
                     }
 
+                    edtSearchMenu.setText("");
+
                 }
             });
 
@@ -1526,7 +1603,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         pinButtonListener(tvPin,tv9);
         pinButtonListener(tvPin,tv0);
 
-        builder.setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Tutup", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -1863,6 +1940,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     TabLayout.Tab tab = tabLayout.getTabAt(2);
                     tab.select();
                 }
+
+                edtSearchMenu.setText("");
 
             }
         });
