@@ -30,7 +30,6 @@
                     android:background="@drawable/input_form"
                     android:hint="IP Server *"
                     android:textColor="@color/color_red"
-                    android:textColorHint="@color/color_red"
                     android:id="@+id/edt_server"
                     android:gravity="left"
                     android:imeOptions="actionDone"

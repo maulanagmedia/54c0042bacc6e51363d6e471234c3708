@@ -17,7 +17,7 @@ public class ServerURL {
         this.context = context;
         serverManager = new SavedServerManager(context);
         this.server = serverManager.getServer();
-        baseURL = "http://" + this.server + "/resto/api/";
+        baseURL = "http://" + this.server + "/api/";
     }
 
     public String login(){ return baseURL + "auth/login/";}

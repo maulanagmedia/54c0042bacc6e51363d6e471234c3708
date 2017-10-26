@@ -30,6 +30,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -533,6 +534,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             penjualanJSON.put("cashier_status", (printCashierState) ? "1": "0");
             penjualanJSON.put("kitchen_status", (printKitchenState) ? "1": "0");
             penjualanJSON.put("cashier_status", (printBarState) ? "1": "0");
+            penjualanJSON.put("print_no", "1");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -778,6 +780,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                             }).show();
                 }
             }else{
+                printKitchenState = true;
                 changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
             }
 
@@ -909,6 +912,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }
 
             }else{
+                printBarState = true;
                 changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Berhasil mencetak");
             }
 
@@ -1397,6 +1401,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }
             });
 
+            setCheckedTagMeja(cbA, cbB, cbC, cbD, cbE, cbF, cbG, cbH, edtJumlah);
+
             ivJmlMin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1572,7 +1578,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     //region Change Server
     private static void loadJumlahEditor(final Context context, final EditText edtJumlah, final String jml){
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AppTheme_Custom_Dialog_Number);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.layout_number, null);
         builder.setView(view);
@@ -1804,6 +1810,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             }
         });
 
+        setCheckedTagMeja(cbA, cbB, cbC, cbD, cbE, cbF, cbG, cbH, edtJumlah);
+
         if(fromInserted) edtJumlah.setText(String.valueOf(iv.parseNullLong(item.getItem5()) + 1));
 
         ivJmlMin.setOnClickListener(new View.OnClickListener() {
@@ -1953,6 +1961,201 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         );
     }
 
+    private static void setCheckedTagMeja(final CheckBox cA, final CheckBox cB, final CheckBox cC, final CheckBox cD, final CheckBox cE, final CheckBox cF, final CheckBox cG, final CheckBox cH, final EditText target){
+
+        cA.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cC.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cE.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cF.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cG.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cH.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+    }
+
     private static CustomItem hitungHargaDiskon(CustomItem item, EditText edtJumlah, EditText edtDiskon, EditText edtHargaDiskon, TextView tvTotal){
 
         double jumlah = iv.parseNullDouble(edtJumlah.getText().toString());
@@ -2041,6 +2244,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"-");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
             textData.append(noMeja+ "-" + urutan +"\n");
+            textData.append("Print no. 1"+"\n");
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
@@ -2181,11 +2385,12 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+"\n");
             textData.append(noMeja+"-"+urutan+"\n");
+            textData.append("Print no. 1"+"\n");
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
-            mPrinter.addTextSize(2, 2);
+            mPrinter.addTextSize(2, 1);
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"\n");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
             method = "addText";
@@ -2202,7 +2407,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             method = "addTextAlign";
             mPrinter.addTextAlign(Printer.ALIGN_LEFT);
             method = "addTextSize";
-            mPrinter.addTextSize(2, 2);
+            mPrinter.addTextSize(2, 1);
 
             // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
 
@@ -2326,11 +2531,12 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+"\n");
             textData.append(noMeja+"-"+urutan+"\n");
+            textData.append("Print no. 1"+"\n");
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
 
-            mPrinter.addTextSize(2, 2);
+            mPrinter.addTextSize(2, 1);
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"\n");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
             method = "addText";
@@ -2347,7 +2553,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             method = "addTextAlign";
             mPrinter.addTextAlign(Printer.ALIGN_LEFT);
             method = "addTextSize";
-            mPrinter.addTextSize(2, 2);
+            mPrinter.addTextSize(2, 1);
 
             // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
 

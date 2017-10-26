@@ -38,7 +38,7 @@
         <item name="android:background">@color/color_red</item>
     </style>
 
-    <style name="AppTheme.Custom.Dialog.Pin" parent="Theme.AppCompat.Dialog">
+    <style name="AppTheme.Custom.Dialog.Pin">
         <item name="colorPrimary">@color/color_black1_active</item>
         <item name="colorAccent">@color/color_black1_active</item>
         <item name="android:background">@color/color_black1</item>

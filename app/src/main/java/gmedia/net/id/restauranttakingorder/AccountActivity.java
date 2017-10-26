@@ -1,13 +1,16 @@
 package gmedia.net.id.restauranttakingorder;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.media.Image;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -310,7 +313,7 @@ public class AccountActivity extends AppCompatActivity {
     //region Change Server
     private void loadPasswordEditor(final String username){
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(AccountActivity.this, R.style.AppTheme_Custom_Dialog_Pin);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(AccountActivity.this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.layout_account_password, null);
         builder.setView(view);
@@ -362,7 +365,12 @@ public class AccountActivity extends AppCompatActivity {
         });
 
 
-        final AlertDialog alert = builder.create();
+        final Dialog alert = builder.create();
+
+        /*DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        alert.getWindow().setLayout(width,  height);*/
         alert.show();
 
         alert.getWindow().setSoftInputMode(
@@ -412,4 +420,28 @@ public class AccountActivity extends AppCompatActivity {
         });
     }
     //endregion
+
+    @Override
+    public void onBackPressed() {
+        // Origin backstage
+        if (doubleBackToExitPressedOnce) {
+            Intent intent = new Intent(AccountActivity.this, AccountActivity.class);
+            intent.putExtra("exit", true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            //System.exit(0);
+        }
+
+        if(!exitState && !doubleBackToExitPressedOnce){
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, getResources().getString(R.string.app_exit), Toast.LENGTH_SHORT).show();
+        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, timerClose);
+    }
 }

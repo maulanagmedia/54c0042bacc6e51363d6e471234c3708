@@ -40,12 +40,14 @@
                         <EditText
                             android:id="@+id/edt_no_meja"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/default_input_height"
+                            android:layout_height="34dp"
                             android:background="@drawable/input_form"
                             android:hint="No Meja"
                             android:imeOptions="actionNext"
                             android:inputType="textPersonName"
-                            android:padding="@dimen/margin_default" />
+                            android:gravity="center_vertical"
+                            android:paddingLeft="@dimen/margin_small"
+                            android:paddingRight="@dimen/margin_small"/>
 
                     </LinearLayout>
 
@@ -61,9 +63,11 @@
 
                         <EditText
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/default_input_height"
+                            android:layout_height="34dp"
                             android:background="@drawable/input_form"
-                            android:padding="@dimen/margin_default"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="@dimen/margin_small"
+                            android:paddingRight="@dimen/margin_small"
                             android:inputType="date"
                             android:imeOptions="actionDone"
                             android:hint="Tanggal Transaksi"
@@ -72,25 +76,78 @@
 
                     </LinearLayout>
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:paddingTop="@dimen/margin_default"
                         android:paddingLeft="@dimen/margin_default"
                         android:paddingRight="@dimen/margin_default"
                         android:layout_alignParentBottom="true"
-                        android:layout_below="@id/ll_form_2"
-                        android:gravity="bottom"
-                        android:orientation="vertical">
+                        android:layout_below="@id/ll_form_2">
 
                         <Button
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/default_input_height"
+                            android:layout_height="30dp"
                             android:background="@drawable/ripple_selected_red"
                             android:textColor="@color/text_color_red"
                             android:id="@+id/btn_cari"
                             android:text="Cari"/>
-                    </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:paddingTop="@dimen/margin_default"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:id="@+id/vl_bottom"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:background="@color/color_red"/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingLeft="@dimen/margin_default"
+                                    android:paddingRight="@dimen/margin_default"
+                                    android:text="Tercetak"
+                                    android:textColor="@color/color_red"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="@dimen/margin_default"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:background="@color/color_blue"/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingLeft="@dimen/margin_default"
+                                    android:paddingRight="@dimen/margin_default"
+                                    android:text="Belum Tercetak"
+                                    android:singleLine="true"
+                                    android:textColor="@color/color_blue"/>
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -159,6 +216,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
                             android:text="Nama Pelanggan"/>
 
                         <TextView
@@ -166,6 +224,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text=""
+                            android:textColor="@color/color_black"
                             android:id="@+id/tv_nama_pelanggan"/>
 
                     </LinearLayout>
@@ -181,6 +240,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
                             android:text="No Nota"/>
 
                         <TextView
@@ -188,6 +248,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text=""
+                            android:textColor="@color/color_black"
                             android:id="@+id/tv_no_nota"/>
 
                     </LinearLayout>
@@ -203,6 +264,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
                             android:text="Jam"/>
 
                         <TextView
@@ -210,6 +272,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text=""
+                            android:textColor="@color/color_black"
                             android:id="@+id/tv_waktu"/>
 
                     </LinearLayout>
@@ -224,6 +287,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
                             android:text="No Meja"/>
 
                         <TextView
@@ -231,9 +295,122 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text=""
+                            android:textColor="@color/color_black"
                             android:id="@+id/tv_no_meja"/>
 
                     </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_width"
+                    android:background="@color/color_black"
+                    android:layout_marginTop="@dimen/margin_tiny"
+                    android:layout_below="@id/ll_title1"></LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_below="@id/ll_title1"
+                    android:id="@+id/ll_title2"
+                    android:weightSum="3">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
+                            android:text="Status Cetak Cashier"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text=""
+                            android:textColor="@color/color_black"
+                            android:id="@+id/tv_cashier_status"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
+                            android:text="Status Cetak Kitchen"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text=""
+                            android:textColor="@color/color_black"
+                            android:id="@+id/tv_kitchen_status"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
+                            android:text="Status Cetak Bar"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text=""
+                            android:textColor="@color/color_black"
+                            android:id="@+id/tv_bar_status"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/margin_default"
+                    android:layout_below="@id/ll_title2"
+                    android:id="@+id/ll_title3"
+                    android:gravity="center">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:background="@drawable/input_form_blue"
+                        android:drawableLeft="@mipmap/ic_printer_blue"
+                        android:textColor="@color/color_blue"
+                        android:text="Cetak Ulang"
+                        android:id="@+id/btn_print"
+                        android:paddingLeft="@dimen/margin_small"
+                        android:paddingRight="@dimen/margin_default"/>
 
                 </LinearLayout>
 
@@ -242,7 +419,7 @@
                     android:layout_height="wrap_content"
                     android:text="Detail Pesanan"
                     android:layout_marginTop="@dimen/margin_default"
-                    android:layout_below="@id/ll_title1"
+                    android:layout_below="@id/ll_title3"
                     android:id="@+id/tv_title2"
                     android:textStyle="bold"
                     android:textAllCaps="true"/>
@@ -258,19 +435,20 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="0.5"
-                        android:layout_height="30dp"
+                        android:layout_height="24dp"
                         android:gravity="center_vertical"
                         android:textStyle="bold"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:text="Total"/>
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="0.5"
-                        android:layout_height="30dp"
+                        android:layout_height="24dp"
                         android:gravity="center_vertical|right"
                         android:textStyle="bold"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
+                        android:textColor="@color/color_black"
                         android:id="@+id/tv_total"/>
                 </LinearLayout>
 

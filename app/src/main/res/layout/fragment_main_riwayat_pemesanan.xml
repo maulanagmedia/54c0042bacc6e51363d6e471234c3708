@@ -14,17 +14,17 @@
             android:orientation="horizontal"
             android:weightSum="1">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_weight="0.4"
                 android:layout_height="match_parent"
                 android:paddingTop="@dimen/margin_default"
-                android:paddingBottom="@dimen/margin_default"
-                android:orientation="vertical">
+                android:paddingBottom="@dimen/margin_default">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/vl_1"
                     android:paddingLeft="@dimen/margin_default"
                     android:paddingRight="@dimen/margin_default"
                     android:orientation="vertical">
@@ -44,6 +44,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/vl_1"
+                    android:id="@+id/vl_2"
                     android:paddingTop="@dimen/margin_default"
                     android:paddingLeft="@dimen/margin_default"
                     android:paddingRight="@dimen/margin_default"
@@ -68,6 +70,8 @@
                     android:paddingTop="@dimen/margin_default"
                     android:paddingLeft="@dimen/margin_default"
                     android:paddingRight="@dimen/margin_default"
+                    android:id="@+id/vl_3"
+                    android:layout_below="@id/vl_2"
                     android:orientation="vertical">
 
                     <Button
@@ -79,9 +83,66 @@
                         android:text="Cari"/>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:paddingTop="@dimen/margin_default"
+                    android:paddingLeft="@dimen/margin_default"
+                    android:paddingRight="@dimen/margin_default"
+                    android:id="@+id/vl_bottom"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/input_form_red"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:text="Tercetak"
+                            android:textColor="@color/color_red"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/margin_default"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/input_form_blue"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:text="Belum Tercetak"
+                            android:textColor="@color/color_blue"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent"
+                    android:id="@+id/vl_4"
+                    android:layout_above="@id/vl_bottom"
+                    android:layout_below="@id/vl_3"
+                    android:layout_marginTop="@dimen/margin_default">
 
                     <ListView
                         android:layout_width="match_parent"
@@ -99,7 +160,7 @@
                         android:visibility="gone"/>
                 </RelativeLayout>
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="@dimen/line_width"
@@ -141,6 +202,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
                             android:text="Nama Pelanggan"/>
 
                         <TextView
@@ -148,6 +210,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text=""
+                            android:textColor="@color/color_black"
                             android:id="@+id/tv_nama_pelanggan"/>
 
                     </LinearLayout>
@@ -163,6 +226,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
                             android:text="No Nota"/>
 
                         <TextView
@@ -170,6 +234,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text=""
+                            android:textColor="@color/color_black"
                             android:id="@+id/tv_no_nota"/>
 
                     </LinearLayout>
@@ -185,13 +250,15 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
-                            android:text="Waktu Pemesanan"/>
+                            android:textColor="@color/color_red"
+                            android:text="Jam"/>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text=""
+                            android:textColor="@color/color_black"
                             android:id="@+id/tv_waktu"/>
 
                     </LinearLayout>
@@ -206,6 +273,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
                             android:text="No Meja"/>
 
                         <TextView
@@ -213,9 +281,122 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text=""
+                            android:textColor="@color/color_black"
                             android:id="@+id/tv_no_meja"/>
 
                     </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_width"
+                    android:background="@color/color_black"
+                    android:layout_marginTop="@dimen/margin_tiny"
+                    android:layout_below="@id/ll_title1"></LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_below="@id/ll_title1"
+                    android:id="@+id/ll_title2"
+                    android:weightSum="3">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
+                            android:text="Status Cetak Cashier"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text=""
+                            android:textColor="@color/color_black"
+                            android:id="@+id/tv_cashier_status"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
+                            android:text="Status Cetak Kitchen"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text=""
+                            android:textColor="@color/color_black"
+                            android:id="@+id/tv_kitchen_status"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
+                            android:text="Status Cetak Bar"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text=""
+                            android:textColor="@color/color_black"
+                            android:id="@+id/tv_bar_status"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/margin_default"
+                    android:layout_below="@id/ll_title2"
+                    android:id="@+id/ll_title3"
+                    android:gravity="center">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="@drawable/input_form_blue"
+                        android:drawableLeft="@mipmap/ic_printer_blue"
+                        android:textColor="@color/color_blue"
+                        android:text="Cetak Ulang"
+                        android:id="@+id/btn_print"
+                        android:paddingLeft="@dimen/margin_small"
+                        android:paddingRight="@dimen/margin_default"/>
 
                 </LinearLayout>
 
@@ -224,7 +405,7 @@
                     android:layout_height="wrap_content"
                     android:text="Detail Pesanan"
                     android:layout_marginTop="@dimen/margin_default"
-                    android:layout_below="@id/ll_title1"
+                    android:layout_below="@id/ll_title3"
                     android:id="@+id/tv_title2"
                     android:textStyle="bold"
                     android:textAllCaps="true"/>
@@ -232,28 +413,36 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:id="@+id/ll_total"
-                    android:layout_alignParentBottom="true"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
+                    android:layout_alignParentBottom="true">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="0.5"
-                        android:layout_height="30dp"
-                        android:gravity="center_vertical"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:text="Total"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="0.5"
-                        android:layout_height="30dp"
-                        android:gravity="center_vertical|right"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:id="@+id/tv_total"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="30dp"
+                            android:gravity="center_vertical"
+                            android:textStyle="bold"
+                            android:textSize="20sp"
+                            android:text="Total"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="30dp"
+                            android:gravity="center_vertical|right"
+                            android:textColor="@color/color_black"
+                            android:textStyle="bold"
+                            android:textSize="20sp"
+                            android:id="@+id/tv_total"/>
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <android.support.v7.widget.RecyclerView

@@ -199,14 +199,14 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_default"
                             android:textSize="18sp"
-                            android:textColor="@color/color_black"
+                            android:textColor="@color/color_red"
                             android:text="IP"/>
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="20sp"
-                            android:textColor="@color/color_red"
+                            android:textColor="@color/color_black"
                             android:textStyle="bold"
                             android:id="@+id/tv_ip_2"
                             android:text=""/>
