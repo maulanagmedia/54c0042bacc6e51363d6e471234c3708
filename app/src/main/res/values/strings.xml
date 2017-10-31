@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Pulens Taking Order</string>
+    <string name="app_name">Pullens Taking Order</string>
     <string name="title_name">@string/app_name</string>
-    <string name="restaurant_name">PULENS</string>
-    <string name="footer_text">Restaurant Taking Order</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="restaurant_name">PULLENS</string>
+    <string name="footer_text">Pullens Taking Order</string>
+    <string name="title_activity_main">Menu</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

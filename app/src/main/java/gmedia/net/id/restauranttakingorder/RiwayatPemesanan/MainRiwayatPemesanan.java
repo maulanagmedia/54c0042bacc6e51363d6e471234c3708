@@ -449,7 +449,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         });
     }
 
-    //region =================================== Setting printer
+    //region =================================== Setting printer =======================================
     private void printDataAll() {
 
         printStatus = false;
@@ -540,6 +540,19 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
 
                         String message = response.getJSONObject("response").getString("message");
                         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+
+                        tvCashierStatus.setText((printCashierState) ? "Tercetak" : "Tidak Tercetak");
+                        tvKitchenStatus.setText((printKitchenState) ? "Tercetak" : "Tidak Tercetak");
+                        tvBarStatus.setText((printBarState) ? "Tercetak" : "Tidak Tercetak");
+
+                        String tanggalCari = edtTanggal.getText().toString();
+                        if(!iv.isValidFormat(FormatItem.formatDateDisplay, tanggalCari)) {
+                            tanggalCari = "";
+                            edtTanggal.setText(tanggalCari);
+                        }
+
+                        startIndex = 0;
+                        getDataTransaksi();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

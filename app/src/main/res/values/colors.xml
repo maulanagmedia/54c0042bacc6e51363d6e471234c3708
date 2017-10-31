@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#e2332d</color>
+    <color name="colorPrimary">#FF0B8DB8</color>
+    <color name="colorPrimaryDark">#097497</color>
+    <color name="colorAccent">#55badc</color>
+
+    <!--<color name="colorPrimary">#e2332d</color>
     <color name="colorPrimaryDark">#d6332c</color>
-    <color name="colorAccent">#ec1d25</color>
+    <color name="colorAccent">#ec1d25</color>-->
 
     <color name="color_white">#ffffff</color>
     <color name="color_black">#000000</color>
     <color name="color_deactive">#dedede</color>
-    <color name="color_red">#e2332d</color>
-    <color name="color_red_active">#ff6767</color>
-    <color name="color_blue">#3F51B5</color>
-    <color name="color_blue_active">#6f80de</color>
+    <color name="color_red">#149dc9</color>
+    <color name="color_red_active">#75c1da</color>
+    <!--<color name="color_red">#e2332d</color>
+    <color name="color_red_active">#ff6767</color>-->
+    <color name="color_blue">#e2332d</color>
+    <color name="color_blue_active">#ff6767</color>
+    <!--<color name="color_blue">#3F51B5</color>
+    <color name="color_blue_active">#6f80de</color>-->
     <color name="color_grey">#9b9b9b</color>
     <color name="color_orange">#ff8c00</color>
     <color name="color_orange_active">#ffb255</color>
     <color name="color_text">#767676</color>
     <color name="color_table">#cecece</color>
-    <color name="color_table_active">#e2332d</color>
-    <color name="color_black1">#414141</color>
-    <color name="color_black1_active">#cbc7c1</color>
+    <color name="color_table_active">#13a2d1</color>
+    <!--<color name="color_table_active">#e2332d</color>-->
+    <color name="color_black1">#FF0B8DB8</color>
+    <color name="color_black1_active">#55badc</color>
+    <!--<color name="color_black1">#414141</color>
+    <color name="color_black1_active">#cbc7c1</color>-->
 </resources>

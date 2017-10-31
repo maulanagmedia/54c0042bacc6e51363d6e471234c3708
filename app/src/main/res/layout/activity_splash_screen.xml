@@ -4,15 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_login"
+    android:background="@drawable/ic_background_splash"
     tools:context="gmedia.net.id.restauranttakingorder.SplashScreen">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:visibility="gone"
         android:gravity="center"
         android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="1">
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,9 +34,9 @@
 
             <ImageView
                 android:layout_width="0dp"
-                android:layout_weight="0.2"
+                android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:src="@mipmap/ic_launcher"/>
+                android:src="@drawable/ic_pullens"/>
         </LinearLayout>
 
         <LinearLayout
@@ -41,12 +51,12 @@
                 android:gravity="center"
                 android:textAllCaps="true"
                 android:textSize="20sp"
-                android:textColor="@color/color_red"
+                android:textColor="@color/color_black"
                 android:textStyle="bold"
                 android:shadowDx="1.5"
                 android:shadowDy="1.3"
                 android:shadowRadius="1.6"
-                android:shadowColor="@color/color_red"/>
+                android:shadowColor="@color/color_white"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
