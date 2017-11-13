@@ -36,7 +36,7 @@ public class MainOpenOrder extends Fragment {
 
     private Context context;
     private View layout;
-    private RecyclerView rvMeja;
+    private RecyclerView rvMeja1, rvMeja2, rvMeja3;
     private ProgressBar pbLoad;
     private SessionManager session;
     private ItemValidation iv = new ItemValidation();
@@ -80,7 +80,9 @@ public class MainOpenOrder extends Fragment {
     private void initUI() {
 
         tvTitle = (TextView) layout.findViewById(R.id.tv_title1);
-        rvMeja = (RecyclerView) layout.findViewById(R.id.rv_list_meja);
+        rvMeja1 = (RecyclerView) layout.findViewById(R.id.rv_list_meja_1);
+        rvMeja2 = (RecyclerView) layout.findViewById(R.id.rv_list_meja_2);
+        rvMeja3 = (RecyclerView) layout.findViewById(R.id.rv_list_meja_3);
         pbLoad = (ProgressBar) layout.findViewById(R.id.pb_load_meja);
         rlRefresh = (RelativeLayout) layout.findViewById(R.id.rl_refresh_container);
         btnRefresh = (Button) layout.findViewById(R.id.btn_refresh);
@@ -120,6 +122,8 @@ public class MainOpenOrder extends Fragment {
 
                     JSONObject response = new JSONObject(result);
                     String status = response.getJSONObject("metadata").getString("status");
+                    listMeja = new ArrayList<>();
+
                     if(iv.parseNullInteger(status) == 200){
 
                         JSONArray jsonArray = response.getJSONArray("response");
@@ -127,7 +131,7 @@ public class MainOpenOrder extends Fragment {
                         for(int i = 0; i < jsonArray.length(); i++){
 
                             JSONObject jo = jsonArray.getJSONObject(i);
-                            listMeja.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"),jo.getString("Status"),jo.getString("flag"),jo.getString("nobukti"),jo.getString("total")));
+                            listMeja.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"),jo.getString("Status"),jo.getString("flag"),jo.getString("nobukti"),jo.getString("total"),jo.getString("jenis"),jo.getString("urutan")));
                         }
 
                         setMejaTable(listMeja);
@@ -156,24 +160,61 @@ public class MainOpenOrder extends Fragment {
 
     private void setMejaTable(List<CustomItem> listItem) {
 
-        rvMeja.setAdapter(null);
+        rvMeja1.setAdapter(null);
+        rvMeja2.setAdapter(null);
+        rvMeja3.setAdapter(null);
 
         if(listItem != null && listItem.size() > 0){
 
-            final ListMejaAdapter menuAdapter = new ListMejaAdapter(context, listItem);
+            List<CustomItem> listItem1 = new ArrayList<>();
+            List<CustomItem> listItem2 = new ArrayList<>();
+            List<CustomItem> listItem3 = new ArrayList<>();
+
+            for(CustomItem item: listItem){
+
+                switch (iv.parseNullInteger(item.getItem7())){
+                    case 1:
+                        listItem1.add(item);
+                        break;
+                    case 2:
+                        listItem2.add(item);
+                        break;
+                    case 3:
+                        listItem3.add(item);
+                        break;
+                }
+            }
+
+            final ListMejaAdapter menuAdapter1 = new ListMejaAdapter(context, listItem1);
+            final ListMejaAdapter menuAdapter2 = new ListMejaAdapter(context, listItem2);
+            final ListMejaAdapter menuAdapter3 = new ListMejaAdapter(context, listItem3);
 
             boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
             if(!tabletSize){
-                final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 2);
-                rvMeja.setLayoutManager(mLayoutManager);
+                final RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(context, 2);
+                final RecyclerView.LayoutManager mLayoutManager2 = new GridLayoutManager(context, 2);
+                final RecyclerView.LayoutManager mLayoutManager3 = new GridLayoutManager(context, 2);
+                rvMeja1.setLayoutManager(mLayoutManager1);
+                rvMeja2.setLayoutManager(mLayoutManager2);
+                rvMeja3.setLayoutManager(mLayoutManager3);
             }else{
-                final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 3);
-                rvMeja.setLayoutManager(mLayoutManager);
-
+                final RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(context, 3);
+                final RecyclerView.LayoutManager mLayoutManager2 = new GridLayoutManager(context, 3);
+                final RecyclerView.LayoutManager mLayoutManager3 = new GridLayoutManager(context, 3);
+                rvMeja1.setLayoutManager(mLayoutManager1);
+                rvMeja2.setLayoutManager(mLayoutManager2);
+                rvMeja3.setLayoutManager(mLayoutManager3);
             }
+
 //        rvListMenu.addItemDecoration(new NavMenu.GridSpacingItemDecoration(2, dpToPx(10), true));
-            rvMeja.setItemAnimator(new DefaultItemAnimator());
-            rvMeja.setAdapter(menuAdapter);
+            rvMeja1.setItemAnimator(new DefaultItemAnimator());
+            rvMeja1.setAdapter(menuAdapter1);
+
+            rvMeja2.setItemAnimator(new DefaultItemAnimator());
+            rvMeja2.setAdapter(menuAdapter2);
+
+            rvMeja3.setItemAnimator(new DefaultItemAnimator());
+            rvMeja3.setAdapter(menuAdapter3);
 
         }
     }

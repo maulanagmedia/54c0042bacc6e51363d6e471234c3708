@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -47,7 +46,6 @@ import com.epson.epos2.printer.ReceiveListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.maulana.custommodul.ApiVolley;
-import com.maulana.custommodul.CustomEvent.OnSwipeTouchListener;
 import com.maulana.custommodul.CustomItem;
 import com.maulana.custommodul.ItemValidation;
 import com.maulana.custommodul.SessionManager;
@@ -89,12 +87,12 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     private static SelectedMenuAdapter selectedMenuAdapter;
     public static final int GET_PELANGGAN = 12;
     private FloatingActionButton fabScanBarcode;
-    private String kategoriMenu = "", kdMeja = "", statusMeja = "";
+    private String kategoriMenu = "", kdMeja = "";
     private SessionManager session;
     private EditText edtNoBukti, edtUrutan;
     private static String noBukti = "";
     private static String noMeja = "";
-    private boolean editMode = false;
+    private boolean editPenjualanMode = false;
     private ProgressBar pbLoadOrder;
     private boolean onProcess = false;
     private static int printState = 0;
@@ -122,6 +120,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     private static boolean phoneMode = false;
     private static RelativeLayout tabContainer, tab1, tab2, tab3;
     private static TabLayout tabLayout;
+    private String printNo = "1";
+    private AlertDialog printDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,7 +251,6 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
             kdMeja = bundle.getString("kdmeja");
             noMeja = bundle.getString("nomeja");
-            statusMeja = bundle.getString("statusmeja");
             noBukti = bundle.getString("nobukti");
 
             edtNoMeja.setText(noMeja);
@@ -259,10 +258,14 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             getKategoriData();
             if(noBukti != null && noBukti.length() > 0){
 
-                editMode = true;
+                urutan = bundle.getString("urutan");
+                printNo = String.valueOf(iv.parseNullInteger(bundle.getString("printno")) + 1);
+                editPenjualanMode = true;
+                edtNoBukti.setText(noBukti);
+                edtUrutan.setText(urutan);
             }else{
 
-                editMode = false;
+                editPenjualanMode = false;
                 getNoBukti();
             }
         }
@@ -284,11 +287,11 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     return;
                 }
 
-                if(edtUrutan.getText().toString().length() == 0){
+                /*if(edtUrutan.getText().toString().length() == 0){
 
                     Toast.makeText(DetailOrder.this, "Urutan tidak termuat, periksa koneksi anda", Toast.LENGTH_LONG).show();
                     return;
-                }
+                }*/
 
                 if(listSelectedMenu == null || listSelectedMenu.size() == 0){
 
@@ -403,6 +406,10 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             e.printStackTrace();
         }
 
+        String method = "POST";
+        if(editPenjualanMode){
+            method = "PUT";
+        }
         JSONObject jBody = new JSONObject();
         try {
             jBody.put("penjualan", penjualan);
@@ -411,7 +418,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             e.printStackTrace();
         }
 
-        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.saveOrder(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, method, serverURL.saveOrder(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
 
@@ -423,6 +430,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
                         progressDialog.dismiss();
                         String message1 = response.getJSONObject("response").getString("message");
+
                         for(int i = 0; i < toastTimer; i++){
                             Toast.makeText(DetailOrder.this, message1 + ".\n Tunggu hingga proses mencetak selesai, aplikasi akan menuju ke daftar transaksi", Toast.LENGTH_LONG).show();
                         }
@@ -430,7 +438,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                         if(printStatus){
 
                             printStatus = false;
-                            printDataAll();
+                            //printDataAll();
+                            loadPrintingDialog();
                         }
 
                     }else{
@@ -458,6 +467,37 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     }
 
     //region =================================== Setting printer
+
+    //region Selected Order Menu
+    private void loadPrintingDialog(){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DetailOrder.this, R.style.AppTheme_Custom_Dialog);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_printer_loading, null);
+        builder.setView(view);
+
+        final TextView tvTitle = (TextView) view.findViewById(R.id.tv_loading);
+
+        //Load Data
+        tvTitle.setText("Mencetak...");
+
+
+        printDialog = builder
+                .setCancelable(false)
+                .create();
+
+        printDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                printDataAll();
+            }
+        });
+
+        printDialog.show();
+
+
+    }
+
     private void printDataAll() {
 
         printState = 1;
@@ -533,8 +573,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         try {
             penjualanJSON.put("cashier_status", (printCashierState) ? "1": "0");
             penjualanJSON.put("kitchen_status", (printKitchenState) ? "1": "0");
-            penjualanJSON.put("cashier_status", (printBarState) ? "1": "0");
-            penjualanJSON.put("print_no", "1");
+            penjualanJSON.put("bar_status", (printBarState) ? "1": "0");
+            penjualanJSON.put("print_no", printNo);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -547,9 +587,17 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             e.printStackTrace();
         }
 
-        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.updatePrinterStatus(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.updatePenjualan(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
+
+                if(printDialog != null){
+                    try {
+                        printDialog.dismiss();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
 
                 Intent intent = new Intent(DetailOrder.this, MainActivity.class);
                 intent.putExtra("riwayat", true);
@@ -559,6 +607,14 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
             @Override
             public void onError(String result) {
+
+                if(printDialog != null){
+                    try {
+                        printDialog.dismiss();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
 
                 Intent intent = new Intent(DetailOrder.this, MainActivity.class);
                 intent.putExtra("riwayat", true);
@@ -582,7 +638,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         tvTitle.setText(message);
 
 
-        dialogLoading = builder
+        printDialog = builder
                 .setPositiveButton("Skip", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -593,7 +649,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 .setCancelable(false)
                 .create();
 
-        dialogLoading.show();
+        printDialog.show();
 
     }
 
@@ -1153,6 +1209,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
                     JSONObject response = new JSONObject(result);
                     String status = response.getJSONObject("metadata").getString("status");
+                    listMenu = new ArrayList<>();
+
                     if(iv.parseNullInteger(status) == 200){
 
                         JSONArray jsonArray = response.getJSONArray("response");
@@ -2244,7 +2302,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"-");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
             textData.append(noMeja+ "-" + urutan +"\n");
-            textData.append("Print no. 1"+"\n");
+            textData.append("Print no. "+ printNo+"\n");
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
@@ -2385,7 +2443,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+"\n");
             textData.append(noMeja+"-"+urutan+"\n");
-            textData.append("Print no. 1"+"\n");
+            textData.append("Print no. "+ printNo +"\n");
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
@@ -2531,7 +2589,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+"\n");
             textData.append(noMeja+"-"+urutan+"\n");
-            textData.append("Print no. 1"+"\n");
+            textData.append("Print no. "+ printNo +"\n");
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());

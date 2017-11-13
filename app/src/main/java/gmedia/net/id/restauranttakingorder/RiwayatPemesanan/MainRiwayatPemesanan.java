@@ -21,7 +21,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -46,6 +45,7 @@ import java.util.List;
 
 import gmedia.net.id.restauranttakingorder.PrinterUtils.ShowMsg;
 import gmedia.net.id.restauranttakingorder.R;
+import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.Adapter.ListChangeMejaAdapter;
 import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.Adapter.ListTransaksiAdapter;
 import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.Adapter.MenuByTransaksiAdapter;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
@@ -57,29 +57,34 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
 
     private View layout;
-    private Context context;
-    private ItemValidation iv = new ItemValidation();
-    private EditText edtNoMeja;
-    private EditText edtTanggal;
+    private static Context context;
+    private static ItemValidation iv = new ItemValidation();
+    private static EditText edtNoMeja;
+    private static EditText edtTanggal;
     private Button btnCari;
-    private ListView lvTransaksi;
-    private TextView tvNamaPelanggan;
-    private TextView tvNoNota;
-    private TextView tvWaktu;
-    private TextView tvNoMeja;
-    private RecyclerView rvListMenu;
-    private TextView tvTotal;
-    private List<CustomItem> listTransaksi, listMenu;
-    private ProgressBar pbLoadTransaksi, pbLoadMenu;
+    private static ListView lvTransaksi;
+    private static TextView tvNamaPelanggan;
+    private static TextView tvNoNota;
+    private static TextView tvWaktu;
+    private static TextView tvNoMeja;
+    private static RecyclerView rvListMenu;
+    private static TextView tvTotal;
+    private static List<CustomItem> listTransaksi;
+    private static List<CustomItem> listMenu;
+    private static ProgressBar pbLoadTransaksi;
+    private static ProgressBar pbLoadMenu;
     private boolean firstLoad = true;
-    private int startIndex = 0, count = 10;
-    private boolean isLoading = false;
-    private ServerURL serverURL;
-    private SessionManager session;
-    private View footerList;
-    private String TAG = "Rawayat";
-    private ListTransaksiAdapter adapterTransaction;
-    private TextView tvCashierStatus, tvKitchenStatus, tvBarStatus;
+    private static int startIndex = 0;
+    private static int count = 10;
+    private static boolean isLoading = false;
+    private static ServerURL serverURL;
+    private static SessionManager session;
+    private static View footerList;
+    private static String TAG = "Rawayat";
+    private static ListTransaksiAdapter adapterTransaction;
+    private static TextView tvCashierStatus;
+    private static TextView tvKitchenStatus;
+    private static TextView tvBarStatus;
 
     //Print
     private static int printState = 0;
@@ -107,6 +112,9 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
     private boolean printStatus = true;
     public static List<CustomItem> listSelectedMenu;
     private Button btnPrint;
+    private Button btnChangeMeja;
+    private List<CustomItem> listMeja;
+    public static AlertDialog mejaDialog;
 
     public MainRiwayatPemesanan() {
         // Required empty public constructor
@@ -161,14 +169,17 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         LayoutInflater li = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
         footerList = li.inflate(R.layout.footer_list, null);
         btnPrint = (Button) layout.findViewById(R.id.btn_print);
+        btnChangeMeja = (Button) layout.findViewById(R.id.btn_change_meja);
 
         listTransaksi = new ArrayList<>();
         listMenu = new ArrayList<>();
 
         mContext = context;
+        startIndex = 0;
         noBukti = "";
         noMeja = "";
         printNo = "1";
+        listTransaksi = new ArrayList<>();
         listSelectedMenu = new ArrayList<>();
         serverURL = new ServerURL(context);
         session = new SessionManager(context);
@@ -185,7 +196,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         }
     }
 
-    private void getDataTransaksi() {
+    private static void getDataTransaksi() {
 
         pbLoadTransaksi.setVisibility(View.VISIBLE);
         listTransaksi = new ArrayList<>();
@@ -207,6 +218,8 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                 try {
                     JSONObject response = new JSONObject(result);
                     String status = response.getJSONObject("metadata").getString("status");
+                    listTransaksi = new ArrayList<>();
+
                     if(iv.parseNullInteger(status) == 200){
 
                         JSONArray jsonArray = response.getJSONArray("response");
@@ -236,7 +249,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         });
     }
 
-    private void getListTransaksi(List<CustomItem> listItem) {
+    private static void getListTransaksi(List<CustomItem> listItem) {
 
         lvTransaksi.setAdapter(null);
 
@@ -276,7 +289,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         }
     }
 
-    private void getMoreData() {
+    private static void getMoreData() {
 
         final List<CustomItem> moreList = new ArrayList<>();
         JSONObject jBody = new JSONObject();
@@ -327,7 +340,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         });
     }
 
-    private void getDetailTransaksi(CustomItem selectedItem) {
+    private static void getDetailTransaksi(CustomItem selectedItem) {
 
         pbLoadMenu.setVisibility(View.VISIBLE);
 
@@ -392,7 +405,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         });
     }
 
-    private void setMenuTable(List<CustomItem> listItem) {
+    private static void setMenuTable(List<CustomItem> listItem) {
 
         rvListMenu.setAdapter(null);
 
@@ -447,6 +460,157 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                 loadPrintingDialog();
             }
         });
+
+        btnChangeMeja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Validasi
+                if(noBukti.length() == 0){
+                    Toast.makeText(context, "Silahkan pilih pesanan", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                getDataMeja();
+            }
+        });
+    }
+
+    public static void changeMeja(String noMejaString){
+
+        if(mejaDialog != null){
+
+            try {
+                mejaDialog.dismiss();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        String tanggalCari = edtTanggal.getText().toString();
+        if(!iv.isValidFormat(FormatItem.formatDateDisplay, tanggalCari)) {
+            tanggalCari = "";
+            edtTanggal.setText(tanggalCari);
+        }
+
+        startIndex = 0;
+        getDataTransaksi();
+        iv.hideSoftKey(context);
+        noMeja = noMejaString;
+        tvNoMeja.setText(noMeja);
+    }
+
+    private void getDataMeja() {
+
+        pbLoadMenu.setVisibility(View.VISIBLE);
+        listMeja = new ArrayList<>();
+
+        ApiVolley request = new ApiVolley(context, new JSONObject(), "GET", serverURL.getMeja(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    listMeja = new ArrayList<>();
+
+                    if(iv.parseNullInteger(status) == 200){
+
+                        JSONArray jsonArray = response.getJSONArray("response");
+
+                        for(int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+                            listMeja.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"),jo.getString("Status"),jo.getString("flag"),jo.getString("nobukti"),jo.getString("total"),jo.getString("jenis"),jo.getString("urutan")));
+                        }
+
+                        loadMejaDilalog();
+                        pbLoadMenu.setVisibility(View.GONE);
+                    }else{
+                        pbLoadMenu.setVisibility(View.GONE);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    pbLoadMenu.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+                pbLoadMenu.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void loadMejaDilalog(){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_change_meja, null);
+        builder.setView(view);
+        builder.setTitle("Pilih Meja");
+        builder.setIcon(R.mipmap.ic_launcher);
+
+        final RecyclerView rvMeja1 = (RecyclerView) view.findViewById(R.id.rv_list_meja_1);
+        final RecyclerView rvMeja2 = (RecyclerView) view.findViewById(R.id.rv_list_meja_2);
+
+        rvMeja1.setAdapter(null);
+        rvMeja2.setAdapter(null);
+
+        if(listMeja!= null && listMeja.size() > 0){
+
+            List<CustomItem> listItem1 = new ArrayList<>();
+            List<CustomItem> listItem2 = new ArrayList<>();
+
+            for(CustomItem item: listMeja){
+
+                switch (iv.parseNullInteger(item.getItem7())){
+                    case 1:
+                        listItem1.add(item);
+                        break;
+                    case 2:
+                        listItem2.add(item);
+                        break;
+                }
+            }
+
+            final ListChangeMejaAdapter mejaAdapter1 = new ListChangeMejaAdapter(context, listItem1, noBukti);
+            final ListChangeMejaAdapter mejaAdapter2 = new ListChangeMejaAdapter(context, listItem2, noBukti);
+
+            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            if(!tabletSize){
+                final RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(context, 2);
+                final RecyclerView.LayoutManager mLayoutManager2 = new GridLayoutManager(context, 2);
+                rvMeja1.setLayoutManager(mLayoutManager1);
+                rvMeja2.setLayoutManager(mLayoutManager2);
+            }else{
+                final RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(context, 3);
+                final RecyclerView.LayoutManager mLayoutManager2 = new GridLayoutManager(context, 3);
+                rvMeja1.setLayoutManager(mLayoutManager1);
+                rvMeja2.setLayoutManager(mLayoutManager2);
+            }
+
+            rvMeja1.setItemAnimator(new DefaultItemAnimator());
+            rvMeja1.setAdapter(mejaAdapter1);
+
+            rvMeja2.setItemAnimator(new DefaultItemAnimator());
+            rvMeja2.setAdapter(mejaAdapter2);
+        }
+
+        builder.setPositiveButton("Tutup", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        mejaDialog = builder
+                .setCancelable(false)
+                .create();
+
+        mejaDialog.show();
+
     }
 
     //region =================================== Setting printer =======================================
@@ -513,7 +677,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         try {
             penjualanJSON.put("cashier_status", (printCashierState) ? "1": "0");
             penjualanJSON.put("kitchen_status", (printKitchenState) ? "1": "0");
-            penjualanJSON.put("cashier_status", (printBarState) ? "1": "0");
+            penjualanJSON.put("bar_status", (printBarState) ? "1": "0");
             penjualanJSON.put("print_no", printNo);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -527,7 +691,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             e.printStackTrace();
         }
 
-        ApiVolley request = new ApiVolley(context, jBody, "POST", serverURL.updatePrinterStatus(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(context, jBody, "POST", serverURL.updatePenjualan(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
 

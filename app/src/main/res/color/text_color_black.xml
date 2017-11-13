@@ -4,7 +4,7 @@
     <!-- pressed -->
     <item android:color="@color/color_black1" android:state_selected="true" />
     <!-- default -->
-    <item android:color="@color/color_black1_active" />
+    <item android:color="@color/color_white" />
 
 
 </selector>

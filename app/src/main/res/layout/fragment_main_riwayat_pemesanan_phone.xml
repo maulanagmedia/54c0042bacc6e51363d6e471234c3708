@@ -313,6 +313,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:layout_marginTop="@dimen/margin_small"
                     android:layout_below="@id/ll_title1"
                     android:id="@+id/ll_title2"
@@ -397,20 +398,48 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginTop="@dimen/margin_default"
+                    android:weightSum="2"
                     android:layout_below="@id/ll_title2"
                     android:id="@+id/ll_title3"
                     android:gravity="center">
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:background="@drawable/input_form_blue"
-                        android:drawableLeft="@mipmap/ic_printer_blue"
-                        android:textColor="@color/color_blue"
-                        android:text="Cetak Ulang"
-                        android:id="@+id/btn_print"
-                        android:paddingLeft="@dimen/margin_small"
-                        android:paddingRight="@dimen/margin_default"/>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"
+                            android:background="@drawable/input_form_blue"
+                            android:drawableLeft="@mipmap/ic_printer_blue"
+                            android:textColor="@color/color_blue"
+                            android:text="Cetak"
+                            android:id="@+id/btn_print"
+                            android:paddingLeft="@dimen/margin_small"
+                            android:paddingRight="@dimen/margin_default"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"
+                            android:background="@drawable/input_form_blue"
+                            android:drawableLeft="@mipmap/ic_sofa"
+                            android:textColor="@color/color_blue"
+                            android:text="Pindah"
+                            android:id="@+id/btn_change_meja"
+                            android:paddingLeft="@dimen/margin_small"
+                            android:paddingRight="@dimen/margin_default"/>
+                    </LinearLayout>
 
                 </LinearLayout>
 

@@ -43,17 +43,6 @@
                         android:textAllCaps="true"/>
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Meja"
-                    android:layout_below="@id/ll_header"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:id="@+id/tv_title2"
-                    android:textColor="@color/color_black"
-                    android:textStyle="bold"
-                    android:textAllCaps="true"/>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -72,7 +61,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Kosong"
+                        android:text="Open Order"
                         android:textStyle="bold"
                         android:layout_marginRight="@dimen/margin_horizontal"/>
 
@@ -86,18 +75,71 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Terisi"
+                        android:text="Riwayat Order"
                         android:textStyle="bold"
                         android:layout_marginRight="@dimen/margin_default"/>
                 </LinearLayout>
 
-                <android.support.v7.widget.RecyclerView
+                <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="@dimen/margin_default"
-                    android:layout_below="@id/tv_title2"
-                    android:layout_above="@id/ll_footer"
-                    android:id="@+id/rv_list_meja"></android.support.v7.widget.RecyclerView>
+                    android:layout_below="@id/ll_header"
+                    android:layout_above="@id/ll_footer">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Meja"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:id="@+id/tv_title2"
+                            android:textColor="@color/color_black"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"/>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:id="@+id/rv_list_meja_1"></android.support.v7.widget.RecyclerView>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Opsi lain"
+                            android:layout_marginTop="@dimen/margin_default"
+                            android:id="@+id/tv_title3"
+                            android:textColor="@color/color_black"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"/>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:id="@+id/rv_list_meja_2"></android.support.v7.widget.RecyclerView>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Order sedang diproses"
+                            android:layout_marginTop="@dimen/margin_default"
+                            android:id="@+id/tv_title4"
+                            android:textColor="@color/color_black"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"/>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:id="@+id/rv_list_meja_3"></android.support.v7.widget.RecyclerView>
+                    </LinearLayout>
+                </ScrollView>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -105,7 +147,7 @@
                     android:background="@color/color_white"
                     android:id="@+id/rl_refresh_container"
                     android:visibility="gone"
-                    android:layout_below="@id/tv_title2"
+                    android:layout_below="@id/ll_header"
                     android:layout_above="@id/ll_footer">
 
                     <Button

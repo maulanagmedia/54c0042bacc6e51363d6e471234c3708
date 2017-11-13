@@ -46,6 +46,24 @@ public class ListTransaksiAdapter extends ArrayAdapter{
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+
+        int hasil = 0;
+        final CustomItem item = items.get(position);
+        if(!item.getItem9().equals("1") || !item.getItem10().equals("1") || !item.getItem11().equals("1")){
+            hasil = 0;
+        }else{
+            hasil = 1;
+        }
+        return hasil;
+    }
+
+    @Override
     public int getCount() {
         return super.getCount();
     }
@@ -54,10 +72,17 @@ public class ListTransaksiAdapter extends ArrayAdapter{
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         ViewHolder holder = new ViewHolder();
+        int tipeViewList = getItemViewType(position);
 
         if(convertView == null){
-            LayoutInflater inflater = context.getLayoutInflater();
-            convertView = inflater.inflate(R.layout.adapter_list_transaksi, null);
+
+            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+            if(tipeViewList == 0){
+                convertView = inflater.inflate(R.layout.adapter_list_transaksi_2, null);
+            }else{
+                convertView = inflater.inflate(R.layout.adapter_list_transaksi, null);
+            }
+
             holder.llContainer = (LinearLayout) convertView.findViewById(R.id.ll_container);
             holder.llLine= (LinearLayout) convertView.findViewById(R.id.ll_line);
             holder.tvItem1 = (TextView) convertView.findViewById(R.id.tv_item1);
@@ -81,27 +106,6 @@ public class ListTransaksiAdapter extends ArrayAdapter{
         holder.tvItem3.setText(itemSelected.getItem7());
         holder.tvItem4.setText(itemSelected.getItem2());
         holder.tvItem5.setText(itemSelected.getItem8());
-
-        if(!itemSelected.getItem9().equals("1") || !itemSelected.getItem10().equals("1") || !itemSelected.getItem11().equals("1")){
-
-            holder.llContainer.setBackground(context.getResources().getDrawable(R.drawable.input_form_blue));
-            holder.llLine.setBackground(context.getResources().getDrawable(R.color.color_blue));
-            holder.tvTitle1.setTextColor(context.getResources().getColor(R.color.color_blue));
-            holder.tvTitle2.setTextColor(context.getResources().getColor(R.color.color_blue));
-            holder.tvTitle3.setTextColor(context.getResources().getColor(R.color.color_blue));
-            holder.tvTitle4.setTextColor(context.getResources().getColor(R.color.color_blue));
-            holder.tvTitle5.setTextColor(context.getResources().getColor(R.color.color_blue));
-            notifyDataSetChanged();
-        }else{
-            holder.llContainer.setBackground(context.getResources().getDrawable(R.drawable.input_form_red));
-            holder.llLine.setBackground(context.getResources().getDrawable(R.color.color_red));
-            holder.tvTitle1.setTextColor(context.getResources().getColor(R.color.color_red));
-            holder.tvTitle2.setTextColor(context.getResources().getColor(R.color.color_red));
-            holder.tvTitle3.setTextColor(context.getResources().getColor(R.color.color_red));
-            holder.tvTitle4.setTextColor(context.getResources().getColor(R.color.color_red));
-            holder.tvTitle5.setTextColor(context.getResources().getColor(R.color.color_red));
-            notifyDataSetChanged();
-        }
         return convertView;
     }
 }

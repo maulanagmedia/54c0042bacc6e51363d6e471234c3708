@@ -25,11 +25,13 @@ public class ServerURL {
     public String getMenu(){ return baseURL + "order/get_menu/";}
     public String getMenuBarcode(){ return baseURL + "order/get_menu_barcode/";}
     public String getMeja(){ return baseURL + "order/get_meja/";}
+    public String getDetailMeja(){ return baseURL + "order/get_detail_meja/";}
     public String getNoBukti(){ return baseURL + "order/generate_nobukti/";}
     public String saveOrder(){ return baseURL + "order/save/";}
+    public String getPenjualan(){ return baseURL + "order/get_penjualan_h/";}
     public String getRiwayatOrder(){ return baseURL + "riwayat/get_riwayat_transaksi/";}
     public String getDetailRiwayatOrder(){ return baseURL + "riwayat/get_detail_riwayat_transaksi/";}
     public String getProfile(){ return baseURL + "profile/get_profile/";}
     public String getAccount(){ return baseURL + "auth/get_account/";}
-    public String updatePrinterStatus(){ return baseURL + "order/update_printer_status/";}
+    public String updatePenjualan(){ return baseURL + "order/update_penjualan/";}
 }

@@ -34,7 +34,7 @@
         android:name="android.hardware.wifi"
         android:required="false" />
 
-    <application>
+    <application android:debuggable="true" >
         <uses-library android:name="android.test.runner" />
 
         <activity
