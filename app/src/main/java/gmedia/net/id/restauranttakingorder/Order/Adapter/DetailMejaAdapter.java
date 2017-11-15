@@ -61,7 +61,7 @@ public class DetailMejaAdapter extends ArrayAdapter{
         final CustomItem itemSelected = items.get(position);
         holder.tvItem1.setText(itemSelected.getItem3());
         holder.tvItem2.setText(iv.ChangeFormatDateString(itemSelected.getItem4(), FormatItem.formatTimestamp, FormatItem.formatDataAndTimeStamp));
-        holder.tvItem3.setText("Antrian " + itemSelected.getItem5() + " / " + itemSelected.getItem6() + " item");
+        holder.tvItem3.setText(itemSelected.getItem6() + " item");
         return convertView;
 
     }

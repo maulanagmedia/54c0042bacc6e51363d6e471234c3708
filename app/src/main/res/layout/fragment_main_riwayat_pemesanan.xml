@@ -83,64 +83,12 @@
                         android:text="Cari"/>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:paddingTop="@dimen/margin_default"
-                    android:paddingLeft="@dimen/margin_default"
-                    android:paddingRight="@dimen/margin_default"
-                    android:id="@+id/vl_bottom"
-                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:background="@drawable/input_form_red"/>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="@dimen/margin_default"
-                            android:paddingRight="@dimen/margin_default"
-                            android:text="Tercetak"
-                            android:textColor="@color/color_red"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="@dimen/margin_default"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:background="@drawable/input_form_blue"/>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="@dimen/margin_default"
-                            android:paddingRight="@dimen/margin_default"
-                            android:text="Belum Tercetak"
-                            android:textColor="@color/color_blue"/>
-                    </LinearLayout>
-
-                </LinearLayout>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/vl_4"
-                    android:layout_above="@id/vl_bottom"
                     android:layout_below="@id/vl_3"
                     android:layout_marginTop="@dimen/margin_default">
 
@@ -196,6 +144,31 @@
                         android:layout_weight="1"
                         android:layout_marginRight="@dimen/margin_small"
                         android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/text_subtitle"
+                            android:textColor="@color/color_red"
+                            android:text="Status"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text=""
+                            android:textColor="@color/color_black"
+                            android:id="@+id/tv_status"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginRight="@dimen/margin_small"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
                         android:orientation="vertical">
 
                         <TextView
@@ -299,6 +272,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:layout_marginTop="@dimen/margin_small"
                     android:layout_below="@id/ll_title1"
                     android:id="@+id/ll_title2"
@@ -441,8 +415,62 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:paddingTop="@dimen/margin_default"
+                    android:paddingLeft="@dimen/margin_default"
+                    android:paddingRight="@dimen/margin_default"
+                    android:id="@+id/vl_bottom"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@color/color_red"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:text="Tercetak"
+                            android:textColor="@color/color_red"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/margin_default"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:background="@color/color_blue"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:text="Belum Tercetak"
+                            android:textColor="@color/color_blue"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:id="@+id/ll_total"
+                    android:visibility="gone"
                     android:layout_alignParentBottom="true">
 
                     <LinearLayout
@@ -478,7 +506,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="@dimen/margin_default"
                     android:layout_below="@id/tv_title2"
-                    android:layout_above="@id/ll_total"
+                    android:layout_above="@id/vl_bottom"
                     android:id="@+id/rv_list_menu"></android.support.v7.widget.RecyclerView>
 
                 <ProgressBar

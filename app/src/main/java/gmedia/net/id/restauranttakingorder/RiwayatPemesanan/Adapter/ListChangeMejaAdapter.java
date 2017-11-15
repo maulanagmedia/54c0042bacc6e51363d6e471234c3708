@@ -90,8 +90,14 @@ public class ListChangeMejaAdapter extends RecyclerView.Adapter<ListChangeMejaAd
         holder.tvItem1.setText(cli.getItem2());
         if(cli.getItem3().equals("1")){
             holder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.color_table_active));
-            holder.tvItem2.setText(cli.getItem5() + " / "+cli.getItem8());
-            holder.tvItem3.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem6())));
+            if(iv.parseNullInteger(cli.getItem7()) == 1){
+
+                holder.tvItem2.setText("");
+                holder.tvItem3.setText(cli.getItem6());
+            }else{
+                holder.tvItem2.setText(cli.getItem5());
+                holder.tvItem3.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem6())));
+            }
         }else{
             holder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.color_table));
             holder.tvItem2.setText("");

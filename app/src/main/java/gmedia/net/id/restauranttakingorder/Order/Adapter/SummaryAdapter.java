@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.maulana.custommodul.CustomItem;
@@ -32,7 +33,8 @@ public class SummaryAdapter extends ArrayAdapter{
     }
 
     private static class ViewHolder {
-        private TextView tvItem1, tvItem2;
+        private TextView tvItem1, tvItem2, tvItem3;
+        private LinearLayout llNote;
     }
 
     @Override
@@ -50,6 +52,8 @@ public class SummaryAdapter extends ArrayAdapter{
             convertView = inflater.inflate(R.layout.adapter_list_summary, null);
             holder.tvItem1 = (TextView) convertView.findViewById(R.id.tv_item1);
             holder.tvItem2 = (TextView) convertView.findViewById(R.id.tv_item2);
+            holder.tvItem3 = (TextView) convertView.findViewById(R.id.tv_item3);
+            holder.llNote = (LinearLayout) convertView.findViewById(R.id.ll_note);
             convertView.setTag(holder);
         }else{
             holder = (ViewHolder) convertView.getTag();
@@ -58,6 +62,12 @@ public class SummaryAdapter extends ArrayAdapter{
         final CustomItem itemSelected = items.get(position);
         holder.tvItem1.setText(itemSelected.getItem2());
         holder.tvItem2.setText(itemSelected.getItem5());
+        if(itemSelected.getItem8().length() > 0){
+            holder.llNote.setVisibility(View.VISIBLE);
+            holder.tvItem3.setText(itemSelected.getItem8());
+        }else{
+            holder.llNote.setVisibility(View.GONE);
+        }
         return convertView;
     }
 }

@@ -122,6 +122,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     private static TabLayout tabLayout;
     private String printNo = "1";
     private AlertDialog printDialog;
+    private String upselling = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -321,7 +323,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         final TextView tvSummary = (TextView) view.findViewById(R.id.tv_summary);
         final ListView lvSummary = (ListView) view.findViewById(R.id.lv_summary);
 
-        tvSummary.setText("Proses pesanan ini (" + noBukti+") ?");
+        tvSummary.setText("Proses pesanan ini (" + noBukti +") ?");
 
         lvSummary.setAdapter(null);
 
@@ -430,6 +432,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
                         progressDialog.dismiss();
                         String message1 = response.getJSONObject("response").getString("message");
+                        upselling = response.getJSONObject("response").getString("upselling");
 
                         for(int i = 0; i < toastTimer; i++){
                             Toast.makeText(DetailOrder.this, message1 + ".\n Tunggu hingga proses mencetak selesai, aplikasi akan menuju ke daftar transaksi", Toast.LENGTH_LONG).show();
@@ -494,8 +497,6 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         });
 
         printDialog.show();
-
-
     }
 
     private void printDataAll() {
@@ -567,27 +568,18 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
     private void updatePrinter() {
 
-
-        JSONObject penjualanJSON = new JSONObject();
-
-        try {
-            penjualanJSON.put("cashier_status", (printCashierState) ? "1": "0");
-            penjualanJSON.put("kitchen_status", (printKitchenState) ? "1": "0");
-            penjualanJSON.put("bar_status", (printBarState) ? "1": "0");
-            penjualanJSON.put("print_no", printNo);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
         JSONObject jBody = new JSONObject();
         try {
             jBody.put("nobukti", noBukti);
-            jBody.put("penjualan", penjualanJSON);
+            jBody.put("upselling", upselling);
+            jBody.put("cashier_status", (printCashierState) ? "1": "0");
+            jBody.put("kitchen_status", (printKitchenState) ? "1": "0");
+            jBody.put("bar_status", (printBarState) ? "1": "0");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.updatePenjualan(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.updatePrinterStatus(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
 
@@ -600,7 +592,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }
 
                 Intent intent = new Intent(DetailOrder.this, MainActivity.class);
-                intent.putExtra("riwayat", true);
+                //intent.putExtra("riwayat", true);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
             }
@@ -617,7 +610,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }
 
                 Intent intent = new Intent(DetailOrder.this, MainActivity.class);
-                intent.putExtra("riwayat", true);
+                //intent.putExtra("riwayat", true);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
             }
@@ -662,7 +656,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             changePrintState(mContext, 1, "Printer belum di atur");
         }else{
 
-            printCashierState = printCashier(urutan, nobukti, timestamp, nomeja, pesanan);
+            printCashierState = printCashier(upselling, nobukti, timestamp, nomeja, pesanan);
 
             if(!printCashierState){
                 //changePrintState(context, 1, "Gagal mencetak");
@@ -2244,21 +2238,20 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
     }
 
-
     //region Prinnter
 
     //region cashier
-    public boolean printCashier(String urutan, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan){
+    public boolean printCashier(String upsell, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan){
 
-        return runPrintCashierSequence(urutan, timestamp, noBukti, noMeja, pesanan);
+        return runPrintCashierSequence(upsell, timestamp, noBukti, noMeja, pesanan);
     }
 
-    private boolean runPrintCashierSequence(String urutan, String timestamp, String noBukti, String noMeja, List<CustomItem> pesanan) {
+    private boolean runPrintCashierSequence(String upsell, String timestamp, String noBukti, String noMeja, List<CustomItem> pesanan) {
         if (!initializeObject()) {
             return false;
         }
 
-        if (!createCashierData(urutan, noBukti, timestamp, noMeja, pesanan)) {
+        if (!createCashierData(upsell, noBukti, timestamp, noMeja, pesanan)) {
             finalizeObject();
             return false;
         }
@@ -2271,7 +2264,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         return true;
     }
 
-    private boolean createCashierData(String urutan, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan) {
+    private boolean createCashierData(String upsell, String noBukti, String timestamp, String noMeja, List<CustomItem> pesanan) {
 
         // baris maks 30 char
         int maxRow= 30;
@@ -2301,8 +2294,11 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             mPrinter.addTextSize(1, 1);
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"-");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
-            textData.append(noMeja+ "-" + urutan +"\n");
-            textData.append("Print no. "+ printNo+"\n");
+            if(upselling.equals("1")){
+                textData.append(noMeja + "/" +  session.getName() +"\n");
+            }else{
+                textData.append(noMeja + "/" + "RE " + upselling + "/" + session.getName() +"\n");
+            }
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
@@ -2322,17 +2318,20 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" "+ item.getItem2();
+                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                if(item.getItem10().length()>0){
+                    itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
+                }
                 textData.append( itemToPrint+"\n");
 
-                if(item.getItem10().length()>0){
+                /*if(item.getItem10().length()>0){
                     textData.append( "   " + item.getItem10() +"\n");
-                }
+                }*/
 
                 if(item.getItem8().length()>0){
                     String[] s = item.getItem8().split("\\r?\\n");
                     for(String note: s){
-                        textData.append( "   " + note +"\n");
+                        textData.append( "   \"" + note +"\"\n");
                     }
                 }
             }
@@ -2442,8 +2441,11 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             method = "addTextSize";
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+"\n");
-            textData.append(noMeja+"-"+urutan+"\n");
-            textData.append("Print no. "+ printNo +"\n");
+            if(upselling.equals("1")){
+                textData.append(noMeja + "/" +  session.getName() +"\n");
+            }else{
+                textData.append(noMeja + "/" + "RE " + upselling + "/" + session.getName() +"\n");
+            }
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
@@ -2472,7 +2474,10 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             int x = 1;
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" "+ item.getItem2();
+                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                if(item.getItem10().length()>0){
+                    itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
+                }
                 textData.append( itemToPrint+"\n");
 
                 if(item.getItem8().length()>0){
@@ -2481,12 +2486,12 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     for(String note: s){
 
                         if(s.length == 1){
-                            textData.append( "  (" + note +")\n");
+                            textData.append( "  \"" + note +"\"\n");
                         }else{
                             if(j == 0){
-                                textData.append( "  (" + note +"\n");
+                                textData.append( "  \"" + note +"\n");
                             }else if(j == s.length - 1){
-                                textData.append( "   " + note +")\n");
+                                textData.append( "   " + note +"\"\n");
                             }else{
                                 textData.append( "   " + note +"\n");
                             }
@@ -2588,8 +2593,11 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             method = "addTextSize";
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+"\n");
-            textData.append(noMeja+"-"+urutan+"\n");
-            textData.append("Print no. "+ printNo +"\n");
+            if(upselling.equals("1")){
+                textData.append(noMeja + "/" +  session.getName() +"\n");
+            }else{
+                textData.append(noMeja + "/" + "RE " + upselling + "/" + session.getName() +"\n");
+            }
             method = "addText";
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
@@ -2618,7 +2626,10 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             int x = 1;
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" "+ item.getItem2();
+                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                if(item.getItem10().length()>0){
+                    itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
+                }
                 textData.append( itemToPrint+"\n");
 
                 if(item.getItem8().length()>0){
@@ -2627,12 +2638,12 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     for(String note: s){
 
                         if(s.length == 1){
-                            textData.append( "  (" + note +")\n");
+                            textData.append( "  \"" + note +"\"\n");
                         }else{
                             if(j == 0){
-                                textData.append( "  (" + note +"\n");
+                                textData.append( "  \"" + note +"\n");
                             }else if(j == s.length - 1){
-                                textData.append( "   " + note +")\n");
+                                textData.append( "   " + note +"\"\n");
                             }else{
                                 textData.append( "   " + note +"\n");
                             }

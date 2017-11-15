@@ -92,6 +92,9 @@ public class SessionManager {
 		return pref.getString(key, null);
 	}
 
+	public String getName(){
+		return pref.getString(TAG_NAMA, null);
+	}
 	public String getUsername(){
 		return pref.getString(TAG_USERNAME, null);
 	}

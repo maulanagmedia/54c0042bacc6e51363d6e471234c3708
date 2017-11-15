@@ -1,28 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:weightSum="1">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_weight="0.7"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/color_black"
-        android:paddingTop="@dimen/margin_small"
-        android:paddingBottom="@dimen/margin_small"
-        android:id="@+id/tv_item1"/>
+        android:orientation="horizontal"
+        android:weightSum="1">
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_weight="0.3"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.7"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:paddingTop="@dimen/margin_small"
+            android:paddingBottom="@dimen/margin_small"
+            android:id="@+id/tv_item1"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:paddingTop="@dimen/margin_small"
+            android:paddingBottom="@dimen/margin_small"
+            android:gravity="right"
+            android:id="@+id/tv_item2"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/color_black"
-        android:paddingTop="@dimen/margin_small"
-        android:paddingBottom="@dimen/margin_small"
-        android:gravity="right"
-        android:id="@+id/tv_item2"/>
+        android:orientation="horizontal"
+        android:id="@+id/ll_note"
+        android:weightSum="1">
 
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:text="Note: "
+            android:gravity="right"
+            android:layout_height="match_parent"
+            android:textColor="@color/color_black"
+            android:paddingTop="@dimen/margin_small"
+            android:paddingBottom="@dimen/margin_small"/>
 
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.8"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:paddingTop="@dimen/margin_small"
+            android:id="@+id/tv_item3"
+            android:paddingBottom="@dimen/margin_small"/>
+    </LinearLayout>
 
 </LinearLayout>

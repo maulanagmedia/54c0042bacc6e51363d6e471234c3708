@@ -34,4 +34,5 @@ public class ServerURL {
     public String getProfile(){ return baseURL + "profile/get_profile/";}
     public String getAccount(){ return baseURL + "auth/get_account/";}
     public String updatePenjualan(){ return baseURL + "order/update_penjualan/";}
+    public String updatePrinterStatus(){ return baseURL + "order/update_printer_status/";}
 }

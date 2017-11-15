@@ -45,7 +45,7 @@ public class ListTransaksiAdapter extends ArrayAdapter{
         notifyDataSetChanged();
     }
 
-    @Override
+    /*@Override
     public int getViewTypeCount() {
         return 2;
     }
@@ -61,7 +61,7 @@ public class ListTransaksiAdapter extends ArrayAdapter{
             hasil = 1;
         }
         return hasil;
-    }
+    }*/
 
     @Override
     public int getCount() {
@@ -72,16 +72,12 @@ public class ListTransaksiAdapter extends ArrayAdapter{
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         ViewHolder holder = new ViewHolder();
-        int tipeViewList = getItemViewType(position);
+        //int tipeViewList = getItemViewType(position);
 
         if(convertView == null){
 
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-            if(tipeViewList == 0){
-                convertView = inflater.inflate(R.layout.adapter_list_transaksi_2, null);
-            }else{
-                convertView = inflater.inflate(R.layout.adapter_list_transaksi, null);
-            }
+            convertView = inflater.inflate(R.layout.adapter_list_transaksi, null);
 
             holder.llContainer = (LinearLayout) convertView.findViewById(R.id.ll_container);
             holder.llLine= (LinearLayout) convertView.findViewById(R.id.ll_line);

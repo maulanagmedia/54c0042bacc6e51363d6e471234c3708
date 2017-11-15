@@ -3,50 +3,91 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/ll_header"
-        android:layout_above="@id/ll_footer"
-        android:padding="@dimen/margin_vertical">
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sv_header"
+            android:padding="@dimen/margin_vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Meja"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:id="@+id/tv_title2"
+                    android:textColor="@color/color_black"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:id="@+id/rv_list_meja_1"></android.support.v7.widget.RecyclerView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Opsi lain"
+                    android:layout_marginTop="@dimen/margin_default"
+                    android:id="@+id/tv_title3"
+                    android:textColor="@color/color_black"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:id="@+id/rv_list_meja_2"></android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
+        </ScrollView>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_below="@id/sv_header"
+            android:id="@+id/ll_footer"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/margin_small"
+            android:gravity="center_vertical|right">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="@dimen/margin_default"
+                android:background="@color/color_table" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Meja"
-                android:layout_marginTop="@dimen/margin_small"
-                android:id="@+id/tv_title2"
-                android:textColor="@color/color_black"
+                android:text="Open Order"
                 android:textStyle="bold"
-                android:textAllCaps="true"/>
+                android:layout_marginRight="@dimen/margin_horizontal"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:id="@+id/rv_list_meja_1"></android.support.v7.widget.RecyclerView>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="@dimen/margin_default"
+                android:layout_marginRight="@dimen/margin_default"
+                android:background="@color/color_table_active" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Opsi lain"
-                android:layout_marginTop="@dimen/margin_default"
-                android:id="@+id/tv_title3"
-                android:textColor="@color/color_black"
+                android:text="Terisi"
                 android:textStyle="bold"
-                android:textAllCaps="true"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:id="@+id/rv_list_meja_2"></android.support.v7.widget.RecyclerView>
-
+                android:layout_marginRight="@dimen/margin_default"/>
         </LinearLayout>
-    </ScrollView>
+    </RelativeLayout>
 </RelativeLayout>

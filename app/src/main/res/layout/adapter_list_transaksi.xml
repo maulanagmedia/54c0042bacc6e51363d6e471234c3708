@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ll_container"
-        android:background="@drawable/input_form_red"
+        android:background="@drawable/input_form"
         android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
         android:paddingLeft="@dimen/margin_default"
@@ -50,6 +50,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="0.25"
+                android:visibility="gone"
                 android:layout_marginRight="@dimen/margin_default"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -67,71 +68,6 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_item4"
                     android:gravity="center"
-                    android:textColor="@color/color_black"
-                    android:layout_marginTop="@dimen/margin_small"
-                    />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="0.25"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Banyak"
-                    android:id="@+id/tv_title3"
-                    android:textColor="@color/color_red"
-                    android:textSize="@dimen/text_subtitle"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tv_item5"
-                    android:gravity="center"
-                    android:textColor="@color/color_black"
-                    android:layout_marginTop="@dimen/margin_small"
-                    />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/line_width"
-            android:id="@+id/ll_line"
-            android:orientation="horizontal"
-            android:background="@color/color_red"
-            android:layout_marginTop="@dimen/margin_small"
-            ></LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/margin_small"
-            android:weightSum="1">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/margin_default"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Waktu Transaki"
-                    android:id="@+id/tv_title4"
-                    android:textColor="@color/color_red"
-                    android:textSize="@dimen/text_subtitle"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tv_item2"
                     android:textColor="@color/color_black"
                     android:layout_marginTop="@dimen/margin_small"
                     />
@@ -158,6 +94,71 @@
                     android:id="@+id/tv_item3"
                     android:textColor="@color/color_black"
                     android:gravity="center"
+                    android:layout_marginTop="@dimen/margin_small"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_width"
+            android:id="@+id/ll_line"
+            android:orientation="horizontal"
+            android:background="@color/color_grey"
+            android:layout_marginTop="@dimen/margin_small"
+            ></LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/margin_small"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/margin_default"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Waktu Order"
+                    android:id="@+id/tv_title4"
+                    android:textColor="@color/color_red"
+                    android:textSize="@dimen/text_subtitle"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_item2"
+                    android:textColor="@color/color_black"
+                    android:layout_marginTop="@dimen/margin_small"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jumlah"
+                    android:id="@+id/tv_title3"
+                    android:textColor="@color/color_red"
+                    android:textSize="@dimen/text_subtitle"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_item5"
+                    android:gravity="center"
+                    android:textColor="@color/color_black"
                     android:layout_marginTop="@dimen/margin_small"
                     />
             </LinearLayout>

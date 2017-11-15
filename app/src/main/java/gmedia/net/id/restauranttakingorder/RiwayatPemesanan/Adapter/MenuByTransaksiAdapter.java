@@ -22,7 +22,7 @@ import java.util.List;
 import gmedia.net.id.restauranttakingorder.Order.MainOrder;
 import gmedia.net.id.restauranttakingorder.R;
 
-public class MenuByTransaksiAdapter extends RecyclerView.Adapter<MenuByTransaksiAdapter.MyViewHolder> {
+public class MenuByTransaksiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
     private List<CustomItem> masterList;
@@ -30,25 +30,32 @@ public class MenuByTransaksiAdapter extends RecyclerView.Adapter<MenuByTransaksi
     private ItemValidation iv = new ItemValidation();
     public static int selectedPosition = 0;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder0 extends RecyclerView.ViewHolder {
 
-        public RelativeLayout rlContainer;
-        public ImageView ivThumbnail;
-        public LinearLayout llThumbnail;
-        public TextView tvThumbnail, tvItem1, tvItem2, tvItem3, tvItem4;
+        public LinearLayout llNote;
+        public TextView tvItem1, tvItem2, tvItem3;
 
-        public MyViewHolder(View view) {
+        public MyViewHolder0(View view) {
+
+            super(view);
+            tvItem1 = (TextView) view.findViewById(R.id.tv_item1);
+        }
+    }
+
+    public class MyViewHolder1 extends RecyclerView.ViewHolder {
+
+        public LinearLayout llNote;
+        public TextView tvItem1, tvItem2, tvItem3, tvNote;
+
+        public MyViewHolder1(View view) {
 
             super(view);
 
-            rlContainer = (RelativeLayout) view.findViewById(R.id.rl_container);
-            ivThumbnail = (ImageView) view.findViewById(R.id.iv_thumbnail);
-            llThumbnail = (LinearLayout) view.findViewById(R.id.ll_thumbnail);
-            tvThumbnail = (TextView) view.findViewById(R.id.tv_text_thumbnail);
+            llNote = (LinearLayout) view.findViewById(R.id.ll_note);
             tvItem1 = (TextView) view.findViewById(R.id.tv_item1);
             tvItem2 = (TextView) view.findViewById(R.id.tv_item2);
             tvItem3 = (TextView) view.findViewById(R.id.tv_item3);
-            tvItem4 = (TextView) view.findViewById(R.id.tv_item4);
+            tvNote = (TextView) view.findViewById(R.id.tv_note);
         }
     }
 
@@ -58,40 +65,75 @@ public class MenuByTransaksiAdapter extends RecyclerView.Adapter<MenuByTransaksi
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.adapter_menu_by_transaksi, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        return new MyViewHolder(itemView);
+        View itemView = null ;
+        if(viewType == 0 ){
+            itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.adapter_menu_by_transaksi_title, parent, false);
+            return new MyViewHolder0(itemView);
+        }else{
+            itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.adapter_menu_by_transaksi, parent, false);
+            return new MyViewHolder1(itemView);
+        }
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         final CustomItem cli = masterList.get(position);
 
-        if(position == selectedPosition){
+        if(holder.getItemViewType() == 0){
 
+            MyViewHolder0 holder0 = (MyViewHolder0) holder;
+            if(cli.getItem3().equals("1")){
+
+                holder0.tvItem1.setText("Order pertama ("+ cli.getItem2()+")");
+            }else{
+                holder0.tvItem1.setText("Upselling "+ cli.getItem3() +" ("+ cli.getItem2()+")");
+            }
         }else{
 
-        }
+            MyViewHolder1 holder1 = (MyViewHolder1) holder;
 
-        holder.tvItem1.setText(cli.getItem2());
-        holder.tvItem2.setText("@ "+iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem3())));
-        holder.tvItem3.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem6())));
-        holder.tvItem4.setText(cli.getItem5());
-        if(cli.getItem4().equals("")){
-
-            String firstWord = cli.getItem2().substring(0,1);
-            holder.tvThumbnail.setText(firstWord.toUpperCase());
-        }
-
-        holder.rlContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
+            holder1.tvItem1.setText(cli.getItem2());
+            holder1.tvItem2.setText(cli.getItem5());
+            if(cli.getItem4().length()>0){
+                holder1.llNote.setVisibility(View.VISIBLE);
+                holder1.tvItem3.setText(cli.getItem4());
+            }else{
+                holder1.llNote.setVisibility(View.GONE);
             }
-        });
+
+            if(cli.getItem7().equals("0") || cli.getItem8().equals("0")){
+
+                holder1.tvItem1.setTextColor(context.getResources().getColor(R.color.color_blue));
+                holder1.tvItem2.setTextColor(context.getResources().getColor(R.color.color_blue));
+                holder1.tvItem3.setTextColor(context.getResources().getColor(R.color.color_blue));
+                holder1.tvNote.setTextColor(context.getResources().getColor(R.color.color_blue));
+            }else{
+
+                holder1.tvItem1.setTextColor(context.getResources().getColor(R.color.color_red));
+                holder1.tvItem2.setTextColor(context.getResources().getColor(R.color.color_red));
+                holder1.tvItem3.setTextColor(context.getResources().getColor(R.color.color_red));
+                holder1.tvNote.setTextColor(context.getResources().getColor(R.color.color_red));
+            }
+
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+
+        int hasil = 0;
+        final CustomItem item = masterList.get(position);
+        if(item.getItem1().equals("H")){
+            hasil = 0;
+        }else{
+            hasil = 1;
+        }
+        return hasil;
     }
 
     @Override
