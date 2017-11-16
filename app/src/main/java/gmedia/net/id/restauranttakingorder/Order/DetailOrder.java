@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
@@ -543,27 +544,57 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
         if(code != Epos2CallbackCode.CODE_SUCCESS){
 
-            String message = status + " pada saat mencetak "+ state;
-            for (int i = 0; i < toastTimer; i++)
+            if (Looper.myLooper() == null)
+            {
+                Looper.prepare();
+            }
+            final String message = status + " pada saat mencetak "+ state;
+            /*for (int i = 0; i < toastTimer; i++)
             {
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            }*/
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                    if(printState == 1){
+
+                        printCashierState = false;
+                        //loadPrintingDialog(context, "Printing kitchen label...");
+                        printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenu);
+                    }else if(printState == 2){
+
+                        printKitchenState = false;
+                        //loadPrintingDialog(context, "Printing bar label...");
+                        printToBar(noBukti, timestampNow, noMeja, listSelectedMenu);
+                    }else if(printState == 3){
+
+                        //finish printing
+                        printBarState = false;
+                        printStatus = true;
+                        updatePrinter();
+                    }
+                }
+            });
+
+        }else{
+            if(printState == 1){
+
+                //loadPrintingDialog(context, "Printing kitchen label...");
+                printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenu);
+            }else if(printState == 2){
+
+                //loadPrintingDialog(context, "Printing bar label...");
+                printToBar(noBukti, timestampNow, noMeja, listSelectedMenu);
+            }else if(printState == 3){
+
+                //finish printing
+                printStatus = true;
+                updatePrinter();
             }
         }
 
-        if(printState == 1){
-
-            //loadPrintingDialog(context, "Printing kitchen label...");
-            printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenu);
-        }else if(printState == 2){
-
-            //loadPrintingDialog(context, "Printing bar label...");
-            printToBar(noBukti, timestampNow, noMeja, listSelectedMenu);
-        }else if(printState == 3){
-
-            //finish printing
-            printStatus = true;
-            updatePrinter();
-        }
     }
 
     private void updatePrinter() {

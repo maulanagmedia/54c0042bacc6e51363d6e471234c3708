@@ -3,10 +3,8 @@
     package="gmedia.net.id.restauranttakingorder">
 
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -57,6 +55,6 @@
         <activity android:name=".AccountActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"></activity>
-    </application>
 
+    </application>
 </manifest>

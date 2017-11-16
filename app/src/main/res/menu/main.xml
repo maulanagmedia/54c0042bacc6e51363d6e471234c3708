@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/empty"
-        android:title="Pengaturan Server"
+        android:id="@+id/nav_order"
+        android:title="Order"
         android:orderInCategory="101"
-        app:showAsAction="always">
-        <menu>
-
-            <item
-                android:id="@+id/action_settings"
-                android:orderInCategory="100"
-                android:title="Change Server"
-                android:icon="@mipmap/ic_server"/>
-
-        </menu>
+        app:showAsAction="always"
+        android:icon="@drawable/ic_order_white1">
 
     </item>
+
+    <item
+        android:id="@+id/nav_riwayat"
+        android:title="Riwayat Order"
+        android:orderInCategory="101"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_riwayat_white1">
+
+    </item>
+
 </menu>

@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -765,26 +766,56 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
 
         if(code != Epos2CallbackCode.CODE_SUCCESS){
 
-            String message = status + " pada saat mencetak "+ state;
-            for (int i = 0; i < toastTimer; i++)
+            if (Looper.myLooper() == null)
+            {
+                Looper.prepare();
+            }
+            final String message = status + " pada saat mencetak "+ state;
+            /*for (int i = 0; i < toastTimer; i++)
             {
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            }*/
+            ((Activity)context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+
+                    if(printState == 1){
+
+                        //loadPrintingDialog(context, "Printing kitchen label...");
+                        printCashierState = false;
+                        printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenuPerUpSelling);
+                    }else if(printState == 2){
+
+                        //loadPrintingDialog(context, "Printing bar label...");
+                        printKitchenState = false;
+                        printToBar(noBukti, timestampNow, noMeja, listSelectedMenuPerUpSelling);
+                    }else if(printState == 3){
+
+                        //finish printing
+                        printBarState = false;
+                        printStatus = true;
+                        updatePrinter();
+                    }
+                }
+            });
+
+        }else{
+            if(printState == 1){
+
+                //loadPrintingDialog(context, "Printing kitchen label...");
+                printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenuPerUpSelling);
+            }else if(printState == 2){
+
+                //loadPrintingDialog(context, "Printing bar label...");
+                printToBar(noBukti, timestampNow, noMeja, listSelectedMenuPerUpSelling);
+            }else if(printState == 3){
+
+                //finish printing
+                printStatus = true;
+                updatePrinter();
             }
-        }
-
-        if(printState == 1){
-
-            //loadPrintingDialog(context, "Printing kitchen label...");
-            printToKitchen(noBukti, timestampNow, noMeja, listSelectedMenuPerUpSelling);
-        }else if(printState == 2){
-
-            //loadPrintingDialog(context, "Printing bar label...");
-            printToBar(noBukti, timestampNow, noMeja, listSelectedMenuPerUpSelling);
-        }else if(printState == 3){
-
-            //finish printing
-            printStatus = true;
-            updatePrinter();
         }
     }
 

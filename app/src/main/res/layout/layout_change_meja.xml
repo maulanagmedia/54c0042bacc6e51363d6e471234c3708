@@ -32,6 +32,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:nestedScrollingEnabled="false"
                     android:id="@+id/rv_list_meja_1"></android.support.v7.widget.RecyclerView>
 
                 <TextView
@@ -48,6 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:nestedScrollingEnabled="false"
                     android:id="@+id/rv_list_meja_2"></android.support.v7.widget.RecyclerView>
 
             </LinearLayout>
