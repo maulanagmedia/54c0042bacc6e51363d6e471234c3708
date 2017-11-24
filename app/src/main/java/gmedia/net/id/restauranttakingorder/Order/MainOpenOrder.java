@@ -1,5 +1,6 @@
 package gmedia.net.id.restauranttakingorder.Order;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import gmedia.net.id.restauranttakingorder.Order.Adapter.ListMejaAdapter;
 import gmedia.net.id.restauranttakingorder.R;
@@ -45,6 +49,8 @@ public class MainOpenOrder extends Fragment {
     private RelativeLayout rlRefresh;
     private Button btnRefresh;
     private TextView tvTitle;
+    private static Timer timer = new Timer();
+    private int timerTime = 1000 * 60 * 1; // 1 minute refresh
 
     public MainOpenOrder() {
         // Required empty public constructor
@@ -100,6 +106,22 @@ public class MainOpenOrder extends Fragment {
                 getData();
             }
         });
+
+        timer.scheduleAtFixedRate(new mainTask(), 1000, timerTime);
+    }
+
+    private class mainTask extends TimerTask
+    {
+        public void run()
+        {
+            ((Activity)context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    getData();
+                }
+            });
+        }
     }
 
     @Override

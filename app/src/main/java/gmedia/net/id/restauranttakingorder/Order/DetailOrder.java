@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -118,12 +119,15 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     private Printer mPrinter;
 
     private boolean printStatus = true;
-    private static boolean phoneMode = false;
+    private static boolean phoneMode = true;
     private static RelativeLayout tabContainer, tab1, tab2, tab3;
     private static TabLayout tabLayout;
     private String printNo = "1";
     private AlertDialog printDialog;
     private String upselling = "";
+    private EditText edtJmlPelanggan;
+    private String jumlahPlg = "";
+    private TextInputLayout tilJmlPelanggan;
 
 
     @Override
@@ -131,7 +135,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_order);
 
-        phoneMode = false;
+        //phoneMode = false;
+        phoneMode = true;
+        boolean tabletMode = true;
         int currentOrientation = getResources().getConfiguration().orientation;
         if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             // Landscape
@@ -139,16 +145,19 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         }
         else {
             // Portrait
-            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            //boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            tabletMode = getResources().getBoolean(R.bool.isTablet);
+            boolean tabletSize = false;
             if(!tabletSize){
-                setContentView(R.layout.activity_detail_order_phone);
+                if(!tabletMode) setContentView(R.layout.activity_detail_order_phone);
+
                 tabLayout = (TabLayout) findViewById(R.id.tab_top);
                 /*tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.add_live));
                 tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.calendar_live));
                 tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.group_live));*/
                 tabLayout.addTab(tabLayout.newTab().setText("Kategori"));
                 tabLayout.addTab(tabLayout.newTab().setText("Menu"));
-                tabLayout.addTab(tabLayout.newTab().setText("Selected Menu"));
+                tabLayout.addTab(tabLayout.newTab().setText("Detail Pesanan"));
 
                 tabContainer = (RelativeLayout) findViewById(R.id.tab_container);
                 tab1 = (RelativeLayout) findViewById(R.id.tab_1);
@@ -238,6 +247,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         pbLoadOrder =  (ProgressBar) findViewById(R.id.pb_load_order);
         edtNoBukti = (EditText) findViewById(R.id.edt_no_bukti);
         edtUrutan= (EditText) findViewById(R.id.edt_urutan);
+        tilJmlPelanggan = (TextInputLayout) findViewById(R.id.til_jml_pelanggan);
+        edtJmlPelanggan= (EditText) findViewById(R.id.edt_jml_pelanggan);
         btnCetak = (Button) findViewById(R.id.btn_cetak);
         btnSimpan = (Button) findViewById(R.id.btn_simpan);
         fabScanBarcode = (FloatingActionButton) findViewById(R.id.fab_scan);
@@ -262,10 +273,12 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             if(noBukti != null && noBukti.length() > 0){
 
                 urutan = bundle.getString("urutan");
+                jumlahPlg = bundle.getString("jmlplg");
                 printNo = String.valueOf(iv.parseNullInteger(bundle.getString("printno")) + 1);
                 editPenjualanMode = true;
                 edtNoBukti.setText(noBukti);
                 edtUrutan.setText(urutan);
+                edtJmlPelanggan.setText(jumlahPlg);
             }else{
 
                 editPenjualanMode = false;
@@ -290,6 +303,15 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     return;
                 }
 
+                if(iv.parseNullInteger(edtJmlPelanggan.getText().toString()) == 0){
+                    edtJmlPelanggan.setError("Jumlah Pelanggan harus lebih dari 0");
+                    edtJmlPelanggan.requestFocus();
+                    return;
+                }else{
+                    edtJmlPelanggan.setError(null);
+                    jumlahPlg = edtJmlPelanggan.getText().toString();
+                }
+
                 /*if(edtUrutan.getText().toString().length() == 0){
 
                     Toast.makeText(DetailOrder.this, "Urutan tidak termuat, periksa koneksi anda", Toast.LENGTH_LONG).show();
@@ -309,6 +331,22 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     Toast.makeText(DetailOrder.this, "Harap tunggu hingga proses selesai", Toast.LENGTH_LONG).show();
                 }
 
+            }
+        });
+
+        edtJmlPelanggan.requestFocus();
+        edtJmlPelanggan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                loadJumlahPelanggan(edtJmlPelanggan.getText().toString());
+            }
+        });
+
+        tilJmlPelanggan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadJumlahPelanggan(edtJmlPelanggan.getText().toString());
             }
         });
     }
@@ -397,7 +435,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             penjualan.put("nmplg", "");
             penjualan.put("kdmeja", kdMeja);
             penjualan.put("nomeja", noMeja);
-            penjualan.put("jumlah_plg", noMeja);
+            penjualan.put("jumlah_plg", edtJmlPelanggan.getText().toString());
             penjualan.put("card", "");
             penjualan.put("nik", session.getUserInfo(SessionManager.TAG_NIK));
             penjualan.put("total", iv.doubleToStringRound(total));
@@ -1271,6 +1309,77 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             }
         });
 
+    }
+
+    private void loadJumlahPelanggan(final String jml){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DetailOrder.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_number, null);
+        builder.setView(view);
+
+        final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        final TextView tvPin = (TextView) view.findViewById(R.id.tv_pin);
+        final TextView tv1 = (TextView) view.findViewById(R.id.tv_1);
+        final TextView tv2 = (TextView) view.findViewById(R.id.tv_2);
+        final TextView tv3 = (TextView) view.findViewById(R.id.tv_3);
+        final TextView tv4 = (TextView) view.findViewById(R.id.tv_4);
+        final TextView tv5 = (TextView) view.findViewById(R.id.tv_5);
+        final TextView tv6 = (TextView) view.findViewById(R.id.tv_6);
+        final TextView tv7 = (TextView) view.findViewById(R.id.tv_7);
+        final TextView tv8 = (TextView) view.findViewById(R.id.tv_8);
+        final TextView tv9 = (TextView) view.findViewById(R.id.tv_9);
+        final TextView tv0 = (TextView) view.findViewById(R.id.tv_0);
+        final ImageView ivClear = (ImageView) view.findViewById(R.id.iv_clear);
+        tvTitle.setText("JUMLAH PELANGGAN");
+        tvPin.setText(jml);
+        pinButtonListener(tvPin,tv1);
+        pinButtonListener(tvPin,tv2);
+        pinButtonListener(tvPin,tv3);
+        pinButtonListener(tvPin,tv4);
+        pinButtonListener(tvPin,tv5);
+        pinButtonListener(tvPin,tv6);
+        pinButtonListener(tvPin,tv7);
+        pinButtonListener(tvPin,tv8);
+        pinButtonListener(tvPin,tv9);
+        pinButtonListener(tvPin,tv0);
+
+        builder.setNegativeButton("Tutup", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        ivClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(tvPin.getText().length() > 0) {
+
+                    tvPin.setText(tvPin.getText().toString().substring(0, tvPin.getText().length()-1));
+
+                    if(tvPin.getText().length() == 0){
+                        tvPin.setText("0");
+                    }
+                }
+            }
+        });
+
+        builder.setPositiveButton("Simpan", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                edtJmlPelanggan.setText(tvPin.getText().toString());
+            }
+        });
+
+
+        final AlertDialog alert = builder.create();
+        alert.show();
+
+        alert.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
     }
 
     private void getMenuByBarcode(String barcode) {
@@ -2326,9 +2435,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"-");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
             if(upselling.equals("1")){
-                textData.append(noMeja + "/" +  session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" +  session.getName() +"\n");
             }else{
-                textData.append(noMeja + "/" + "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" + "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());
@@ -2473,9 +2582,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+"\n");
             if(upselling.equals("1")){
-                textData.append(noMeja + "/" +  session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg"+ "/" +  session.getName() +"\n");
             }else{
-                textData.append(noMeja + "/" + "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" + "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());
@@ -2625,9 +2734,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+"\n");
             if(upselling.equals("1")){
-                textData.append(noMeja + "/" +  session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" +  session.getName() +"\n");
             }else{
-                textData.append(noMeja + "/" + "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" + "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());

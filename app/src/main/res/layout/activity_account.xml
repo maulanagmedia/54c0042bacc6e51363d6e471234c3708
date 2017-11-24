@@ -61,7 +61,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/ll_header"
@@ -69,14 +69,26 @@
         android:layout_marginLeft="@dimen/margin_default"
         android:layout_marginBottom="@dimen/margin_default"
         android:background="@drawable/input_form"
-        android:orientation="vertical"
         android:padding="@dimen/margin_default">
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/lv_account"></ListView>
-    </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_selected_red"
+            android:layout_marginTop="@dimen/margin_default"
+            android:text="Refresh "
+            android:visibility="gone"
+            android:id="@+id/btn_refresh"
+            android:layout_centerInParent="true"
+            android:drawableLeft="@mipmap/ic_find"
+            android:padding="@dimen/margin_default"
+            android:textColor="@color/text_color_red"/>
+    </RelativeLayout>
 
     <ProgressBar
         android:layout_width="wrap_content"

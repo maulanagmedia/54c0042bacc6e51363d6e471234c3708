@@ -42,7 +42,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="34dp"
                             android:background="@drawable/input_form"
-                            android:hint="No Meja"
+                            android:hint="Meja / Nobukti"
                             android:imeOptions="actionNext"
                             android:inputType="textPersonName"
                             android:gravity="center_vertical"

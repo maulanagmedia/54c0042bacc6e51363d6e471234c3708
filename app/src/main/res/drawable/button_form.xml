@@ -24,6 +24,13 @@
             <padding android:left="0dip" android:top="0dip" android:right="0dip" android:bottom="0dip" />
         </shape>
     </item>
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="@color/color_red_active"/>
+            <corners android:radius="@dimen/radius"/>
+            <padding android:left="0dip" android:top="0dip" android:right="0dip" android:bottom="0dip" />
+        </shape>
+    </item>
     <item>
         <shape>
             <solid android:color="@color/color_red"/>

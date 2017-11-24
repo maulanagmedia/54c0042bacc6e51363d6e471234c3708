@@ -34,7 +34,7 @@
                         android:layout_height="@dimen/default_input_height"
                         android:background="@drawable/input_form"
                         android:padding="@dimen/margin_default"
-                        android:hint="No Meja"
+                        android:hint="Meja / Nobukti"
                         android:inputType="textPersonName"
                         android:imeOptions="actionNext"
                         android:id="@+id/edt_no_meja"/>

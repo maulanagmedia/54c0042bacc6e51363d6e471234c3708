@@ -54,6 +54,7 @@ public class AccountActivity extends AppCompatActivity {
     private List<CustomItem> masterList;
     private ProgressBar pbLoading;
     private ImageView ivServer;
+    private Button btnRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +94,7 @@ public class AccountActivity extends AppCompatActivity {
         lvAccount = (ListView) findViewById(R.id.lv_account);
         pbLoading = (ProgressBar) findViewById(R.id.pb_loading);
         ivServer = (ImageView) findViewById(R.id.iv_server);
+        btnRefresh = (Button) findViewById(R.id.btn_refresh);
 
         String server = serverManager.getServer();
         if(server.length() > 0){
@@ -104,12 +106,29 @@ public class AccountActivity extends AppCompatActivity {
         }
 
         ivServer.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 loadChangeServer();
             }
         });
 
+        btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                btnRefresh.setVisibility(View.GONE);
+                session = new SessionManager(AccountActivity.this);
+                String server = serverManager.getServer();
+                if(server.length() > 0){
+
+                    tvServer.setText(server);
+                    getAccountList();
+                }else{
+                    loadChangeServer();
+                }
+            }
+        });
     }
 
     private void getAccountList(){
@@ -140,6 +159,7 @@ public class AccountActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     setAccountAdapter(null);
+                    btnRefresh.setVisibility(View.VISIBLE);
                 }
 
                 pbLoading.setVisibility(View.GONE);
@@ -149,6 +169,7 @@ public class AccountActivity extends AppCompatActivity {
             public void onError(String result) {
                 pbLoading.setVisibility(View.GONE);
                 setAccountAdapter(null);
+                btnRefresh.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -264,6 +285,7 @@ public class AccountActivity extends AppCompatActivity {
         serverURL = new ServerURL(AccountActivity.this);
         final ProgressDialog progressDialog = new ProgressDialog(AccountActivity.this, R.style.AppTheme_Custom_Dialog);
         progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 

@@ -141,6 +141,7 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
             intent.putExtra("nobukti", cli.getItem3());
             intent.putExtra("urutan", cli.getItem5());
             intent.putExtra("printno", cli.getItem7());
+            intent.putExtra("jmlplg", cli.getItem8());
         }
 
         context.startActivity(intent);
@@ -243,7 +244,7 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
                             for(int i = 0; i < jsonArray.length(); i++){
 
                                 JSONObject jo = jsonArray.getJSONObject(i);
-                                listPenjualan.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"), jo.getString("nobukti"), jo.getString("usertgl"), jo.getString("urutan"), jo.getString("jml_item"), jo.getString("print_no")));
+                                listPenjualan.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"), jo.getString("nobukti"), jo.getString("usertgl"), jo.getString("urutan"), jo.getString("jml_item"), jo.getString("print_no"), jo.getString("jumlah_plg")));
                             }
 
                             if(nobukti.equals("")){

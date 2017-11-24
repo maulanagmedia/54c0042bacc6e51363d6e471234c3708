@@ -113,6 +113,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
     private Printer mPrinter;
     private static String noBukti = "";
     private static String noMeja = "";
+    private static String jumlahPlg = "";
     private static String printNo = "1";
     private boolean printStatus = true;
     public static List<CustomItem> listSelectedMenu, listSelectedMenuPerUpSelling;
@@ -236,7 +237,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                         for(int i = 0; i < jsonArray.length(); i++){
 
                             JSONObject jo = jsonArray.getJSONObject(i);
-                            listTransaksi.add(new CustomItem(jo.getString("nobukti"), jo.getString("urutan"), jo.getString("pelanggan"), jo.getString("total"), jo.getString("usertgl"), jo.getString("nomeja"), jo.getString("nama"), jo.getString("jml_item"), jo.getString("cashier_status"), jo.getString("kitchen_status"), jo.getString("bar_status"), jo.getString("print_no"), jo.getString("status")));
+                            listTransaksi.add(new CustomItem(jo.getString("nobukti"), jo.getString("urutan"), jo.getString("pelanggan"), jo.getString("total"), jo.getString("usertgl"), jo.getString("nomeja"), jo.getString("nama"), jo.getString("jml_item"), jo.getString("cashier_status"), jo.getString("kitchen_status"), jo.getString("bar_status"), jo.getString("print_no"), jo.getString("status"), jo.getString("jumlah_plg")));
                         }
                     }
 
@@ -367,6 +368,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         noMeja = selectedItem.getItem6();
         printNo = String.valueOf(iv.parseNullInteger(selectedItem.getItem12()) + 1);
         urutan = selectedItem.getItem2();
+        jumlahPlg = selectedItem.getItem14();
 
         listMenu = new ArrayList<>();
         listSelectedMenu = new ArrayList<>();
@@ -1166,9 +1168,9 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"-");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
             if(upselling.equals("1")){
-                textData.append(noMeja+"/"+  session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg"+"/"+  session.getName() +"\n");
             }else{
-                textData.append(noMeja+"/"+ "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg"+"/"+ "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());
@@ -1314,9 +1316,9 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+" (RE)\n");
             if(upselling.equals("1")){
-                textData.append(noMeja+"/"+  session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg"+"/"+  session.getName() +"\n");
             }else{
-                textData.append(noMeja+"/"+ "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg"+"/"+ "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());
@@ -1467,9 +1469,9 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+" (RE)\n");
             if(upselling.equals("1")){
-                textData.append(noMeja + "/" +  session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" +  session.getName() +"\n");
             }else{
-                textData.append(noMeja + "/" + "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" + "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());
