@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,6 +38,7 @@ public class KategoriMenuAdapter extends ArrayAdapter{
     private static class ViewHolder {
         private TextView tvItem1;
         private LinearLayout llContainer;
+        private ImageView ivIcon;
     }
 
     public void addMoreData(List<CustomItem> moreData){
@@ -60,16 +62,19 @@ public class KategoriMenuAdapter extends ArrayAdapter{
             convertView = inflater.inflate(R.layout.adapter_kategori_menu, null);
             holder.tvItem1 = (TextView) convertView.findViewById(R.id.tv_item1);
             holder.llContainer = (LinearLayout) convertView.findViewById(R.id.ll_container);
+            holder.ivIcon= (ImageView) convertView.findViewById(R.id.iv_icon);
             convertView.setTag(holder);
         }else{
             holder = (ViewHolder) convertView.getTag();
         }
 
         if(position == selectedPosition){
+            holder.ivIcon.setImageResource(R.drawable.ic_kat_menu_white);
             holder.llContainer.setBackgroundColor(context.getResources().getColor(R.color.color_red));
             holder.tvItem1.setTextColor(context.getResources().getColor(R.color.color_white));
             notifyDataSetChanged();
         }else{
+            holder.ivIcon.setImageResource(R.drawable.ic_kat_menu_black);
             holder.llContainer.setBackgroundColor(context.getResources().getColor(R.color.color_white));
             holder.tvItem1.setTextColor(context.getResources().getColor(R.color.color_black));
             notifyDataSetChanged();

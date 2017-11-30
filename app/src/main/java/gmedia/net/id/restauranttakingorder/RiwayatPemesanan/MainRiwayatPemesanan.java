@@ -195,6 +195,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         serverURL = new ServerURL(context);
         session = new SessionManager(context);
         isLoading = false;
+        edtTanggal.setText(iv.getCurrentDate(FormatItem.formatDateDisplay));
         getDataTransaksi();
         setEvent();
         printerManager = new SavedPrinterManager(context);
@@ -402,7 +403,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                             }
 
                             listMenu.add(new CustomItem(jo.getString("id"), jo.getString("nmbrg"), jo.getString("harga"), jo.getString("catatan"), jo.getString("jml"), jo.getString("total"),jo.getString("print_menu"),jo.getString("print_rekap")));
-                            listSelectedMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),jo.getString("jml"),jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),jo.getString("tag_meja"),jo.getString("type"),jo.getString("upselling"),jo.getString("print_menu"),jo.getString("print_rekap"), "1"));
+                            listSelectedMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),jo.getString("jml"),jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),jo.getString("tag_meja"),jo.getString("type"),jo.getString("upselling"),jo.getString("print_menu"),jo.getString("print_rekap"), "1",jo.getString("jenis_order")));
                             // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja, 11. type, 12. upselling, 13. print menu, 14. print rekap, 15. flag cetak
                         }
                     }
@@ -1188,10 +1189,13 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             method = "addTextSize";
             mPrinter.addTextSize(1, 1);
 
-            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
+            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja, 16. Jenis order
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                String itemToPrint = item.getItem5() + " ("+ item.getItem16()+ ")" +" X "+ item.getItem2();
+                if(item.getItem16().toUpperCase().equals("DN")){
+                    itemToPrint = item.getItem5() + " X "+ item.getItem2();
+                }
                 if(item.getItem10().length()>0){
                     itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
                 }
@@ -1343,12 +1347,15 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             method = "addTextSize";
             mPrinter.addTextSize(2, 1);
 
-            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
+            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja, 16. Jenis Order
 
             int x = 1;
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                String itemToPrint = item.getItem5() + " ("+ item.getItem16()+ ")" +" X "+ item.getItem2();
+                if(item.getItem16().toUpperCase().equals("DN")){
+                    itemToPrint = item.getItem5() + " X "+ item.getItem2();
+                }
                 if(item.getItem10().length()>0){
                     itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
                 }
@@ -1501,7 +1508,10 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             int x = 1;
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                String itemToPrint = item.getItem5() + " ("+ item.getItem16()+ ")" +" X "+ item.getItem2();
+                if(item.getItem16().toUpperCase().equals("DN")){
+                    itemToPrint = item.getItem5() + " X "+ item.getItem2();
+                }
                 if(item.getItem10().length()>0){
                     itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
                 }

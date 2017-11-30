@@ -19,13 +19,21 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.maulana.custommodul.ApiVolley;
+import com.maulana.custommodul.ItemValidation;
 import com.maulana.custommodul.SessionManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import gmedia.net.id.restauranttakingorder.Order.MainOpenOrder;
 import gmedia.net.id.restauranttakingorder.Order.MainOrder;
 import gmedia.net.id.restauranttakingorder.Printer.MainPrinter;
 import gmedia.net.id.restauranttakingorder.Profile.MainProfile;
 import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.MainRiwayatPemesanan;
+import gmedia.net.id.restauranttakingorder.Utils.SavedPrinterManager;
+import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +48,9 @@ public class MainActivity extends AppCompatActivity
     private boolean exitState = false;
     private int timerClose = 2000;
     private static String title = "";
+    private SavedPrinterManager printerManager;
+    private ServerURL serverURL;
+    private ItemValidation iv = new ItemValidation();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +130,60 @@ public class MainActivity extends AppCompatActivity
         headerView = navigationView.getHeaderView(0);
         tvUser = (TextView) headerView.findViewById(R.id.tv_user);
         tvUser.setText(session.getUserInfo(SessionManager.TAG_NAMA));
+
+        printerManager = new SavedPrinterManager(MainActivity.this);
+        serverURL = new ServerURL(MainActivity.this);
+        getDetailPrinter();
+    }
+
+    private void getDetailPrinter() {
+
+        ApiVolley request = new ApiVolley(MainActivity.this, new JSONObject(), "GET", serverURL.getPrinter(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    if(iv.parseNullInteger(status) == 200){
+
+                        JSONArray jsonArray = response.getJSONArray("response");
+                        for (int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+                            if(jo.getString("flag").toUpperCase().equals("SUMMARY")){
+
+                                if(printerManager.getData(SavedPrinterManager.TAG_IP1) == null || printerManager.getData(SavedPrinterManager.TAG_IP1).length() == 0){
+
+                                    printerManager.saveLastPrinter(1, jo.getString("namaprinter"), jo.getString("namaprinter"), jo.getString("ip"));
+                                }
+                            }else if(jo.getString("flag").toUpperCase().equals("MAKANAN")){
+
+                                if(printerManager.getData(SavedPrinterManager.TAG_IP2) == null || printerManager.getData(SavedPrinterManager.TAG_IP2).length() == 0){
+
+                                    printerManager.saveLastPrinter(2, jo.getString("namaprinter"), jo.getString("namaprinter"), jo.getString("ip"));
+                                }
+                            }else if(jo.getString("flag").toUpperCase().equals("MINUMAN")){
+
+                                if(printerManager.getData(SavedPrinterManager.TAG_IP3) == null || printerManager.getData(SavedPrinterManager.TAG_IP3).length() == 0){
+
+                                    printerManager.saveLastPrinter(3, jo.getString("namaprinter"), jo.getString("namaprinter"), jo.getString("ip"));
+                                }
+                            }
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+
+            }
+        });
     }
 
     @Override

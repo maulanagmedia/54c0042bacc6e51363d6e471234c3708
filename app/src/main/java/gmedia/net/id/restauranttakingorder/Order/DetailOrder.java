@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -36,6 +37,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -128,13 +131,16 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     private EditText edtJmlPelanggan;
     private String jumlahPlg = "";
     private TextInputLayout tilJmlPelanggan;
+    private boolean firstLoadJumlah = true;
 
+    private static boolean doubleBackToExitPressedOnce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_order);
 
+        doubleBackToExitPressedOnce = false;
         //phoneMode = false;
         phoneMode = true;
         boolean tabletMode = true;
@@ -349,6 +355,31 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 loadJumlahPelanggan(edtJmlPelanggan.getText().toString());
             }
         });
+
+        if(firstLoadJumlah){
+            firstLoadJumlah = false;
+            edtJmlPelanggan.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                    if(iv.parseNullInteger(edtJmlPelanggan.getText().toString()) == 0){
+                        edtJmlPelanggan.setError("Jumlah Pelanggan harus lebih dari 0");
+                    }else{
+                        edtJmlPelanggan.setError(null);
+                    }
+                }
+            });
+        }
     }
 
     private void loadSaveDialog(List<CustomItem> listItem){
@@ -420,6 +451,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 jo.put("tglinput", timestampNow);
                 jo.put("nik", session.getUserInfo(SessionManager.TAG_NIK));
                 jo.put("catatan", item.getItem8());
+                jo.put("jenis_order", item.getItem12());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1280,7 +1312,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                         for(int i = 0; i < jsonArray.length(); i++){
 
                             JSONObject jo = jsonArray.getJSONObject(i);
-                            listMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),"1",jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),"",jo.getString("type")));
+                            listMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),"1",jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),"",jo.getString("type"), "DN"));
                             // id, nama, harga, gambar, banyak, satuan, diskon, catatan, hargaDiskon, tag meja
                         }
 
@@ -1532,6 +1564,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
             final TextView tvHarga = (TextView) view.findViewById(R.id.tv_harga);
             final EditText edtHarga = (EditText) view.findViewById(R.id.edt_harga);
+            final RadioGroup rgJenisOrder = (RadioGroup) view.findViewById(R.id.rg_jenis_order);
+            final RadioButton rbDN = (RadioButton) view.findViewById(R.id.rb_dn);
+            final RadioButton rbTA = (RadioButton) view.findViewById(R.id.rb_ta);
             final ImageView ivJmlPlus = (ImageView) view.findViewById(R.id.iv_jml_plus);
             final ImageView ivJmlMin = (ImageView) view.findViewById(R.id.iv_jml_min);
             final EditText edtJumlah = (EditText) view.findViewById(R.id.edt_jumlah);
@@ -1561,6 +1596,11 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             edtDiskon.setText(item.getItem7());
             edtCatatan.setText(item.getItem8());
             edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())));
+            if(item.getItem12().equals("DN")) {
+                rbDN.setChecked(true);
+            }else{
+                rbTA.setChecked(true);
+            }
 
             edtJumlah.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -1691,12 +1731,15 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     }
 
                     newItem[0].setItem10(tagMeja);
+                    String jenisOrder = "DN";
+                    if(rbTA.isChecked()) jenisOrder = "TA";
+                    newItem[0].setItem12(jenisOrder);
                     addMoreSelectedMenu(newItem[0]);
                     alert.dismiss();
                     updateHargaTotal();
                     //setTabPosition(2);
                     if(phoneMode){
-                        TabLayout.Tab tab = tabLayout.getTabAt(2);
+                        TabLayout.Tab tab = tabLayout.getTabAt(1);
                         tab.select();
                     }
 
@@ -1907,6 +1950,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         final TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
         final TextView tvHarga = (TextView) view.findViewById(R.id.tv_harga);
         final EditText edtHarga = (EditText) view.findViewById(R.id.edt_harga);
+        final RadioGroup rgJenisOrder = (RadioGroup) view.findViewById(R.id.rg_jenis_order);
+        final RadioButton rbDN = (RadioButton) view.findViewById(R.id.rb_dn);
+        final RadioButton rbTA = (RadioButton) view.findViewById(R.id.rb_ta);
         final ImageView ivJmlPlus = (ImageView) view.findViewById(R.id.iv_jml_plus);
         final ImageView ivJmlMin = (ImageView) view.findViewById(R.id.iv_jml_min);
         final EditText edtJumlah = (EditText) view.findViewById(R.id.edt_jumlah);
@@ -1934,6 +1980,11 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         edtSatuan.setText(item.getItem6());
         edtDiskon.setText(item.getItem7());
         edtCatatan.setText(item.getItem8());
+        if(item.getItem12().equals("DN")) {
+            rbDN.setChecked(true);
+        }else{
+            rbTA.setChecked(true);
+        }
         String[] listTag = item.getItem10().split(",");
         for(int i = 0; i < listTag.length; i++){
 
@@ -2130,6 +2181,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }
 
                 newItem[0].setItem10(tagMeja);
+                String jenisOrder = "DN";
+                if(rbTA.isChecked()) jenisOrder = "TA";
+                newItem[0].setItem12(jenisOrder);
 
                 listSelectedMenu.set(position, newItem[0]);
                 selectedMenuAdapter.notifyDataSetChanged();
@@ -2137,7 +2191,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 updateHargaTotal();
                 //setTabPosition(2);
                 if(phoneMode){
-                    TabLayout.Tab tab = tabLayout.getTabAt(2);
+                    TabLayout.Tab tab = tabLayout.getTabAt(1);
                     tab.select();
                 }
 
@@ -2356,7 +2410,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         double hargaDiskon = (diskon != 0) ? (harga - (harga * diskon / 100)): harga;
         edtHargaDiskon.setText(iv.ChangeToRupiahFormat(hargaDiskon));
         tvTotal.setText(iv.ChangeToRupiahFormat(jumlah*hargaDiskon));
-        CustomItem newItem = new CustomItem(item.getItem1(),item.getItem2(),item.getItem3(),item.getItem4(),edtJumlah.getText().toString(),item.getItem6(), edtDiskon.getText().toString(),item.getItem8(),iv.doubleToStringRound(hargaDiskon), item.getItem10(), item.getItem11());
+        CustomItem newItem = new CustomItem(item.getItem1(),item.getItem2(),item.getItem3(),item.getItem4(),edtJumlah.getText().toString(),item.getItem6(), edtDiskon.getText().toString(),item.getItem8(),iv.doubleToStringRound(hargaDiskon), item.getItem10(), item.getItem11(), item.getItem12());
         return newItem;
     }
     //endregion
@@ -2374,8 +2428,36 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+
+        if (doubleBackToExitPressedOnce) {
+
+            super.onBackPressed();
+            overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+        }
+
+        if(!doubleBackToExitPressedOnce){
+
+            AlertDialog builder = new AlertDialog.Builder(DetailOrder.this)
+                    .setIcon(R.mipmap.ic_warning)
+                    .setTitle("Peringatan")
+                    .setMessage("Pesanan belum terproses (tekan Proses pada Detail Pesanan untuk memproses).\nApakah anda yakin ingin kembali tanpa memproses pesanan?")
+                    .setCancelable(false)
+                    .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                            doubleBackToExitPressedOnce = true;
+                            onBackPressed();
+                        }
+                    })
+                    .setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                            doubleBackToExitPressedOnce=false;
+                        }
+                    }).show();
+        }
     }
 
     //region Prinnter
@@ -2458,7 +2540,10 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                String itemToPrint = item.getItem5() + " ("+ item.getItem12()+ ")" +" X "+ item.getItem2();
+                if(item.getItem12().toUpperCase().equals("DN")){
+                    itemToPrint = item.getItem5() + " X "+ item.getItem2();
+                }
                 if(item.getItem10().length()>0){
                     itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
                 }
@@ -2614,7 +2699,10 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             int x = 1;
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                String itemToPrint = item.getItem5() + " ("+ item.getItem12()+ ")" +" X "+ item.getItem2();
+                if(item.getItem12().toUpperCase().equals("DN")){
+                    itemToPrint = item.getItem5() + " X "+ item.getItem2();
+                }
                 if(item.getItem10().length()>0){
                     itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
                 }
@@ -2766,7 +2854,10 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             int x = 1;
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() +" X "+ item.getItem2();
+                String itemToPrint = item.getItem5() + " ("+ item.getItem12()+ ")" +" X "+ item.getItem2();
+                if(item.getItem12().toUpperCase().equals("DN")){
+                    itemToPrint = item.getItem5() + " X "+ item.getItem2();
+                }
                 if(item.getItem10().length()>0){
                     itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
                 }

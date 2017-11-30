@@ -211,7 +211,7 @@ public class MainOpenOrder extends Fragment {
             final ListMejaAdapter menuAdapter2 = new ListMejaAdapter(context, listItem2);
             final ListMejaAdapter menuAdapter3 = new ListMejaAdapter(context, listItem3);
 
-            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            boolean tabletSize = context.getResources().getBoolean(R.bool.isTablet);
             if(!tabletSize){
                 final RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(context, 2);
                 final RecyclerView.LayoutManager mLayoutManager2 = new GridLayoutManager(context, 2);
