@@ -4,96 +4,192 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_red"
     tools:context="gmedia.net.id.restauranttakingorder.AccountActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/ll_header"
-        android:layout_margin="@dimen/margin_default"
-        android:background="@drawable/input_form"
-        android:paddingLeft="@dimen/margin_default"
-        android:paddingRight="@dimen/margin_default"
-        android:paddingBottom="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:weightSum="1">
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="0.9"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/margin_small"
-            android:paddingBottom="@dimen/margin_small"
-            android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.25"
+            android:orientation="horizontal"
+            android:id="@+id/ll_icon"
+            android:weightSum="1"
+            android:gravity="center_horizontal|bottom">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Server"
-                android:padding="@dimen/margin_tiny"
-                android:textColor="@color/color_black"
-                android:textSize="@dimen/font_title"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.4"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="bottom"
+                android:weightSum="1">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/color_red"
-                android:textSize="@dimen/font_value"
-                android:layout_margin="@dimen/margin_tiny"
-                android:id="@+id/tv_server"
-                android:text=""/>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.7"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_pullens"/>
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="0.1"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="@dimen/margin_default">
+            android:layout_marginLeft="@dimen/margin_horizontal"
+            android:layout_marginRight="@dimen/margin_horizontal"
+            android:gravity="center">
 
-            <ImageView
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/ll_header"
+                android:layout_margin="@dimen/margin_default"
+                android:background="@drawable/input_form"
+                android:paddingLeft="@dimen/margin_default"
+                android:paddingRight="@dimen/margin_default"
+                android:paddingBottom="0dp"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.9"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/margin_small"
+                    android:paddingBottom="@dimen/margin_small"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Server"
+                        android:gravity="center_horizontal"
+                        android:padding="@dimen/margin_tiny"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/font_title"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/font_value"
+                        android:gravity="center"
+                        android:layout_margin="@dimen/margin_tiny"
+                        android:id="@+id/tv_server"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.1"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/margin_default"
+                    android:weightSum="1">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerInside"
+                        android:id="@+id/iv_server"
+                        android:src="@mipmap/ic_edit_red"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.45"
+            android:orientation="vertical"
+            android:gravity="center_horizontal|top">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/margin_default"
+                android:layout_marginLeft="@dimen/margin_default"
+                android:layout_marginBottom="@dimen/margin_default"
+                android:gravity="center_horizontal"
+                android:padding="@dimen/margin_default"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="@dimen/margin_default"
+                    android:layout_marginLeft="@dimen/margin_default"
+                    android:layout_marginBottom="@dimen/margin_default"
+                    android:background="@drawable/input_form"
+                    android:padding="@dimen/margin_default">
+
+                    <ListView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/lv_account"></ListView>
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/pb_loading"
+                        android:layout_centerInParent="true"
+                        android:visibility="gone"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ripple_selected_red"
+                        android:layout_marginTop="@dimen/margin_default"
+                        android:text="Refresh "
+                        android:visibility="gone"
+                        android:id="@+id/btn_refresh"
+                        android:layout_centerInParent="true"
+                        android:drawableLeft="@mipmap/ic_find"
+                        android:padding="@dimen/margin_default"
+                        android:textColor="@color/text_color_red"/>
+                </RelativeLayout>
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="wrap_content"
+                    android:minHeight="60dp"
+                    android:visibility="gone"
+                    android:background="@drawable/ripple_selected_red"
+                    android:layout_marginTop="@dimen/margin_default"
+                    android:text="MASUK"
+                    android:textSize="19sp"
+                    android:id="@+id/btn_enter"
+                    android:textColor="@color/text_color_red"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerInside"
-                android:id="@+id/iv_server"
-                android:src="@mipmap/ic_edit_red"/>
+                android:gravity="center"
+                android:text="@string/title_name"
+                android:textColor="@color/color_white"
+                android:textAllCaps="true"/>
         </LinearLayout>
+
     </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/ll_header"
-        android:layout_marginRight="@dimen/margin_default"
-        android:layout_marginLeft="@dimen/margin_default"
-        android:layout_marginBottom="@dimen/margin_default"
-        android:background="@drawable/input_form"
-        android:padding="@dimen/margin_default">
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/lv_account"></ListView>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ripple_selected_red"
-            android:layout_marginTop="@dimen/margin_default"
-            android:text="Refresh "
-            android:visibility="gone"
-            android:id="@+id/btn_refresh"
-            android:layout_centerInParent="true"
-            android:drawableLeft="@mipmap/ic_find"
-            android:padding="@dimen/margin_default"
-            android:textColor="@color/text_color_red"/>
-    </RelativeLayout>
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/pb_loading"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
 </RelativeLayout>

@@ -1543,7 +1543,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         boolean editMode = false;
         for(CustomItem listMenu: listSelectedMenu){
 
-            if(listMenu.getItem1().equals(item.getItem1())) {
+            if(listMenu.getItem1().equals(item.getItem1()) && listMenu.getItem12().equals(item.getItem12())) {
                 editMode = true;
                 break;
             }
@@ -1582,6 +1582,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             final CheckBox cbF = (CheckBox) view.findViewById(R.id.cb_f);
             final CheckBox cbG = (CheckBox) view.findViewById(R.id.cb_g);
             final CheckBox cbH = (CheckBox) view.findViewById(R.id.cb_h);
+            final CheckBox cbI = (CheckBox) view.findViewById(R.id.cb_i);
+            final CheckBox cbJ = (CheckBox) view.findViewById(R.id.cb_j);
             final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
             final Button btnHapus = (Button) view.findViewById(R.id.btn_hapus);
             btnHapus.setVisibility(View.GONE);
@@ -1633,7 +1635,62 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }
             });
 
-            setCheckedTagMeja(cbA, cbB, cbC, cbD, cbE, cbF, cbG, cbH, edtJumlah);
+            rgJenisOrder.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                    String selectedJenis = "DN";
+                    if(i == rbTA.getId()) selectedJenis = "TA";
+                    int position = 0;
+                    boolean isExist = false;
+                    for(CustomItem itemAtPosition: listSelectedMenu){
+
+                        if(item.getItem1().equals(itemAtPosition.getItem1()) && itemAtPosition.getItem12().equals(selectedJenis)){
+
+                            isExist = true;
+                            break;
+                        }
+                        position++;
+                    }
+
+                    if(isExist){
+
+                        CustomItem itemAtPosition = listSelectedMenu.get(position);
+
+                        tvTitle.setText(itemAtPosition.getItem2());
+                        tvHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(itemAtPosition.getItem9())*iv.parseNullDouble(itemAtPosition.getItem5())));
+                        edtHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(itemAtPosition.getItem3())));
+                        edtJumlah.setText(itemAtPosition.getItem5());
+                        edtSatuan.setText(itemAtPosition.getItem6());
+                        edtDiskon.setText(itemAtPosition.getItem7());
+                        edtCatatan.setText(itemAtPosition.getItem8());
+                        edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(itemAtPosition.getItem9())));
+                        /*if(itemAtPosition.getItem12().equals("DN")) {
+                            rbDN.setChecked(true);
+                        }else{
+                            rbTA.setChecked(true);
+                        }*/
+
+                    }else{
+
+                        tvTitle.setText(item.getItem2());
+                        tvHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())*iv.parseNullDouble(item.getItem5())));
+                        edtHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem3())));
+                        edtJumlah.setText("1");
+                        edtSatuan.setText(item.getItem6());
+                        edtDiskon.setText(item.getItem7());
+                        edtCatatan.setText(item.getItem8());
+                        edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())));
+                        /*if(item.getItem12().equals("DN")) {
+                            rbDN.setChecked(true);
+                        }else{
+                            rbTA.setChecked(true);
+                        }*/
+                    }
+                }
+            });
+
+            setCheckedTagMeja(cbA, cbB, cbC, cbD, cbE, cbF, cbG, cbH, cbI, cbJ, edtJumlah);
 
             ivJmlMin.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1718,6 +1775,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     if(cbF.isChecked())listTagMeja.add("F");
                     if(cbG.isChecked())listTagMeja.add("G");
                     if(cbH.isChecked())listTagMeja.add("H");
+                    if(cbI.isChecked())listTagMeja.add("I");
+                    if(cbJ.isChecked())listTagMeja.add("J");
 
                     String tagMeja = "";
                     int x = 0;
@@ -1767,7 +1826,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 double lastJumlah = 0;
                 for(CustomItem item: listSelectedMenu){
 
-                    if(item.getItem1().equals(selectedMenu.getItem1())){
+                    if(item.getItem1().equals(selectedMenu.getItem1()) && item.getItem12().equals(selectedMenu.getItem12())){
                         isExist = true;
                         lastJumlah = iv.parseNullDouble(item.getItem5());
                         break;
@@ -1937,7 +1996,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
     //region dialogEdit
 
-    private static void loadEditOrderDialog(final Context context, final int position, boolean fromInserted){
+    private static void loadEditOrderDialog(final Context context, final int position, final boolean fromInserted){
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -1968,6 +2027,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         final CheckBox cbF = (CheckBox) view.findViewById(R.id.cb_f);
         final CheckBox cbG = (CheckBox) view.findViewById(R.id.cb_g);
         final CheckBox cbH = (CheckBox) view.findViewById(R.id.cb_h);
+        final CheckBox cbI = (CheckBox) view.findViewById(R.id.cb_i);
+        final CheckBox cbJ = (CheckBox) view.findViewById(R.id.cb_j);
         final Button btnBatal = (Button) view.findViewById(R.id.btn_batal);
         final Button btnHapus = (Button) view.findViewById(R.id.btn_hapus);
         final Button btnSimpan = (Button) view.findViewById(R.id.btn_simpan);
@@ -1985,6 +2046,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         }else{
             rbTA.setChecked(true);
         }
+
         String[] listTag = item.getItem10().split(",");
         for(int i = 0; i < listTag.length; i++){
 
@@ -2012,6 +2074,12 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     break;
                 case "H":
                     cbH.setChecked(true);
+                    break;
+                case "I":
+                    cbI.setChecked(true);
+                    break;
+                case "J":
+                    cbJ.setChecked(true);
                     break;
             }
         }
@@ -2053,7 +2121,62 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             }
         });
 
-        setCheckedTagMeja(cbA, cbB, cbC, cbD, cbE, cbF, cbG, cbH, edtJumlah);
+        rgJenisOrder.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                String selectedJenis = "DN";
+                if(i == rbTA.getId()) selectedJenis = "TA";
+                int position = 0;
+                boolean isExist = false;
+                for(CustomItem itemAtPosition: listSelectedMenu){
+
+                    if(item.getItem1().equals(itemAtPosition.getItem1()) && itemAtPosition.getItem12().equals(selectedJenis)){
+
+                        isExist = true;
+                        break;
+                    }
+                    position++;
+                }
+
+                if(isExist){
+
+                    CustomItem itemAtPosition = listSelectedMenu.get(position);
+
+                    tvTitle.setText(itemAtPosition.getItem2());
+                    tvHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(itemAtPosition.getItem9())*iv.parseNullDouble(itemAtPosition.getItem5())));
+                    edtHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(itemAtPosition.getItem3())));
+                    edtJumlah.setText(itemAtPosition.getItem5());
+                    edtSatuan.setText(itemAtPosition.getItem6());
+                    edtDiskon.setText(itemAtPosition.getItem7());
+                    edtCatatan.setText(itemAtPosition.getItem8());
+                    edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(itemAtPosition.getItem9())));
+                    /*if(itemAtPosition.getItem12().equals("DN")) {
+                        rbDN.setChecked(true);
+                    }else{
+                        rbTA.setChecked(true);
+                    }*/
+
+                }else{
+
+                    tvTitle.setText(item.getItem2());
+                    tvHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())*iv.parseNullDouble(item.getItem5())));
+                    edtHarga.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem3())));
+                    edtJumlah.setText("1");
+                    edtSatuan.setText(item.getItem6());
+                    edtDiskon.setText(item.getItem7());
+                    edtCatatan.setText(item.getItem8());
+                    edtHargaDiskon.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(item.getItem9())));
+                    /*if(item.getItem12().equals("DN")) {
+                        rbDN.setChecked(true);
+                    }else{
+                        rbTA.setChecked(true);
+                    }*/
+                }
+            }
+        });
+
+        setCheckedTagMeja(cbA, cbB, cbC, cbD, cbE, cbF, cbG, cbH, cbI, cbJ, edtJumlah);
 
         if(fromInserted) edtJumlah.setText(String.valueOf(iv.parseNullLong(item.getItem5()) + 1));
 
@@ -2168,6 +2291,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cbF.isChecked())listTagMeja.add("F");
                 if(cbG.isChecked())listTagMeja.add("G");
                 if(cbH.isChecked())listTagMeja.add("H");
+                if(cbI.isChecked())listTagMeja.add("I");
+                if(cbJ.isChecked())listTagMeja.add("J");
 
                 String tagMeja = "";
                 int x = 0;
@@ -2185,14 +2310,38 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(rbTA.isChecked()) jenisOrder = "TA";
                 newItem[0].setItem12(jenisOrder);
 
-                listSelectedMenu.set(position, newItem[0]);
+                int position = 0;
+                boolean isExist = false;
+                for(CustomItem itemAtPosition: listSelectedMenu){
+
+                    if(newItem[0].getItem1().equals(itemAtPosition.getItem1()) && newItem[0].getItem12().equals(itemAtPosition.getItem12())){
+
+                        isExist = true;
+                        break;
+                    }
+                    position++;
+                }
+
+                if(isExist){
+                    listSelectedMenu.set(position, newItem[0]);
+                }else{
+                    listSelectedMenu.add(newItem[0]);
+                }
+
                 selectedMenuAdapter.notifyDataSetChanged();
                 alert.dismiss();
                 updateHargaTotal();
                 //setTabPosition(2);
                 if(phoneMode){
-                    TabLayout.Tab tab = tabLayout.getTabAt(1);
-                    tab.select();
+
+                    if(fromInserted){
+                        TabLayout.Tab tab = tabLayout.getTabAt(1);
+                        tab.select();
+                    }else{
+                        TabLayout.Tab tab = tabLayout.getTabAt(2);
+                        tab.select();
+                    }
+
                 }
 
                 edtSearchMenu.setText("");
@@ -2207,7 +2356,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         );
     }
 
-    private static void setCheckedTagMeja(final CheckBox cA, final CheckBox cB, final CheckBox cC, final CheckBox cD, final CheckBox cE, final CheckBox cF, final CheckBox cG, final CheckBox cH, final EditText target){
+    private static void setCheckedTagMeja(final CheckBox cA, final CheckBox cB, final CheckBox cC, final CheckBox cD, final CheckBox cE, final CheckBox cF, final CheckBox cG, final CheckBox cH, final CheckBox cI, final CheckBox cJ, final EditText target){
 
         cA.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -2221,6 +2370,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cF.isChecked()) anotherCheck = true;
                 if(cG.isChecked()) anotherCheck = true;
                 if(cH.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
 
                 if(anotherCheck){
 
@@ -2245,6 +2396,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cF.isChecked()) anotherCheck = true;
                 if(cG.isChecked()) anotherCheck = true;
                 if(cH.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
 
                 if(anotherCheck){
 
@@ -2269,6 +2422,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cF.isChecked()) anotherCheck = true;
                 if(cG.isChecked()) anotherCheck = true;
                 if(cH.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
 
                 if(anotherCheck){
 
@@ -2293,6 +2448,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cF.isChecked()) anotherCheck = true;
                 if(cG.isChecked()) anotherCheck = true;
                 if(cH.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
 
                 if(anotherCheck){
 
@@ -2317,6 +2474,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cF.isChecked()) anotherCheck = true;
                 if(cG.isChecked()) anotherCheck = true;
                 if(cH.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
 
                 if(anotherCheck){
 
@@ -2341,6 +2500,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cE.isChecked()) anotherCheck = true;
                 if(cG.isChecked()) anotherCheck = true;
                 if(cH.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
 
                 if(anotherCheck){
 
@@ -2365,6 +2526,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cE.isChecked()) anotherCheck = true;
                 if(cF.isChecked()) anotherCheck = true;
                 if(cH.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
 
                 if(anotherCheck){
 
@@ -2389,6 +2552,60 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 if(cE.isChecked()) anotherCheck = true;
                 if(cF.isChecked()) anotherCheck = true;
                 if(cG.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cI.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+                if(cJ.isChecked()) anotherCheck = true;
+
+                if(anotherCheck){
+
+                    if(b){
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) + 1));
+                    }else{
+                        target.setText(String.valueOf(iv.parseNullInteger(target.getText().toString()) - 1));
+                    }
+                }
+            }
+        });
+
+        cJ.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                boolean anotherCheck = false;
+                if(cA.isChecked()) anotherCheck = true;
+                if(cB.isChecked()) anotherCheck = true;
+                if(cC.isChecked()) anotherCheck = true;
+                if(cD.isChecked()) anotherCheck = true;
+                if(cE.isChecked()) anotherCheck = true;
+                if(cF.isChecked()) anotherCheck = true;
+                if(cG.isChecked()) anotherCheck = true;
+                if(cH.isChecked()) anotherCheck = true;
+                if(cI.isChecked()) anotherCheck = true;
 
                 if(anotherCheck){
 

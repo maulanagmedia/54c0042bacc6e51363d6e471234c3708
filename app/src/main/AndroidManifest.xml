@@ -55,6 +55,7 @@
             android:screenOrientation="portrait"></activity>
         <activity android:name=".AccountActivity"
             android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
             android:screenOrientation="portrait"></activity>
 
     </application>

@@ -297,7 +297,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:layout_marginTop="@dimen/margin_small"
-                        android:weightSum="4">
+                        android:weightSum="5">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -394,14 +394,6 @@
                                 android:textSize="@dimen/tag_meja"
                                 android:textStyle="bold"/>
                         </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="15dp"
-                        android:weightSum="4">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -426,6 +418,14 @@
                                 android:textSize="@dimen/tag_meja"
                                 android:textStyle="bold"/>
                         </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="15dp"
+                        android:weightSum="5">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -494,6 +494,54 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="H"
+                                android:textColor="@color/color_black"
+                                android:textSize="@dimen/tag_meja"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <CheckBox
+                                android:layout_width="@dimen/cb_tag_meja"
+                                android:layout_height="@dimen/cb_tag_meja"
+                                android:background="@drawable/custom_checkbox"
+                                android:button="@null"
+                                android:textSize="@dimen/tag_meja"
+                                android:id="@+id/cb_i"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="I"
+                                android:textColor="@color/color_black"
+                                android:textSize="@dimen/tag_meja"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <CheckBox
+                                android:layout_width="@dimen/cb_tag_meja"
+                                android:layout_height="@dimen/cb_tag_meja"
+                                android:background="@drawable/custom_checkbox"
+                                android:button="@null"
+                                android:textSize="@dimen/tag_meja"
+                                android:id="@+id/cb_j"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="J"
                                 android:textColor="@color/color_black"
                                 android:textSize="@dimen/tag_meja"
                                 android:textStyle="bold"/>

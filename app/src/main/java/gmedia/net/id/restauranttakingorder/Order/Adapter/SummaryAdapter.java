@@ -61,6 +61,9 @@ public class SummaryAdapter extends ArrayAdapter{
 
         final CustomItem itemSelected = items.get(position);
         holder.tvItem1.setText(itemSelected.getItem2());
+        if(itemSelected.getItem12().equals("TA")){
+            holder.tvItem1.setText(itemSelected.getItem2() + " ("+ itemSelected.getItem12()+")");
+        }
         holder.tvItem2.setText(itemSelected.getItem5());
         if(itemSelected.getItem8().length() > 0){
             holder.llNote.setVisibility(View.VISIBLE);

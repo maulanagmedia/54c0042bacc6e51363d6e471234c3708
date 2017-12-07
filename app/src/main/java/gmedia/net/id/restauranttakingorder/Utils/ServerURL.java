@@ -21,6 +21,9 @@ public class ServerURL {
     }
 
     public String login(){ return baseURL + "auth/login/";}
+    public String checkServer(){ return baseURL + "auth/cek_server/";}
+    public static String loginAdmin = "auth/login/";
+    public static String getListAdmin = "auth/get_admin/";
     public String getKategori(){ return baseURL + "order/get_kategori/";}
     public String getMenu(){ return baseURL + "order/get_menu/";}
     public String getMenuBarcode(){ return baseURL + "order/get_menu_barcode/";}

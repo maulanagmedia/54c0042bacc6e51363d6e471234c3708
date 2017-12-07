@@ -29,7 +29,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/input_form"
                     android:hint="IP Server *"
-                    android:textColor="@color/color_red"
+                    android:textColor="@color/color_black"
                     android:id="@+id/edt_server"
                     android:gravity="left"
                     android:imeOptions="actionDone"

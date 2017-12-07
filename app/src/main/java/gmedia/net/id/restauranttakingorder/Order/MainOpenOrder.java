@@ -42,13 +42,13 @@ public class MainOpenOrder extends Fragment {
     private View layout;
     private RecyclerView rvMeja1, rvMeja2, rvMeja3;
     private ProgressBar pbLoad;
-    private SessionManager session;
+    private static SessionManager session;
     private ItemValidation iv = new ItemValidation();
     private List<CustomItem> listMeja;
     private ServerURL serverURL;
     private RelativeLayout rlRefresh;
     private Button btnRefresh;
-    private TextView tvTitle;
+    private static TextView tvTitle;
     private static Timer timer = new Timer();
     private int timerTime = 1000 * 60 * 1; // 1 minute refresh
 
@@ -108,6 +108,11 @@ public class MainOpenOrder extends Fragment {
         });
 
         timer.scheduleAtFixedRate(new mainTask(), 1000, timerTime);
+    }
+
+    public static void updateStatus(Context context){
+        session = new SessionManager(context);
+        tvTitle.setText(session.getUserInfo(SessionManager.TAG_NAMA));
     }
 
     private class mainTask extends TimerTask

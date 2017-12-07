@@ -55,6 +55,9 @@ public class AccountActivity extends AppCompatActivity {
     private ProgressBar pbLoading;
     private ImageView ivServer;
     private Button btnRefresh;
+    private Button btnEnter;
+    private AlertDialog alertDialogListAdmin;
+    private AlertDialog alertChangeServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +98,7 @@ public class AccountActivity extends AppCompatActivity {
         pbLoading = (ProgressBar) findViewById(R.id.pb_loading);
         ivServer = (ImageView) findViewById(R.id.iv_server);
         btnRefresh = (Button) findViewById(R.id.btn_refresh);
+        btnEnter = (Button) findViewById(R.id.btn_enter);
 
         String server = serverManager.getServer();
         if(server.length() > 0){
@@ -124,16 +128,72 @@ public class AccountActivity extends AppCompatActivity {
 
                     tvServer.setText(server);
                     getAccountList();
+
+
                 }else{
                     loadChangeServer();
                 }
+            }
+        });
+
+        btnEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                checkServer();
+            }
+        });
+    }
+
+    private void checkServer(){
+
+        serverURL = new ServerURL(AccountActivity.this);
+
+        final ProgressDialog progressDialog = new ProgressDialog(AccountActivity.this, R.style.AppTheme_Custom_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
+
+        ApiVolley request = new ApiVolley(AccountActivity.this, new JSONObject(), "GET", serverURL.checkServer(), "", "", 0, "", "", new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+
+                    if(iv.parseNullInteger(status) == 200){
+
+                        progressDialog.dismiss();
+                        JSONObject jo = response.getJSONObject("response");
+                        session.createLoginSession("","","", "", "", "1","");
+                        Intent intent = new Intent(AccountActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(AccountActivity.this, "Tidak dapat menyambung ke server, harap lapor ke admin", Toast.LENGTH_LONG).show();
+                }
+
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onError(String result) {
+                progressDialog.dismiss();
+                Toast.makeText(AccountActivity.this, "Tidak dapat menyambung ke server, harap lapor ke admin", Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void getAccountList(){
 
+        serverURL = new ServerURL(AccountActivity.this);
         pbLoading.setVisibility(View.VISIBLE);
+        btnRefresh.setVisibility(View.GONE);
         masterList = new ArrayList<>();
         ApiVolley request = new ApiVolley(AccountActivity.this, new JSONObject(), "GET", serverURL.getAccount(), "", "", 0, "", "", new ApiVolley.VolleyCallback() {
             @Override
@@ -211,12 +271,12 @@ public class AccountActivity extends AppCompatActivity {
         String ip = serverManager.getServer();
         if(ip.length() > 0) edtServer.setText(ip);
 
-        final AlertDialog alert = builder.create();
+        alertChangeServer = builder.create();
         btnBatal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                alert.dismiss();
+                alertChangeServer.dismiss();
             }
         });
 
@@ -231,18 +291,19 @@ public class AccountActivity extends AppCompatActivity {
                     return;
                 }
 
-                AlertDialog konfirmasiSimpan = new AlertDialog.Builder(AccountActivity.this)
+                loadListAdmin(edtServer.getText().toString());
+                /*AlertDialog konfirmasiSimpan = new AlertDialog.Builder(AccountActivity.this)
                         .setTitle("Konfirmasi")
                         .setMessage("Simpan perubahan ?")
                         .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
-                                serverManager.saveLastServer(edtServer.getText().toString());
+                                *//*serverManager.saveLastServer(edtServer.getText().toString());
                                 tvServer.setText(edtServer.getText().toString());
                                 serverURL = new ServerURL(AccountActivity.this);
                                 getAccountList();
-                                alert.dismiss();
+                                alert.dismiss();*//*
                             }
                         })
                         .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
@@ -251,17 +312,287 @@ public class AccountActivity extends AppCompatActivity {
 
                             }
                         })
-                        .show();
+                        .show();*/
 
             }
         });
 
+        alertChangeServer.show();
+
+        alertChangeServer.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+    }
+
+    private void loadListAdmin(final String server) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(AccountActivity.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_list_admin, null);
+        builder.setView(view);
+        builder.setTitle("Konfirmasi Admin");
+        builder.setMessage("Pilih admin penyetuju");
+        builder.setCancelable(false);
+        builder.setNeutralButton("Tutup", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        final ListView lvAdmin = (ListView) view.findViewById(R.id.lv_admin);
+        final Button btnRefreshAdmin = (Button) view.findViewById(R.id.btn_refresh);
+        final ProgressBar pbLoadingAdmin = (ProgressBar) view.findViewById(R.id.pb_loading);
+
+        getAdminList(server, lvAdmin, btnRefreshAdmin, pbLoadingAdmin);
+
+        btnRefreshAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                getAdminList(server, lvAdmin, btnRefreshAdmin, pbLoadingAdmin);
+                btnRefreshAdmin.setVisibility(View.GONE);
+            }
+        });
+
+        alertDialogListAdmin = builder.create();
+
+        alertDialogListAdmin.show();
+
+        alertDialogListAdmin.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+    }
+
+    private void getAdminList(final String server, final ListView lvAdmin, final Button btnRefreshAdmin, final ProgressBar pbLoadingAdmin){
+
+        final String urlGetAdmin = "http://" + server + "/api/" + ServerURL.getListAdmin;
+        pbLoadingAdmin.setVisibility(View.VISIBLE);
+        ApiVolley request = new ApiVolley(AccountActivity.this, new JSONObject(), "GET", urlGetAdmin, "", "", 0, "", "", new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    List<CustomItem> adminList = new ArrayList<>();
+
+                    if(iv.parseNullInteger(status) == 200){
+
+                        adminList = new ArrayList<>();
+                        JSONArray jsonArray = response.getJSONArray("response");
+
+                        for(int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+                            adminList.add(new CustomItem(jo.getString("nik"),jo.getString("nama"),jo.getString("bagian"),jo.getString("username")));
+                        }
+
+                        lvAdmin.setAdapter(null);
+
+                        if(adminList != null && adminList.size() > 0){
+
+                            AccountAdapter adapter = new AccountAdapter(AccountActivity.this, adminList);
+                            lvAdmin.setAdapter(adapter);
+
+                            lvAdmin.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                                    CustomItem selectedItem = (CustomItem) adapterView.getItemAtPosition(i);
+                                    loadAdminPin(server, selectedItem.getItem4());
+                                }
+                            });
+                        }
+                    }else{
+                        lvAdmin.setAdapter(null);
+                        btnRefreshAdmin.setVisibility(View.VISIBLE);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    lvAdmin.setAdapter(null);
+                    btnRefreshAdmin.setVisibility(View.VISIBLE);
+                }
+
+                pbLoadingAdmin.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(String result) {
+                pbLoadingAdmin.setVisibility(View.GONE);
+                lvAdmin.setAdapter(null);
+                btnRefreshAdmin.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    //region Admin Authentication
+
+    private void loadAdminPin(final String server, final String username){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(AccountActivity.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_account_password, null);
+        builder.setView(view);
+
+        final TextView tvPin = (TextView) view.findViewById(R.id.tv_pin);
+        final TextView tv1 = (TextView) view.findViewById(R.id.tv_1);
+        final TextView tv2 = (TextView) view.findViewById(R.id.tv_2);
+        final TextView tv3 = (TextView) view.findViewById(R.id.tv_3);
+        final TextView tv4 = (TextView) view.findViewById(R.id.tv_4);
+        final TextView tv5 = (TextView) view.findViewById(R.id.tv_5);
+        final TextView tv6 = (TextView) view.findViewById(R.id.tv_6);
+        final TextView tv7 = (TextView) view.findViewById(R.id.tv_7);
+        final TextView tv8 = (TextView) view.findViewById(R.id.tv_8);
+        final TextView tv9 = (TextView) view.findViewById(R.id.tv_9);
+        final TextView tv0 = (TextView) view.findViewById(R.id.tv_0);
+        final ImageView ivClear = (ImageView) view.findViewById(R.id.iv_clear);
+        pinButtonListener(tvPin,tv1);
+        pinButtonListener(tvPin,tv2);
+        pinButtonListener(tvPin,tv3);
+        pinButtonListener(tvPin,tv4);
+        pinButtonListener(tvPin,tv5);
+        pinButtonListener(tvPin,tv6);
+        pinButtonListener(tvPin,tv7);
+        pinButtonListener(tvPin,tv8);
+        pinButtonListener(tvPin,tv9);
+        pinButtonListener(tvPin,tv0);
+
+        builder.setNegativeButton("Batal", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        ivClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(tvPin.getText().length() > 0) tvPin.setText(tvPin.getText().toString().substring(0, tvPin.getText().length()-1));
+            }
+        });
+
+
+        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                validateAdmin(server, username, tvPin.getText().toString());
+            }
+        });
+
+
+        final Dialog alert = builder.create();
+
+        /*DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        alert.getWindow().setLayout(width,  height);*/
         alert.show();
 
         alert.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
     }
+
+    private void validateAdmin(String server, String username, String password) {
+
+        if(username.length() == 0){
+
+            Toast.makeText(AccountActivity.this, "Username masih kosong", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(password.length() == 0){
+
+            Toast.makeText(AccountActivity.this, "Pin harap diisi", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        loginAdmin(server, username, password);
+    }
+
+    private void loginAdmin(final String server, final String username, final String password) {
+
+        String loginURL = "http://" + server + "/api/" + ServerURL.loginAdmin;
+        final ProgressDialog progressDialog = new ProgressDialog(AccountActivity.this, R.style.AppTheme_Custom_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
+
+        JSONObject jBody = new JSONObject();
+        try {
+            jBody.put("username", username);
+            jBody.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ApiVolley request = new ApiVolley(AccountActivity.this, jBody, "POST", loginURL, "", "", 0, username, password, new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    String message = response.getJSONObject("metadata").getString("message");
+                    if(iv.parseNullInteger(status) == 200){
+
+                        progressDialog.dismiss();
+                        serverURL = new ServerURL(AccountActivity.this);
+                        serverManager.saveLastServer(server);
+                        tvServer.setText(server);
+                        serverURL = new ServerURL(AccountActivity.this);
+                        JSONObject jo = response.getJSONObject("response");
+
+                        message = "Server berhasil diubah";
+
+                        if(alertDialogListAdmin != null){
+                            try {
+                                if(alertDialogListAdmin.isShowing()){
+                                    alertDialogListAdmin.dismiss();
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+
+                        if(alertChangeServer != null){
+                            try {
+                                if(alertChangeServer.isShowing()){
+                                    alertChangeServer.dismiss();
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+
+                        getAccountList();
+                        //session.createLoginSession(jo.getString("nik"),jo.getString("nik"),jo.getString("nama"), username, password, "1","");
+                        /*session.createLoginSession("","","", "", "", "1","");
+                        Toast.makeText(AccountActivity.this, message, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(AccountActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);*/
+                    }
+
+                    Toast.makeText(AccountActivity.this, message, Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(AccountActivity.this, "Terjadi kesalahan, mohon ulangi kembali", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+                Toast.makeText(AccountActivity.this, "Terjadi kesalahan, mohon ulangi kembali", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    //endregion
 
     private void validateLogin(String username, String password) {
 
