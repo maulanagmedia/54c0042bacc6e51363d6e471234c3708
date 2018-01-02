@@ -158,7 +158,7 @@ public class MainOpenOrder extends Fragment {
                         for(int i = 0; i < jsonArray.length(); i++){
 
                             JSONObject jo = jsonArray.getJSONObject(i);
-                            listMeja.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"),jo.getString("Status"),jo.getString("flag"),jo.getString("nobukti"),jo.getString("total"),jo.getString("jenis"),jo.getString("urutan")));
+                            listMeja.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"),jo.getString("Status"),jo.getString("flag"),jo.getString("nobukti"),jo.getString("total"),jo.getString("jenis"),jo.getString("urutan"),jo.getString("letakmeja")));
                         }
 
                         setMejaTable(listMeja);
@@ -221,6 +221,9 @@ public class MainOpenOrder extends Fragment {
                 final RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(context, 2);
                 final RecyclerView.LayoutManager mLayoutManager2 = new GridLayoutManager(context, 2);
                 final RecyclerView.LayoutManager mLayoutManager3 = new GridLayoutManager(context, 2);
+                rvMeja1.setMinimumHeight(iv.dpToPx(context,(listItem1.size()/2 + listItem1.size() % 2) * 196));
+                rvMeja2.setMinimumHeight(iv.dpToPx(context,(listItem2.size()/2 + listItem2.size() % 2) * 196));
+                rvMeja3.setMinimumHeight(iv.dpToPx(context,(listItem3.size()/2 + listItem3.size() % 2) * 196));
                 rvMeja1.setLayoutManager(mLayoutManager1);
                 rvMeja2.setLayoutManager(mLayoutManager2);
                 rvMeja3.setLayoutManager(mLayoutManager3);
@@ -228,6 +231,9 @@ public class MainOpenOrder extends Fragment {
                 final RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(context, 3);
                 final RecyclerView.LayoutManager mLayoutManager2 = new GridLayoutManager(context, 3);
                 final RecyclerView.LayoutManager mLayoutManager3 = new GridLayoutManager(context, 3);
+                rvMeja1.setMinimumHeight(iv.dpToPx(context,(listItem1.size()/3 + ((listItem1.size() % 3 > 0) ? 1 : 0)) * 196));
+                rvMeja2.setMinimumHeight(iv.dpToPx(context,(listItem2.size()/3 + ((listItem2.size() % 3 > 0) ? 1 : 0)) * 196));
+                rvMeja3.setMinimumHeight(iv.dpToPx(context,(listItem3.size()/3 + ((listItem3.size() % 3 > 0) ? 1 : 0)) * 196));
                 rvMeja1.setLayoutManager(mLayoutManager1);
                 rvMeja2.setLayoutManager(mLayoutManager2);
                 rvMeja3.setLayoutManager(mLayoutManager3);
@@ -242,6 +248,7 @@ public class MainOpenOrder extends Fragment {
 
             rvMeja3.setItemAnimator(new DefaultItemAnimator());
             rvMeja3.setAdapter(menuAdapter3);
+
 
         }
     }

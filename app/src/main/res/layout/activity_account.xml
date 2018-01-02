@@ -55,8 +55,7 @@
                 android:id="@+id/ll_header"
                 android:layout_margin="@dimen/margin_default"
                 android:background="@drawable/input_form"
-                android:paddingLeft="@dimen/margin_default"
-                android:paddingRight="@dimen/margin_default"
+                android:paddingLeft="@dimen/margin_small"
                 android:paddingBottom="0dp"
                 android:weightSum="1">
 
@@ -92,9 +91,11 @@
                     android:layout_weight="0.1"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
+                    android:id="@+id/ll_server"
+                    android:background="?attr/selectableItemBackground"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/margin_default"
+                    android:padding="@dimen/padding_icon"
                     android:weightSum="1">
 
                     <ImageView

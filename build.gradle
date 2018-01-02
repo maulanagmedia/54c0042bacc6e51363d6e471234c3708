@@ -3,6 +3,7 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0'
@@ -21,7 +22,7 @@ subprojects {
     version = '3.5.0'
     group = 'gmedia.rto'
 
-    ext.androidBuildTools = '26.+'
+    ext.androidBuildTools = '26.0.2'
     ext.androidTargetSdk = 26
     ext.zxingCore = 'com.google.zxing:core:3.3.0'
 }
@@ -29,6 +30,7 @@ subprojects {
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 

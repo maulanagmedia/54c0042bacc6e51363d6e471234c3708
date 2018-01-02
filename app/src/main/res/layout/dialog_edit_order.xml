@@ -62,6 +62,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_default"
+                android:orientation="vertical"
+                android:background="@drawable/input_form"
+                android:padding="@dimen/margin_default"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Pilihan"
+                    android:textColor="@color/color_black"/>
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sp_pilihan"></Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_default"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -125,6 +146,7 @@
                     android:gravity="center_vertical"
                     android:hint="Satuan"
                     android:inputType="none"
+                    android:ellipsize="end"
                     android:editable="false"
                     android:id="@+id/edt_satuan"
                     android:layout_marginLeft="@dimen/margin_default"
@@ -193,6 +215,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginTop="@dimen/margin_default"
                 android:orientation="vertical">
 
@@ -256,7 +279,7 @@
                         android:text="Dine In"
                         android:id="@+id/rb_dn"
                         android:textColor="@color/color_black"
-                        android:textSize="24sp"
+                        android:textSize="@dimen/jenis_order"
                         android:textStyle="bold" />
 
                     <RadioButton
@@ -266,7 +289,7 @@
                         android:layout_height="wrap_content"
                         android:text="Take Away"
                         android:textColor="@color/color_black"
-                        android:textSize="24sp"
+                        android:textSize="@dimen/jenis_order"
                         android:textStyle="bold" />
                 </RadioGroup>
             </LinearLayout>
@@ -517,7 +540,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="I"
+                                android:text="I "
                                 android:textColor="@color/color_black"
                                 android:textSize="@dimen/tag_meja"
                                 android:textStyle="bold"/>
@@ -559,7 +582,7 @@
                 android:orientation="horizontal"
                 android:weightSum="1">
 
-                <EditText
+                <AutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="100dp"
@@ -570,7 +593,8 @@
                     android:gravity="left"
                     android:scrollHorizontally="false"
                     android:inputType="textPersonName|textMultiLine"
-                    android:padding="@dimen/margin_default"/>
+                    android:padding="@dimen/margin_default"
+                    android:imeOptions="flagNoExtractUi"/>
             </LinearLayout>
         </LinearLayout>
 

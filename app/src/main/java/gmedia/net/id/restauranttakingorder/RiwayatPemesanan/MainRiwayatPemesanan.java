@@ -44,7 +44,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import gmedia.net.id.restauranttakingorder.Order.Adapter.SummaryAdapter;
 import gmedia.net.id.restauranttakingorder.PrinterUtils.ShowMsg;
 import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.Adapter.ListChangeMejaAdapter;
@@ -125,6 +124,11 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
     private static CustomItem lastSelectedOrder;
     AlertDialog.Builder loadMejaDialog;
     private static TextView tvStatus;
+    private static String lastCetakStatus = "";
+    private String printerSummaryEnable = "1";
+    private String printerKitchenEnable = "1";
+    private String printerBarEnable = "1";
+    private static String namaPelanggan = "";
 
     public MainRiwayatPemesanan() {
         // Required empty public constructor
@@ -182,6 +186,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         btnPrint = (Button) layout.findViewById(R.id.btn_print);
         btnChangeMeja = (Button) layout.findViewById(R.id.btn_change_meja);
 
+        lastCetakStatus = "";
         listTransaksi = new ArrayList<>();
         listMenu = new ArrayList<>();
 
@@ -190,6 +195,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         noBukti = "";
         noMeja = "";
         printNo = "1";
+        namaPelanggan = "";
         listTransaksi = new ArrayList<>();
         listSelectedMenu = new ArrayList<>();
         serverURL = new ServerURL(context);
@@ -274,13 +280,14 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                    CustomItem item = (CustomItem) adapterView.getItemAtPosition(i);
-                    lastSelectedOrder = item;
-                    getDetailTransaksi(lastSelectedOrder);
+                    /*CustomItem item = (CustomItem) adapterView.getItemAtPosition(i);
+                    selectTransaksi(item);*/
                 }
             });
 
-            lvTransaksi.setOnScrollListener(new AbsListView.OnScrollListener() {
+            lvTransaksi.setOnScrollListener(onScrollListener());
+
+            /*lvTransaksi.setOnScrollListener(new AbsListView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(AbsListView absListView, int i) {
 
@@ -289,20 +296,58 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                 @Override
                 public void onScroll(AbsListView absListView, int i, int i1, int i2) {
 
-                    if(absListView.getLastVisiblePosition() == i2-1 && lvTransaksi.getCount() > (count-1) && !isLoading ){
+                    *//*if(absListView.getLastVisiblePosition() == i2-1 && lvTransaksi.getCount() > (count-1) && !isLoading ){
                         isLoading = true;
                         lvTransaksi.addFooterView(footerList);
                         startIndex += count;
                         getMoreData();
-                        Log.i(TAG, "onScroll: last");
+                        Log.i(TAG, "onScroll: last "+absListView.getLastVisiblePosition());
+                    }*//*
+
+                    if(i+i1 == i2 && i2 != 0 && !isLoading)
+                    {
+                        isLoading = true;
+                        lvTransaksi.addFooterView(footerList);
+                        startIndex += count;
+                        getMoreData();
+                        Log.i(TAG, "onScroll: last "+i1);
                     }
                 }
-            });
+            });*/
         }
+    }
+
+    private static AbsListView.OnScrollListener onScrollListener() {
+        return new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                int threshold = 1;
+                int count = lvTransaksi.getCount();
+
+                if (scrollState == SCROLL_STATE_IDLE) {
+                    if (lvTransaksi.getLastVisiblePosition() >= count - threshold && !isLoading) {
+
+                        isLoading = true;
+                        lvTransaksi.addFooterView(footerList);
+                        startIndex += count;
+                        getMoreData();
+                        Log.i(TAG, "onScroll: last ");
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+                                 int totalItemCount) {
+            }
+
+        };
     }
 
     private static void getMoreData() {
 
+        isLoading = true;
         final List<CustomItem> moreList = new ArrayList<>();
         JSONObject jBody = new JSONObject();
 
@@ -352,12 +397,21 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         });
     }
 
-    private static void getDetailTransaksi(CustomItem selectedItem) {
+    public static void selectTransaksi(CustomItem selectedItem){
+
+        lastSelectedOrder = selectedItem;
+        getDetailTransaksi(lastSelectedOrder);
+
+    }
+
+    public static void getDetailTransaksi(CustomItem selectedItem) {
 
         pbLoadMenu.setVisibility(View.VISIBLE);
 
         tvStatus.setText(Status.getPenjualanStatus(selectedItem.getItem13()));
-        tvNamaPelanggan.setText(selectedItem.getItem3());
+        lastCetakStatus = selectedItem.getItem13();
+        tvNamaPelanggan.setText(selectedItem.getItem7());
+        namaPelanggan = selectedItem.getItem3();
         tvNoNota.setText(selectedItem.getItem1());
         tvWaktu.setText(iv.ChangeFormatDateString(selectedItem.getItem5(), FormatItem.formatTimestamp, FormatItem.formatTime));
         tvNoMeja.setText(selectedItem.getItem6());
@@ -403,8 +457,25 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                             }
 
                             listMenu.add(new CustomItem(jo.getString("id"), jo.getString("nmbrg"), jo.getString("harga"), jo.getString("catatan"), jo.getString("jml"), jo.getString("total"),jo.getString("print_menu"),jo.getString("print_rekap")));
-                            listSelectedMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),jo.getString("jml"),jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),jo.getString("tag_meja"),jo.getString("type"),jo.getString("upselling"),jo.getString("print_menu"),jo.getString("print_rekap"), "1",jo.getString("jenis_order")));
-                            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja, 11. type, 12. upselling, 13. print menu, 14. print rekap, 15. flag cetak
+                            listSelectedMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),jo.getString("jml"),jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),jo.getString("tag_meja"),jo.getString("type"),jo.getString("upselling"),jo.getString("print_menu"),jo.getString("print_rekap"), "1",jo.getString("jenis_order"), jo.getString("alias"), jo.getString("pilihan")));
+                            // 1. id
+                            // 2. nama
+                            // 3. harga
+                            // 4. gambar
+                            //  5. banyak
+                            // 6. satuan
+                            // 7. diskon
+                            // 8. catatan
+                            // 9. hargaDiskon
+                            // 10. tag meja
+                            // 11. type
+                            // 12. upselling
+                            // 13. print menu
+                            // 14. print rekap
+                            // 15. flag cetak
+                            // 16. Jenis Order (DN/TA)
+                            // 17. alias
+                            // 18. pilihan
                         }
                     }
 
@@ -479,8 +550,12 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                     Toast.makeText(context, "Silahkan pilih pesanan", Toast.LENGTH_LONG).show();
                     return;
                 }
-                
-                loadUpsellingDialog();
+
+                if(lastCetakStatus.equals("1")){
+                    loadUpsellingDialog();
+                }else{
+                    Toast.makeText(context, "Pesanan sudah selesai/ tidak dalam proses tidak dapat dicetak", Toast.LENGTH_LONG).show();
+                }
 
                 //loadPrintingDialog();
             }
@@ -530,7 +605,12 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     CustomItem item = (CustomItem) adapterView.getItemAtPosition(i);
                     upselling = item.getItem3();
-                    loadPreCetakDialog();
+                    if(lastCetakStatus.equals("1")){
+                        loadPreCetakDialog();
+                    }else{
+                        Toast.makeText(context, "Pesanan sudah selesai/ tidak dalam proses tidak dapat dicetak", Toast.LENGTH_LONG).show();
+                    }
+
                 }
             });
         }
@@ -918,13 +998,58 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         dialogLoading.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
-                printDataAll();
+                getDetailPrinter();
             }
         });
 
         dialogLoading.show();
 
 
+    }
+
+    private void getDetailPrinter() {
+
+        ApiVolley request = new ApiVolley( context , new JSONObject(), "GET", serverURL.getPrinter(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    if(iv.parseNullInteger(status) == 200){
+
+                        JSONArray jsonArray = response.getJSONArray("response");
+                        for (int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+
+                            if(jo.getString("flag").toUpperCase().equals("SUMMARY")){
+
+                                printerSummaryEnable = jo.getString("status");
+
+                            }else if(jo.getString("flag").toUpperCase().equals("MAKANAN")){
+
+                                printerKitchenEnable = jo.getString("status");
+                            }else if(jo.getString("flag").toUpperCase().equals("MINUMAN")){
+
+                                printerBarEnable = jo.getString("status");
+                            }
+                        }
+
+                        printDataAll();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+
+            }
+        });
     }
 
     // Bagian printing
@@ -934,6 +1059,9 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
 
         if(printerManager.getData(SavedPrinterManager.TAG_IP1) == null){
             changePrintState(mContext, 1, "Printer belum di atur");
+        }else if(printerSummaryEnable.equals("0")){
+            printCashierState = true;
+            changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Printer berhasil");
         }else{
 
             printCashierState = printCashier(urutan, nobukti, timestamp, nomeja, pesanan);
@@ -943,7 +1071,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                 AlertDialog dialog = new AlertDialog.Builder(mContext)
                         .setTitle("Peringatan")
                         .setIcon(R.mipmap.ic_warning)
-                        .setMessage("Tidak dapat mencetak printout untuk CASHIER.")
+                        .setMessage("Tidak dapat mencetak printout untuk Bar (S).")
                         .setCancelable(false)
                         .setPositiveButton("Ulangi Mencetak", new DialogInterface.OnClickListener() {
                             @Override
@@ -958,7 +1086,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                                 AlertDialog dialog1 = new AlertDialog.Builder(mContext)
                                         .setTitle("Konfirmasi")
                                         .setCancelable(false)
-                                        .setMessage("Printout CASHIER tidak akan tercetak")
+                                        .setMessage("Printout Bar (S) tidak akan tercetak")
                                         .setPositiveButton("Lanjutkan Tanpa Mencetak", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -984,6 +1112,9 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
 
         if(printerManager.getData(SavedPrinterManager.TAG_IP2) == null){
             changePrintState(mContext, 1, "Printer belum di atur");
+        }else if(printerKitchenEnable.equals("0")){
+            printKitchenState = true;
+            changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Printer belum di atur");
         }else{
 
             boolean isKitchen = false;
@@ -1050,6 +1181,9 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
 
         if(printerManager.getData(SavedPrinterManager.TAG_IP3) == null){
             changePrintState(mContext, 1, "Printer belum di atur");
+        }else if(printerBarEnable.equals("0")){
+            printBarState = true;
+            changePrintState(mContext, Epos2CallbackCode.CODE_SUCCESS, "Printer belum di atur");
         }else{
 
             boolean isBar = false;
@@ -1157,9 +1291,27 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             method = "addTextAlign";
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
             method = "addTextSize";
-            mPrinter.addTextSize(1, 1);
+            mPrinter.addTextSize(2, 1);
             textData.append("SUMMARY ORDER\n");
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextSize";
+            mPrinter.addTextSize(2, 1);
+            textData.append(namaPelanggan+"\n");
             method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addTextSize";
+            mPrinter.addTextSize(2, 1);
+            textData.append(noMeja+"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
+            method = "addText";
+            mPrinter.addTextSize(1,1);
             textData.append(noBukti+" (RE)\n");
             mPrinter.addText(textData.toString());
             textData.delete(0, textData.length());
@@ -1169,9 +1321,9 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatDateDisplay)+"-");
             textData.append(iv.ChangeFormatDateString(timestamp, FormatItem.formatTimestamp, FormatItem.formatTime)+"\n");
             if(upselling.equals("1")){
-                textData.append(noMeja +"/"+ jumlahPlg+" plg"+"/"+  session.getName() +"\n");
+                textData.append(jumlahPlg+" plg"+"/"+  session.getName() +"\n");
             }else{
-                textData.append(noMeja +"/"+ jumlahPlg+" plg"+"/"+ "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(jumlahPlg+" plg"+"/"+ "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());
@@ -1189,7 +1341,25 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             method = "addTextSize";
             mPrinter.addTextSize(1, 1);
 
-            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja, 16. Jenis order
+            // 1. id
+            // 2. nama
+            // 3. harga
+            // 4. gambar
+            // 5. banyak
+            // 6. satuan
+            // 7. diskon
+            // 8. catatan
+            // 9. hargaDiskon
+            // 10. tag meja
+            // 11. type
+            // 12. upselling
+            // 13. print menu
+            // 14. print rekap
+            // 15. flag cetak
+            // 16. Jenis Order (DN/TA)
+            // 17. alias
+            // 18. pilihan
+
             for(CustomItem item : pesanan){
 
                 String itemToPrint = item.getItem5() + " ("+ item.getItem16()+ ")" +" X "+ item.getItem2();
@@ -1206,8 +1376,8 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                     textData.append( "   " + item.getItem10() +"\n");
                 }*/
 
-                if(item.getItem8().length()>0){
-                    String[] s = item.getItem8().split("\\r?\\n");
+                if(item.getItem8().length()>0 || item.getItem18().length() > 0){
+                    String[] s = (item.getItem18() + " " + item.getItem8()).split("\\r?\\n");
                     for(String note: s){
                         textData.append( "   \"" + note +"\"\n");
                     }
@@ -1316,13 +1486,21 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
             /*method = "addFeedLine";
             mPrinter.addFeedLine(1);*/
+
+            method = "addTextSize";
+            mPrinter.addTextSize(2, 1);
+            textData.append(noMeja+"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
             method = "addTextSize";
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+" (RE)\n");
             if(upselling.equals("1")){
-                textData.append(noMeja +"/"+ jumlahPlg+" plg"+"/"+  session.getName() +"\n");
+                textData.append(jumlahPlg+" plg"+"/"+  session.getName() +"\n");
             }else{
-                textData.append(noMeja +"/"+ jumlahPlg+" plg"+"/"+ "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(jumlahPlg+" plg"+"/"+ "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());
@@ -1347,14 +1525,31 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             method = "addTextSize";
             mPrinter.addTextSize(2, 1);
 
-            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja, 16. Jenis Order
+            // 1. id
+            // 2. nama
+            // 3. harga
+            // 4. gambar
+            // 5. banyak
+            // 6. satuan
+            // 7. diskon
+            // 8. catatan
+            // 9. hargaDiskon
+            // 10. tag meja
+            // 11. type
+            // 12. upselling
+            // 13. print menu
+            // 14. print rekap
+            // 15. flag cetak
+            // 16. Jenis Order (DN/TA)
+            // 17. alias
+            // 18. pilihan
 
             int x = 1;
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() + " ("+ item.getItem16()+ ")" +" X "+ item.getItem2();
+                String itemToPrint = item.getItem5() + " ("+ item.getItem16()+ ")" +" X "+ item.getItem17();
                 if(item.getItem16().toUpperCase().equals("DN")){
-                    itemToPrint = item.getItem5() + " X "+ item.getItem2();
+                    itemToPrint = item.getItem5() + " X "+ item.getItem17();
                 }
                 if(item.getItem10().length()>0){
                     itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
@@ -1362,8 +1557,8 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
 
                 textData.append( itemToPrint+"\n");
 
-                if(item.getItem8().length()>0){
-                    String[] s = item.getItem8().split("\\r?\\n");
+                if(item.getItem8().length()>0 || item.getItem18().length() > 0){
+                    String[] s = (item.getItem18() + " " + item.getItem8()).split("\\r?\\n");
                     int j = 0;
                     for(String note: s){
 
@@ -1472,13 +1667,21 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             mPrinter.addTextAlign(Printer.ALIGN_CENTER);
             /*method = "addFeedLine";
             mPrinter.addFeedLine(1);*/
+
+            method = "addTextSize";
+            mPrinter.addTextSize(2, 1);
+            textData.append(noMeja+"\n");
+            method = "addText";
+            mPrinter.addText(textData.toString());
+            textData.delete(0, textData.length());
+
             method = "addTextSize";
             mPrinter.addTextSize(1, 1);
             textData.append(noBukti+" (RE)\n");
             if(upselling.equals("1")){
-                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" +  session.getName() +"\n");
+                textData.append(jumlahPlg+" plg" + "/" +  session.getName() +"\n");
             }else{
-                textData.append(noMeja +"/"+ jumlahPlg+" plg" + "/" + "RE " + upselling + "/" + session.getName() +"\n");
+                textData.append(jumlahPlg+" plg" + "/" + "RE " + upselling + "/" + session.getName() +"\n");
             }
             method = "addText";
             mPrinter.addText(textData.toString());
@@ -1503,22 +1706,39 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
             method = "addTextSize";
             mPrinter.addTextSize(2, 1);
 
-            // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
+            // 1. id
+            // 2. nama
+            // 3. harga
+            // 4. gambar
+            // 5. banyak
+            // 6. satuan
+            // 7. diskon
+            // 8. catatan
+            // 9. hargaDiskon
+            // 10. tag meja
+            // 11. type
+            // 12. upselling
+            // 13. print menu
+            // 14. print rekap
+            // 15. flag cetak
+            // 16. Jenis Order (DN/TA)
+            // 17. alias
+            // 18. pilihan
 
             int x = 1;
             for(CustomItem item : pesanan){
 
-                String itemToPrint = item.getItem5() + " ("+ item.getItem16()+ ")" +" X "+ item.getItem2();
+                String itemToPrint = item.getItem5() + " ("+ item.getItem16()+ ")" +" X "+ item.getItem17();
                 if(item.getItem16().toUpperCase().equals("DN")){
-                    itemToPrint = item.getItem5() + " X "+ item.getItem2();
+                    itemToPrint = item.getItem5() + " X "+ item.getItem17();
                 }
                 if(item.getItem10().length()>0){
                     itemToPrint = itemToPrint + " (" + item.getItem10() + ")";
                 }
                 textData.append( itemToPrint+"\n");
 
-                if(item.getItem8().length()>0){
-                    String[] s = item.getItem8().split("\\r?\\n");
+                if(item.getItem8().length()>0 || item.getItem18().length() > 0){
+                    String[] s = (item.getItem18() + " " + item.getItem8()).split("\\r?\\n");
                     int j = 0;
                     for(String note: s){
 

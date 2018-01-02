@@ -14,6 +14,7 @@ import com.maulana.custommodul.ItemValidation;
 import java.util.List;
 
 import gmedia.net.id.restauranttakingorder.R;
+import gmedia.net.id.restauranttakingorder.RiwayatPemesanan.MainRiwayatPemesanan;
 import gmedia.net.id.restauranttakingorder.Utils.FormatItem;
 
 
@@ -99,9 +100,19 @@ public class ListTransaksiAdapter extends ArrayAdapter{
         final CustomItem itemSelected = items.get(position);
         holder.tvItem1.setText(itemSelected.getItem6());
         holder.tvItem2.setText(iv.ChangeFormatDateString(itemSelected.getItem5(), FormatItem.formatTimestamp, FormatItem.formatDataAndTime));
-        holder.tvItem3.setText(itemSelected.getItem7());
+        holder.tvItem3.setText(itemSelected.getItem3());
+        //holder.tvItem3.setText(itemSelected.getItem7()); pramusaji
         holder.tvItem4.setText(itemSelected.getItem2());
         holder.tvItem5.setText(itemSelected.getItem8());
+
+        holder.llContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                MainRiwayatPemesanan.selectTransaksi(itemSelected);
+            }
+        });
+
         return convertView;
     }
 }

@@ -64,14 +64,15 @@
                         <EditText
                             android:layout_width="match_parent"
                             android:layout_height="34dp"
+                            android:textSize="13sp"
                             android:background="@drawable/input_form"
                             android:gravity="center_vertical"
                             android:paddingLeft="@dimen/margin_small"
-                            android:paddingRight="@dimen/margin_small"
                             android:inputType="date"
                             android:imeOptions="actionDone"
                             android:hint="Tanggal Transaksi"
-                            android:drawableRight="@mipmap/ic_date_picker"
+                            android:drawableRight="@mipmap/ic_date_picker_black"
+                            android:drawablePadding="3dp"
                             android:id="@+id/edt_tanggal" />
 
                     </LinearLayout>
@@ -207,7 +208,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
+                        android:layout_weight="0.8"
                         android:layout_marginRight="@dimen/margin_small"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
@@ -231,8 +232,7 @@
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:visibility="gone"
+                        android:layout_weight="0.8"
                         android:layout_marginRight="@dimen/margin_small"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
@@ -242,7 +242,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="@dimen/text_subtitle"
                             android:textColor="@color/color_red"
-                            android:text="Nama Pelanggan"/>
+                            android:text="Updated By"/>
 
                         <TextView
                             android:layout_width="match_parent"
@@ -281,6 +281,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_weight="0.6"
+                        android:visibility="gone"
                         android:layout_marginRight="@dimen/margin_small"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">

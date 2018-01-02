@@ -87,6 +87,7 @@
                 android:layout_marginRight="@dimen/margin_vertical"
                 android:layout_marginBottom="@dimen/margin_vertical"
                 android:rotation="90"
+                android:visibility="gone"
                 android:id="@+id/fab_scan"/>
 
         </RelativeLayout>
@@ -96,24 +97,22 @@
             android:layout_height="match_parent"
             android:id="@+id/tab_3">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:weightSum="1">
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="@dimen/margin_default"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="@dimen/margin_small"
                     android:gravity="center"
-                    android:weightSum="1">
+                    android:id="@+id/ll_1">
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/input_form_disable"
                         android:paddingTop="@dimen/margin_tiny"
                         android:paddingLeft="@dimen/margin_default"
@@ -125,7 +124,7 @@
 
                         <EditText
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:id="@+id/edt_no_bukti"
                             android:hint="No Bukti"
                             android:gravity="center"
@@ -137,15 +136,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/margin_default"
+                    android:id="@+id/ll_2"
+                    android:layout_below="@id/ll_1"
+                    android:layout_marginTop="@dimen/margin_tiny"
                     android:weightSum="1">
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:gravity="center"
@@ -153,7 +153,7 @@
 
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/input_form_disable"
                             android:paddingTop="@dimen/margin_tiny"
                             android:paddingLeft="@dimen/margin_default"
@@ -165,7 +165,7 @@
 
                             <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:background="@color/color_deactive"
                                 android:id="@+id/edt_no_meja"
                                 android:hint="Nomor Meja"
@@ -211,25 +211,28 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/margin_default"
+                    android:id="@+id/ll_3"
+                    android:layout_below="@id/ll_2"
+                    android:layout_marginTop="@dimen/margin_tiny"
                     android:weightSum="1">
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
+                        android:orientation="horizontal"
                         android:gravity="center"
                         android:weightSum="1">
 
                         <android.support.design.widget.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/input_form"
-                            android:id="@+id/til_jml_pelanggan"
+                            android:id="@+id/til_nama_pelanggan"
+                            android:layout_marginTop="@dimen/margin_tiny"
                             android:paddingTop="@dimen/margin_tiny"
                             android:paddingLeft="@dimen/margin_default"
                             android:paddingRight="@dimen/margin_default"
@@ -240,12 +243,38 @@
 
                             <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/edt_nama_pelanggan"
+                                android:hint="Nama Pelanggan"
+                                android:gravity="center"
+                                android:text=""
+                                android:background="@color/color_white"
+                                android:inputType="textPersonName"/>
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/input_form"
+                            android:id="@+id/til_jml_pelanggan"
+                            android:layout_marginTop="@dimen/margin_tiny"
+                            android:paddingTop="@dimen/margin_tiny"
+                            android:paddingLeft="@dimen/margin_default"
+                            android:paddingRight="@dimen/margin_default"
+                            android:paddingBottom="@dimen/margin_tiny"
+                            android:layout_marginLeft="@dimen/margin_small"
+                            android:layout_marginRight="@dimen/margin_small"
+                            android:layout_marginBottom="@dimen/margin_small">
+
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:background="@color/color_white"
                                 android:id="@+id/edt_jml_pelanggan"
                                 android:hint="Jumlah Pelanggan"
                                 android:gravity="center"
-                                android:text="0"
+                                android:text="2"
                                 android:inputType="none"
                                 android:editable="false"/>
                         </android.support.design.widget.TextInputLayout>
@@ -254,15 +283,17 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.08"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:id="@+id/ll_4"
+                    android:layout_below="@id/ll_3"
+                    android:gravity="top"
                     android:weightSum="1">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="0.5"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textStyle="bold"
                         android:text="Nama Menu"/>
@@ -270,7 +301,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="0.35"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:text="Harga"/>
@@ -278,43 +309,31 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_weight="0.15"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:text="Jml"/>
 
                 </LinearLayout>
 
-                <ListView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.42"
-                    android:id="@+id/lv_order"></ListView>
-
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_width"
-                    android:background="@color/color_grey"
-                    android:orientation="vertical"></LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.2"
-                    android:orientation="vertical"
-                    android:weightSum="1">
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:id="@+id/ll_bottom"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:gravity="center"
                         android:weightSum="1">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="0.25"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:gravity="center"
                             android:text="Total"
                             android:textStyle="bold"
@@ -325,7 +344,7 @@
                             android:layout_weight="0.75"
                             android:paddingLeft="@dimen/margin_default"
                             android:paddingRight="@dimen/margin_default"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:gravity="center_vertical|right"
                             android:id="@+id/tv_total"
                             android:text="Rp 0"
@@ -335,15 +354,14 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:weightSum="1">
 
                         <Button
                             android:layout_width="0dp"
                             android:layout_weight="0.5"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_margin="@dimen/margin_small"
                             android:background="@drawable/button_login"
                             android:id="@+id/btn_cetak"
@@ -354,7 +372,7 @@
                         <Button
                             android:layout_width="0dp"
                             android:layout_weight="1"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_margin="@dimen/margin_small"
                             android:background="@drawable/button_form"
                             android:id="@+id/btn_simpan"
@@ -362,7 +380,24 @@
                             android:textColor="@color/color_white"/>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_width"
+                    android:background="@color/color_grey"
+                    android:orientation="vertical"
+                    android:id="@+id/ll_line"
+                    android:layout_above="@id/ll_bottom"></LinearLayout>
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.32"
+                    android:id="@+id/lv_order"
+                    android:layout_above="@id/ll_bottom"
+                    android:layout_below="@id/ll_4"></ListView>
+
+            </RelativeLayout>
 
             <ProgressBar
                 android:layout_width="wrap_content"

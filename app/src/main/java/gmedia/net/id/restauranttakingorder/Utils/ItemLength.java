@@ -7,4 +7,5 @@ package gmedia.net.id.restauranttakingorder.Utils;
 public class ItemLength {
 
     public static int tableLength = 25;
+    public static int autocompleteLength = 25;
 }

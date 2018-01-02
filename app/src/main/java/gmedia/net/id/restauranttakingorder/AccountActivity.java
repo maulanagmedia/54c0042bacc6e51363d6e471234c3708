@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -58,6 +59,7 @@ public class AccountActivity extends AppCompatActivity {
     private Button btnEnter;
     private AlertDialog alertDialogListAdmin;
     private AlertDialog alertChangeServer;
+    private LinearLayout llServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +99,7 @@ public class AccountActivity extends AppCompatActivity {
         lvAccount = (ListView) findViewById(R.id.lv_account);
         pbLoading = (ProgressBar) findViewById(R.id.pb_loading);
         ivServer = (ImageView) findViewById(R.id.iv_server);
+        llServer = (LinearLayout) findViewById(R.id.ll_server);
         btnRefresh = (Button) findViewById(R.id.btn_refresh);
         btnEnter = (Button) findViewById(R.id.btn_enter);
 
@@ -108,6 +111,14 @@ public class AccountActivity extends AppCompatActivity {
         }else{
             loadChangeServer();
         }
+
+        llServer.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                loadChangeServer();
+            }
+        });
 
         ivServer.setOnClickListener(new View.OnClickListener() {
 

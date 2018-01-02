@@ -26,4 +26,6 @@
     <dimen name="min_number">70sp</dimen>
     <dimen name="tag_meja">32sp</dimen>
     <dimen name="cb_tag_meja">50dip</dimen>
+    <dimen name="jenis_order">24sp</dimen>
+    <dimen name="padding_icon">8dp</dimen>
 </resources>

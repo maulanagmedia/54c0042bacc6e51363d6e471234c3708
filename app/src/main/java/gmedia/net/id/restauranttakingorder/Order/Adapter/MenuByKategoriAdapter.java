@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.maulana.custommodul.CustomItem;
 import com.maulana.custommodul.ImageUtils;
@@ -42,11 +43,13 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
         public ImageView ivThumbnail;
         public LinearLayout llThumbnail;
         public TextView tvThumbnail, tvItem1, tvItem2;
+        public ImageView ivSoldout;
 
         public MyViewHolder(View view) {
 
             super(view);
 
+            ivSoldout = (ImageView) view.findViewById(R.id.iv_soldout);
             rlContainer = (RelativeLayout) view.findViewById(R.id.rl_container);
             ivThumbnail = (ImageView) view.findViewById(R.id.iv_thumbnail);
             llThumbnail = (LinearLayout) view.findViewById(R.id.ll_thumbnail);
@@ -95,12 +98,25 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
             iu.LoadRealImage(context, cli.getItem4(),holder.ivThumbnail);
         }
 
+        if(cli.getItem13().equals("1")){
+            holder.ivSoldout.setVisibility(View.GONE);
+        }else{
+            holder.ivSoldout.setVisibility(View.VISIBLE);
+        }
+
         holder.rlContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DetailOrder.loadAddOrderDialog(context, cli);
+
+                if(cli.getItem13().equals("1")){
+                    DetailOrder.loadAddOrderDialog(context, cli);
+                }else{
+                    Toast.makeText(context, "Menu yang anda pilih sedang tidak tersedia", Toast.LENGTH_LONG).show();
+                }
             }
         });
+
+
     }
 
     @Override

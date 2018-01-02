@@ -108,16 +108,22 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
             holder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.color_table_active));
             if(iv.parseNullInteger(cli.getItem7()) == 1){
 
-                holder.tvItem2.setText("");
-                holder.tvItem3.setText(cli.getItem6());
+                holder.tvItem2.setText(cli.getItem6());
+                holder.tvItem3.setText(cli.getItem9());
             }else{
                 holder.tvItem2.setText(cli.getItem5());
                 holder.tvItem3.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem6())));
             }
         }else{
             holder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.color_table));
-            holder.tvItem2.setText("");
-            holder.tvItem3.setText("");
+            if(iv.parseNullInteger(cli.getItem7()) == 1){
+
+                holder.tvItem2.setText("");
+                holder.tvItem3.setText(cli.getItem9());
+            }else{
+                holder.tvItem2.setText("");
+                holder.tvItem3.setText("");
+            }
         }
 
         holder.rlContainer.setOnClickListener(new View.OnClickListener() {
@@ -451,6 +457,7 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
             intent.putExtra("urutan", cli.getItem5());
             intent.putExtra("printno", cli.getItem7());
             intent.putExtra("jmlplg", cli.getItem8());
+            intent.putExtra("nmplg", cli.getItem9());
         }
 
         context.startActivity(intent);
@@ -553,7 +560,7 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
                             for(int i = 0; i < jsonArray.length(); i++){
 
                                 JSONObject jo = jsonArray.getJSONObject(i);
-                                listPenjualan.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"), jo.getString("nobukti"), jo.getString("usertgl"), jo.getString("urutan"), jo.getString("jml_item"), jo.getString("print_no"), jo.getString("jumlah_plg")));
+                                listPenjualan.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"), jo.getString("nobukti"), jo.getString("usertgl"), jo.getString("urutan"), jo.getString("jml_item"), jo.getString("print_no"), jo.getString("jumlah_plg"), jo.getString("nmplg")));
                             }
 
                             if(nobukti.equals("")){

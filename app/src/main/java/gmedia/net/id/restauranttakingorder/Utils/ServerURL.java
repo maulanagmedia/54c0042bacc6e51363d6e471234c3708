@@ -39,4 +39,5 @@ public class ServerURL {
     public String updatePenjualan(){ return baseURL + "order/update_penjualan/";}
     public String updatePrinterStatus(){ return baseURL + "order/update_printer_status/";}
     public String getPrinter(){ return baseURL + "printer/get_printer/";}
+    public String getSugestionCatatan(){ return baseURL + "order/get_sugestion_catatan/";}
 }

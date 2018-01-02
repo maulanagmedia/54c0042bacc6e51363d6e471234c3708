@@ -77,13 +77,12 @@
                 android:layout_width="0dp"
                 android:layout_weight="0.5"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/margin_default"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Pramusaji"
+                    android:text="Pelanggan"
                     android:id="@+id/tv_title5"
                     android:textColor="@color/color_red"
                     android:textSize="@dimen/text_subtitle" />
@@ -94,6 +93,8 @@
                     android:id="@+id/tv_item3"
                     android:textColor="@color/color_black"
                     android:gravity="center"
+                    android:singleLine="true"
+                    android:ellipsize="end"
                     android:layout_marginTop="@dimen/margin_small"
                     />
             </LinearLayout>
