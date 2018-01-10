@@ -758,14 +758,19 @@ public class ItemValidation {
     //endregion
 
     public void hideSoftKey(Context context){
-        InputMethodManager inputManager =
-                (InputMethodManager) context.
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(
-                ((Activity) context).getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS); ((Activity) context).getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        );
+
+        try {
+            InputMethodManager inputManager =
+                    (InputMethodManager) context.
+                            getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(
+                    ((Activity) context).getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS); ((Activity) context).getWindow().setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+            );
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 

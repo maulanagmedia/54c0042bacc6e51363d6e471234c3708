@@ -65,9 +65,9 @@ public class SummaryAdapter extends ArrayAdapter{
             holder.tvItem1.setText(itemSelected.getItem2() + " ("+ itemSelected.getItem12()+")");
         }
         holder.tvItem2.setText(itemSelected.getItem5());
-        if(itemSelected.getItem8().length() > 0){
+        if(itemSelected.getItem8().length() > 0 || itemSelected.getItem15().length() > 0){
             holder.llNote.setVisibility(View.VISIBLE);
-            holder.tvItem3.setText(itemSelected.getItem8());
+            holder.tvItem3.setText((itemSelected.getItem15().length() > 0 ? itemSelected.getItem15() + " ":"") + itemSelected.getItem8());
         }else{
             holder.llNote.setVisibility(View.GONE);
         }

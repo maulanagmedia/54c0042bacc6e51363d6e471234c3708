@@ -101,6 +101,9 @@ public class SessionManager {
 	public String getPassword(){
 		return pref.getString(TAG_PASSWORD, null);
 	}
+	public String getNik(){
+		return pref.getString(TAG_NIK, null);
+	}
 
 	/**
 	 * Clear session details

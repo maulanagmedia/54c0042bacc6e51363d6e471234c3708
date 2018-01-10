@@ -99,9 +99,9 @@ public class MenuByTransaksiAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             holder1.tvItem1.setText(cli.getItem2());
             holder1.tvItem2.setText(cli.getItem5());
-            if(cli.getItem4().length()>0){
+            if(cli.getItem4().length()>0 || cli.getItem9().length() > 0){
                 holder1.llNote.setVisibility(View.VISIBLE);
-                holder1.tvItem3.setText(cli.getItem4());
+                holder1.tvItem3.setText((cli.getItem9().length() > 0 ? cli.getItem9()+ " ": "")+cli.getItem4());
             }else{
                 holder1.llNote.setVisibility(View.GONE);
             }

@@ -107,7 +107,6 @@ public class MainOpenOrder extends Fragment {
             }
         });
 
-        timer.scheduleAtFixedRate(new mainTask(), 1000, timerTime);
     }
 
     public static void updateStatus(Context context){
@@ -133,7 +132,22 @@ public class MainOpenOrder extends Fragment {
     public void onResume() {
         super.onResume();
 
-        getData();
+        session = new SessionManager(context);
+        //getData();
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new mainTask(), 0, timerTime);
+    }
+
+    @Override
+    public void onPause() {
+        timer.cancel();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        timer.cancel();
+        super.onDestroy();
     }
 
     private void getData() {
@@ -141,7 +155,7 @@ public class MainOpenOrder extends Fragment {
         pbLoad.setVisibility(View.VISIBLE);
         listMeja = new ArrayList<>();
 
-        ApiVolley request = new ApiVolley(context, new JSONObject(), "GET", serverURL.getMeja(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(context, new JSONObject(), "GET", serverURL.getMeja()+session.getNik(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
 
@@ -158,7 +172,7 @@ public class MainOpenOrder extends Fragment {
                         for(int i = 0; i < jsonArray.length(); i++){
 
                             JSONObject jo = jsonArray.getJSONObject(i);
-                            listMeja.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"),jo.getString("Status"),jo.getString("flag"),jo.getString("nobukti"),jo.getString("total"),jo.getString("jenis"),jo.getString("urutan"),jo.getString("letakmeja")));
+                            listMeja.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"),jo.getString("Status"),jo.getString("flag"),jo.getString("nobukti"),jo.getString("total"),jo.getString("jenis"),jo.getString("urutan"),jo.getString("letakmeja"),jo.getString("order_gantung")));
                         }
 
                         setMejaTable(listMeja);

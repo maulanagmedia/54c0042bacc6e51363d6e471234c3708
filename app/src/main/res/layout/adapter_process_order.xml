@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:paddingTop="@dimen/margin_small"
+            android:textSize="18sp"
+            android:paddingBottom="@dimen/margin_small"
+            android:id="@+id/tv_item1"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:paddingTop="@dimen/margin_small"
+            android:paddingBottom="@dimen/margin_small"
+            android:gravity="right"
+            android:id="@+id/tv_item2"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:paddingTop="@dimen/margin_small"
+            android:paddingBottom="@dimen/margin_small"
+            android:gravity="right"
+            android:id="@+id/tv_item3"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/ll_note"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:text="Note: "
+            android:textSize="16sp"
+            android:gravity="right"
+            android:id="@+id/tv_note"
+            android:layout_height="match_parent"
+            android:textColor="@color/color_black"
+            android:paddingTop="@dimen/margin_small"
+            android:paddingBottom="@dimen/margin_small"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.8"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:textSize="16sp"
+            android:paddingTop="@dimen/margin_small"
+            android:id="@+id/tv_item4"
+            android:paddingBottom="@dimen/margin_small"/>
+    </LinearLayout>
+
+</LinearLayout>

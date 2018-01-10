@@ -655,9 +655,10 @@ public class AccountActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    }else{
+                        Toast.makeText(AccountActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
 
-                    Toast.makeText(AccountActivity.this, message, Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                 } catch (JSONException e) {
                     e.printStackTrace();

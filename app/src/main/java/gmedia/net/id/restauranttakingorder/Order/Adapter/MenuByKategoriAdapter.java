@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
         public RelativeLayout rlContainer;
         public ImageView ivThumbnail;
         public LinearLayout llThumbnail;
-        public TextView tvThumbnail, tvItem1, tvItem2;
+        public TextView tvThumbnail, tvItem1, tvItem2, tvItem3;
         public ImageView ivSoldout;
 
         public MyViewHolder(View view) {
@@ -56,6 +57,7 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
             tvThumbnail = (TextView) view.findViewById(R.id.tv_text_thumbnail);
             tvItem1 = (TextView) view.findViewById(R.id.tv_item1);
             tvItem2 = (TextView) view.findViewById(R.id.tv_item2);
+            tvItem3 = (TextView) view.findViewById(R.id.tv_item3);
         }
     }
 
@@ -85,6 +87,8 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
 
         holder.tvItem1.setText(cli.getItem2());
         holder.tvItem2.setText( "@ " + iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem3())));
+        holder.tvItem3.setText(Html.fromHtml(cli.getItem18()));
+
         if(cli.getItem4().equals("")){
 
             holder.llThumbnail.setVisibility(View.VISIBLE);
@@ -95,7 +99,7 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
             holder.llThumbnail.setVisibility(View.GONE);
             holder.ivThumbnail.setVisibility(View.VISIBLE);
             ImageUtils iu = new ImageUtils();
-            iu.LoadRealImage(context, cli.getItem4(),holder.ivThumbnail);
+            iu.LoadCircleRealImage(context, cli.getItem4(),holder.ivThumbnail);
         }
 
         if(cli.getItem13().equals("1")){
@@ -115,7 +119,6 @@ public class MenuByKategoriAdapter extends RecyclerView.Adapter<MenuByKategoriAd
                 }
             }
         });
-
 
     }
 

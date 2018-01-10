@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class ApiVolley {
 
-    private RequestQueue requestQueue;
+    public static RequestQueue requestQueue;
 
     public ApiVolley(final Context context, JSONObject jsonBody, String requestMethod, String REST_URL, final String successDialog, final String failDialog, final int showDialogFlag, final String user, final String pass , final VolleyCallback callback){
 
@@ -133,7 +133,7 @@ public class ApiVolley {
         //endregion
 
         if(requestQueue == null){
-            requestQueue = Volley.newRequestQueue(context);
+            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         }
         // retry when timeout
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
@@ -141,7 +141,7 @@ public class ApiVolley {
         ));
         stringRequest.setShouldCache(false);
         requestQueue.add(stringRequest);
-        requestQueue.getCache().clear();
+        //requestQueue.getCache().clear();
 
     }
 

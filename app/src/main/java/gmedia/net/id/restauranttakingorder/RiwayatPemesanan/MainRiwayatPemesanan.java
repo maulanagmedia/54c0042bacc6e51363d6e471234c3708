@@ -456,7 +456,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                                 upselling = jo.getString("upselling");
                             }
 
-                            listMenu.add(new CustomItem(jo.getString("id"), jo.getString("nmbrg"), jo.getString("harga"), jo.getString("catatan"), jo.getString("jml"), jo.getString("total"),jo.getString("print_menu"),jo.getString("print_rekap")));
+                            listMenu.add(new CustomItem(jo.getString("id"), jo.getString("nmbrg"), jo.getString("harga"), jo.getString("catatan"), jo.getString("jml"), jo.getString("total"),jo.getString("print_menu"),jo.getString("print_rekap"), jo.getString("pilihan")));
                             listSelectedMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),jo.getString("jml"),jo.getString("satuan"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),jo.getString("tag_meja"),jo.getString("type"),jo.getString("upselling"),jo.getString("print_menu"),jo.getString("print_rekap"), "1",jo.getString("jenis_order"), jo.getString("alias"), jo.getString("pilihan")));
                             // 1. id
                             // 2. nama
@@ -707,7 +707,7 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
         pbLoadMenu.setVisibility(View.VISIBLE);
         listMeja = new ArrayList<>();
 
-        ApiVolley request = new ApiVolley(context, new JSONObject(), "GET", serverURL.getMeja(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(context, new JSONObject(), "GET", serverURL.getMeja()+session.getNik(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
 
@@ -1038,16 +1038,37 @@ public class MainRiwayatPemesanan extends Fragment implements ReceiveListener {
                         }
 
                         printDataAll();
+                    }else{
+                        try {
+                            dialogLoading.dismiss();
+                        }catch (Exception e){
+
+                        }
+                        updatePrinter();
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    try {
+                        dialogLoading.dismiss();
+                    }catch (Exception ex){
+
+                    }
+
+                    updatePrinter();
                 }
             }
 
             @Override
             public void onError(String result) {
+                Log.d(TAG, "onError: "+result);
+                try {
+                    dialogLoading.dismiss();
+                }catch (Exception ex){
 
+                }
+
+                updatePrinter();
             }
         });
     }

@@ -1,11 +1,16 @@
 package gmedia.net.id.restauranttakingorder;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -51,6 +56,11 @@ public class MainActivity extends AppCompatActivity
     private SavedPrinterManager printerManager;
     private ServerURL serverURL;
     private ItemValidation iv = new ItemValidation();
+
+    private String version = "";
+    private String latestVersion = "";
+    private String link = "";
+    private boolean updateRequired = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +183,99 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
                     }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        session = new SessionManager(MainActivity.this);
+        serverURL = new ServerURL(MainActivity.this);
+
+        checkVersion();
+    }
+
+    private void checkVersion(){
+
+        PackageInfo pInfo = null;
+        version = "";
+
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        version = pInfo.versionName;
+        getSupportActionBar().setSubtitle(" Version "+ version);
+        latestVersion = "";
+        link = "";
+
+        ApiVolley request = new ApiVolley(MainActivity.this, new JSONObject(), "GET", serverURL.getLatestVersion(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+
+            @Override
+            public void onSuccess(String result) {
+
+                JSONObject responseAPI;
+                try {
+                    responseAPI = new JSONObject(result);
+                    String status = responseAPI.getJSONObject("metadata").getString("status");
+
+                    if(iv.parseNullInteger(status) == 200){
+                        latestVersion = responseAPI.getJSONObject("response").getString("versi");
+                        link = responseAPI.getJSONObject("response").getString("link");
+                        updateRequired = (iv.parseNullInteger(responseAPI.getJSONObject("response").getString("wajib")) == 1) ? true : false;
+
+                        if(!version.trim().equals(latestVersion.trim()) && link.length() > 0){
+
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            if(updateRequired){
+
+                                builder.setIcon(R.mipmap.ic_launcher)
+                                        .setTitle("Update")
+                                        .setMessage("Versi terbaru "+latestVersion+" telah tersedia, mohon download versi terbaru.")
+                                        .setPositiveButton("Update Sekarang", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                                                startActivity(browserIntent);
+                                            }
+                                        })
+                                        .setCancelable(false)
+                                        .show();
+                            }else{
+
+                                builder.setIcon(R.mipmap.ic_launcher)
+                                        .setTitle("Update")
+                                        .setMessage("Versi terbaru "+latestVersion+" telah tersedia, mohon download versi terbaru.")
+                                        .setPositiveButton("Update Sekarang", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                                                startActivity(browserIntent);
+                                            }
+                                        })
+                                        .setNegativeButton("Update Nanti", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        }).show();
+                            }
+                        }
+                    }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();

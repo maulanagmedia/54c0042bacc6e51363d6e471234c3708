@@ -7,12 +7,12 @@ android {
         applicationId 'gmedia.net.id.pullenstakingorder'
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 4
-        versionName '4.0'
+        versionCode 5
+        versionName '5.0'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters "armeabi", "armeabi-v7a","x86"
+            abiFilters "armeabi", "armeabi-v7a", "x86"
         }
     }
     buildTypes {

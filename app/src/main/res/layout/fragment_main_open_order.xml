@@ -78,6 +78,19 @@
                         android:text="Terisi"
                         android:textStyle="bold"
                         android:layout_marginRight="@dimen/margin_default"/>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="@dimen/margin_default"
+                        android:background="@color/color_orange_active" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Belum mencetak"
+                        android:textStyle="bold"
+                        android:layout_marginRight="@dimen/margin_horizontal"/>
                 </LinearLayout>
 
                 <ScrollView

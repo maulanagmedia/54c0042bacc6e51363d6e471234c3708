@@ -41,6 +41,7 @@ import java.util.List;
 import gmedia.net.id.restauranttakingorder.Adapter.AccountAdapter;
 import gmedia.net.id.restauranttakingorder.Order.DetailOrder;
 import gmedia.net.id.restauranttakingorder.Order.MainOpenOrder;
+import gmedia.net.id.restauranttakingorder.Order.ReleaseOrder;
 import gmedia.net.id.restauranttakingorder.R;
 import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
@@ -56,6 +57,7 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
     private ServerURL serverURL;
     private SessionManager session;
     private List<CustomItem> listPenjualan;
+    private List<CustomItem> listOrderRelease;
     private boolean nonMeja = false;
     private AlertDialog alertDialogListAdmin;
 
@@ -104,12 +106,16 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
         }
 
         holder.tvItem1.setText(cli.getItem2());
-        if(cli.getItem3().equals("1")){
+        if(cli.getItem3().equals("1")){ // ada yg menggantung
             holder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.color_table_active));
-            if(iv.parseNullInteger(cli.getItem7()) == 1){
+            if(iv.parseNullInteger(cli.getItem7()) == 1){ // jenis meja
 
                 holder.tvItem2.setText(cli.getItem6());
                 holder.tvItem3.setText(cli.getItem9());
+
+                if(cli.getItem10().equals("1")){
+                    holder.rlContainer.setBackgroundColor(context.getResources().getColor(R.color.color_orange_active));
+                }
             }else{
                 holder.tvItem2.setText(cli.getItem5());
                 holder.tvItem3.setText(iv.ChangeToRupiahFormat(iv.parseNullDouble(cli.getItem6())));
@@ -152,7 +158,7 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
         serverURL = new ServerURL(context);
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.layout_list_admin, null);
+        View view = inflater.inflate(R.layout.layout_list_admin_detail, null);
         builder.setView(view);
         builder.setTitle("Pramusaji");
         builder.setCancelable(false);
@@ -163,6 +169,7 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
             }
         });
 
+        final Button btnLoadOrderReleased = (Button) view.findViewById(R.id.btn_show_current);
         final ListView lvAdmin = (ListView) view.findViewById(R.id.lv_admin);
         final Button btnRefreshAdmin = (Button) view.findViewById(R.id.btn_refresh);
         final ProgressBar pbLoadingAdmin = (ProgressBar) view.findViewById(R.id.pb_loading);
@@ -185,6 +192,17 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
         alertDialogListAdmin.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         );
+
+        if(!cli.getItem3().equals("1")){
+          btnLoadOrderReleased.setVisibility(View.GONE);
+        }
+
+        btnLoadOrderReleased.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getReleasedOrder(cli);
+            }
+        });
     }
 
     private void getAdminList(final CustomItem cli, final ListView lvAdmin, final Button btnRefreshAdmin, final ProgressBar pbLoadingAdmin){
@@ -522,6 +540,101 @@ public class ListMejaAdapter extends RecyclerView.Adapter<ListMejaAdapter.MyView
 
                     CustomItem item = (CustomItem) adapterView.getItemAtPosition(i);
                     getPenjualan(item);
+                }
+            });
+        }
+
+        final android.support.v7.app.AlertDialog alert = builder.create();
+
+        alert.show();
+
+        alert.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
+    }
+
+    private void getReleasedOrder(final CustomItem cli) {
+
+        JSONObject jBody = new JSONObject();
+        try {
+            jBody.put("kdmeja", cli.getItem1());
+            jBody.put("nobukti", "");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ApiVolley request = new ApiVolley(context, jBody, "POST", serverURL.getDetailMeja(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                try {
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    if(iv.parseNullInteger(status) == 200){
+
+                        JSONArray jsonArray = response.getJSONArray("response");
+                        if(jsonArray.length() > 0){
+
+                            listOrderRelease = new ArrayList<>();
+                            for(int i = 0; i < jsonArray.length(); i++){
+
+                                JSONObject jo = jsonArray.getJSONObject(i);
+                                listOrderRelease.add(new CustomItem(jo.getString("kdmeja"), jo.getString("nmmeja"), jo.getString("nobukti"), jo.getString("usertgl"), jo.getString("urutan"), jo.getString("jml_item"), jo.getString("print_no"), jo.getString("jumlah_plg"), jo.getString("nmplg")));
+                            }
+
+                            loadListOrderRelease();
+
+                        }else{
+
+                            Toast.makeText(context, "Tidak terdapat order", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "Terjadi kesalahan saat mengakses data, mohon coba kembali", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onError(String result) {
+                Toast.makeText(context, "Terjadi kesalahan saat mengakses data, mohon coba kembali", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void loadListOrderRelease(){
+
+        final android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_detail_meja, null);
+        builder.setView(view);
+        builder.setTitle("Order Dalam Proses");
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setNeutralButton("Tutup", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        builder.setCancelable(false);
+
+        final ListView lvDetailMeja = (ListView) view.findViewById(R.id.lv_detail_meja);
+
+        lvDetailMeja.setAdapter(null);
+
+        if(listOrderRelease != null && listOrderRelease.size() > 0){
+
+            DetailMejaAdapter adapter = new DetailMejaAdapter((Activity) context, listOrderRelease);
+            lvDetailMeja.setAdapter(adapter);
+            lvDetailMeja.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    CustomItem item = (CustomItem) adapterView.getItemAtPosition(i);
+                    Intent intent = new Intent(context, ReleaseOrder.class);
+                    intent.putExtra("nobukti", item.getItem3());
+                    intent.putExtra("nama", item.getItem9());
+                    ((Activity)context).startActivity(intent);
                 }
             });
         }
