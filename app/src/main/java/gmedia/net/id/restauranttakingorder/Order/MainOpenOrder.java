@@ -2,6 +2,7 @@ package gmedia.net.id.restauranttakingorder.Order;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +36,8 @@ import java.util.TimerTask;
 
 import gmedia.net.id.restauranttakingorder.Order.Adapter.ListMejaAdapter;
 import gmedia.net.id.restauranttakingorder.R;
+import gmedia.net.id.restauranttakingorder.UpsellingAndSoldout.ListSoldOutMenu;
+import gmedia.net.id.restauranttakingorder.UpsellingAndSoldout.ListUpsellingMenu;
 import gmedia.net.id.restauranttakingorder.Utils.ServerURL;
 
 public class MainOpenOrder extends Fragment {
@@ -51,6 +55,7 @@ public class MainOpenOrder extends Fragment {
     private static TextView tvTitle;
     private static Timer timer = new Timer();
     private int timerTime = 1000 * 60 * 1; // 1 minute refresh
+    private LinearLayout llUpsellingMenu, llSoldOutMenu;
 
     public MainOpenOrder() {
         // Required empty public constructor
@@ -92,6 +97,8 @@ public class MainOpenOrder extends Fragment {
         pbLoad = (ProgressBar) layout.findViewById(R.id.pb_load_meja);
         rlRefresh = (RelativeLayout) layout.findViewById(R.id.rl_refresh_container);
         btnRefresh = (Button) layout.findViewById(R.id.btn_refresh);
+        llUpsellingMenu = (LinearLayout) layout.findViewById(R.id.ll_upselling_menu);
+        llSoldOutMenu= (LinearLayout) layout.findViewById(R.id.ll_sold_out_menu);
 
         session = new SessionManager(context);
         tvTitle.setText(session.getUserInfo(SessionManager.TAG_NAMA));
@@ -107,6 +114,26 @@ public class MainOpenOrder extends Fragment {
             }
         });
 
+        initEvent();
+    }
+
+    private void initEvent() {
+
+        llUpsellingMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ListUpsellingMenu.class);
+                startActivity(intent);
+            }
+        });
+
+        llSoldOutMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ListSoldOutMenu.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public static void updateStatus(Context context){

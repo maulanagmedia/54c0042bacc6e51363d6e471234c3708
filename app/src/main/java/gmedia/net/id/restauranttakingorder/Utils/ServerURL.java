@@ -41,6 +41,7 @@ public class ServerURL {
     public String updatePenjualan(){ return baseURL + "order/update_penjualan/";}
     public String updatePrinterStatus(){ return baseURL + "order/update_printer_status/";}
     public String getMenuSoldOut(){ return baseURL + "order/get_menu_sold_out/";}
+    public String getMenuUpselling(){ return baseURL + "order/get_upselling_menu/";}
     public String getOrderProcess(){ return baseURL + "order/get_process_order/";}
 
     public String getRiwayatOrder(){ return baseURL + "riwayat/get_riwayat_transaksi/";}

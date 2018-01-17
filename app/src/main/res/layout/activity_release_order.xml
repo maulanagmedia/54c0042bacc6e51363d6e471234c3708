@@ -12,6 +12,10 @@
         android:background="@color/colorPrimary"
         app:tabTextColor="@color/color_white"
         app:tabSelectedTextColor="@color/color_white"
+        android:layout_alignParentTop="true"
+        app:tabMaxWidth="0dp"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
         app:tabIndicatorColor="@color/color_white"
         android:id="@+id/tab_top">
 

@@ -46,6 +46,72 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/ll_header"
+                    android:id="@+id/ll_special_menu"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:id="@+id/ll_upselling_menu"
+                        android:background="@drawable/button_login"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/margin_default"
+                        android:layout_marginRight="@dimen/margin_default"
+                        android:layout_marginLeft="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin_small">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginRight="@dimen/margin_small"
+                            android:src="@mipmap/ic_o_menu"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Upselling Menu"
+                            android:textSize="16sp"
+                            android:textColor="@color/color_white"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:id="@+id/ll_sold_out_menu"
+                        android:background="@drawable/button_login"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/margin_default"
+                        android:layout_marginRight="@dimen/margin_default"
+                        android:layout_marginLeft="@dimen/margin_default"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin_small">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginRight="@dimen/margin_small"
+                            android:src="@mipmap/ic_sold_out"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sold Out Menu"
+                            android:textSize="16sp"
+                            android:textColor="@color/color_white"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:id="@+id/ll_footer"
                     android:orientation="horizontal"
@@ -96,7 +162,7 @@
                 <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_below="@id/ll_header"
+                    android:layout_below="@id/ll_special_menu"
                     android:layout_above="@id/ll_footer">
 
                     <LinearLayout

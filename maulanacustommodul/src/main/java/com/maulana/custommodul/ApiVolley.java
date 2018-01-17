@@ -136,12 +136,18 @@ public class ApiVolley {
             requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         }
         // retry when timeout
+        /*stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30*60*1000, *//*DefaultRetryPolicy.DEFAULT_MAX_RETRIES*//*0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));*/
+
+        // Never retry when slow response
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                30*60*1000, /*DefaultRetryPolicy.DEFAULT_MAX_RETRIES*/0,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+                0, -1,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         ));
+
         stringRequest.setShouldCache(false);
         requestQueue.add(stringRequest);
-        //requestQueue.getCache().clear();
+        requestQueue.getCache().clear();
 
     }
 

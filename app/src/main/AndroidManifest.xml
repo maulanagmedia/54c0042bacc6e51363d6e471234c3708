@@ -61,8 +61,14 @@
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-        <activity android:name=".Order.ReleaseOrder"
+        <activity
+            android:name=".Order.ReleaseOrder"
             android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UpsellingAndSoldout.ListUpsellingMenu"
+            android:screenOrientation="portrait" />
+        <activity android:name=".UpsellingAndSoldout.ListSoldOutMenu"
             android:screenOrientation="portrait"></activity>
     </application>
 
