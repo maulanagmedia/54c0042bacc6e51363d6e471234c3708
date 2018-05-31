@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
@@ -95,7 +96,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     private static List<CustomItem> listMenu;
     private static List<CustomItem> listMenuProcess;
     public static List<CustomItem> listSelectedMenu;
-    private ProgressBar pbLoadMenu, pbLoadKategori;
+    private static ProgressBar pbLoadMenu;
+    private ProgressBar pbLoadKategori;
     private boolean firstLoad = true;
     private static ItemValidation iv = new ItemValidation();
     private static SelectedMenuAdapter selectedMenuAdapter;
@@ -158,6 +160,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     private static ProgressBar pbSoldOut;
     private static List<CustomItem> menuSoldOutList;
     private static boolean firstSoldOutMenuLoad = true;
+    private static Button btnRefreshOrder, btnRefreshKategori;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -338,6 +341,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         btnCetak = (Button) findViewById(R.id.btn_cetak);
         btnSimpan = (Button) findViewById(R.id.btn_simpan);
         fabScanBarcode = (FloatingActionButton) findViewById(R.id.fab_scan);
+        btnRefreshKategori = (Button) findViewById(R.id.btn_refresh_kategori);
+        btnRefreshOrder = (Button) findViewById(R.id.btn_refresh_order);
 
         lvOnProcess = (ListView) findViewById(R.id.lv_on_process);
         pbOnProcess = (ProgressBar) findViewById(R.id.pb_on_process);
@@ -436,7 +441,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
 
                 if(listSelectedMenu == null || listSelectedMenu.size() == 0){
 
-                    Toast.makeText(DetailOrder.this, "Harap pilih minimal satu menu", Toast.LENGTH_LONG).show();
+                    Toast.makeText(DetailOrder.this, "Harap pilih minimal satu menu / pastikan order tidak kosong", Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -521,9 +526,33 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 }
             });
         }
+
+        btnRefreshOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(noBukti.length()>0){
+
+                    btnRefreshOrder.setVisibility(View.GONE);
+                    getListSelectedMenuOrder();
+                }
+            }
+        });
+
+        btnRefreshKategori.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(noBukti.length()>0){
+
+                    btnRefreshKategori.setVisibility(View.GONE);
+                    getKategoriData();
+                }
+            }
+        });
     }
 
-    private void getListSelectedMenu() {
+    private static void getListSelectedMenu() {
 
         JSONObject jBody = new JSONObject();
         try {
@@ -533,7 +562,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             e.printStackTrace();
         }
 
-        ApiVolley request = new ApiVolley(DetailOrder.this, jBody, "POST", serverURL.getMenuGantung() + "", "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+        ApiVolley request = new ApiVolley(mContext, jBody, "POST", serverURL.getMenuGantung() + "", "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
                 try {
@@ -590,6 +619,86 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             public void onError(String result) {
                 pbLoadMenu.setVisibility(View.GONE);
                 isAll = false;
+            }
+        });
+    }
+
+    private static void getListSelectedMenuOrder() {
+
+        btnSimpan.setEnabled(false);
+        pbLoadOrder.setVisibility(View.VISIBLE);
+        onProcess = true;
+        btnRefreshOrder.setVisibility(View.GONE);
+
+        JSONObject jBody = new JSONObject();
+        try {
+            jBody.put("nobukti", noBukti);
+            jBody.put("nik", session.getNik());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ApiVolley request = new ApiVolley(mContext, jBody, "POST", serverURL.getMenuGantung() + "", "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+
+                onProcess = false;
+                btnSimpan.setEnabled(true);
+                btnRefreshOrder.setVisibility(View.GONE);
+                pbLoadOrder.setVisibility(View.GONE);
+
+                try {
+
+                    JSONObject response = new JSONObject(result);
+                    String status = response.getJSONObject("metadata").getString("status");
+                    //listSelectedMenu = new ArrayList<>();
+                    listSelectedMenu.clear();
+
+                    if(iv.parseNullInteger(status) == 200){
+
+
+                        JSONArray jsonArray = response.getJSONArray("response");
+                        for(int i = 0; i < jsonArray.length(); i++){
+
+                            JSONObject jo = jsonArray.getJSONObject(i);
+                            listSelectedMenu.add(new CustomItem(jo.getString("kdbrg"), jo.getString("nmbrg"),jo.getString("harga"),jo.getString("link"),jo.getString("jml"),jo.getString("sat"),jo.getString("diskon"),jo.getString("catatan"),jo.getString("harga_diskon"),jo.getString("tag_meja"),jo.getString("type"),jo.getString("jenis"),jo.getString("status"), jo.getString("pilihan"), jo.getString("terpilih"), jo.getString("alias"), jo.getString("id")));
+                            /*1. id
+                            2. nama
+                            3. harga
+                            4. gambar
+                            5. banyak
+                            6. satuan
+                            7. diskon
+                            8. catatan
+                            9. hargaDiskon
+                            10. tag meja
+                            11. type (makanan/ minuman)
+                            12. Jenis (DN/TA)
+                            13. status
+                            14. pilihan
+                            15. terpilih
+                            16. alias
+                            17. id*/
+
+                        }
+                    }
+
+                    selectedMenuAdapter.notifyDataSetChanged();
+                    updateHargaTotal();
+                } catch (JSONException e) {
+
+                    btnRefreshOrder.setVisibility(View.VISIBLE);
+                }
+
+            }
+
+            @Override
+            public void onError(String result) {
+
+                btnSimpan.setEnabled(true);
+                onProcess = false;
+                pbLoadOrder.setVisibility(View.GONE);
+                btnRefreshOrder.setVisibility(View.VISIBLE);
             }
         });
 
@@ -706,6 +815,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             @Override
             public void onSuccess(String result) {
 
+                btnSimpan.setEnabled(true);
+                progressDialog.dismiss();
+                onProcess = false;
                 try {
                     JSONObject response = new JSONObject(result);
                     String status = response.getJSONObject("metadata").getString("status");
@@ -717,7 +829,9 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                         String idOrder =   response.getJSONObject("response").getString("id");
                         Toast.makeText(context, message1, Toast.LENGTH_LONG).show();
 
-                        if(id.equals("")){
+                        listSelectedMenu.clear();
+                        getListSelectedMenuOrder();
+                        /*if(id.equals("")){
 
                             listSelectedMenu.add(detailOrder);
                             selectedMenuAdapter.notifyDataSetChanged();
@@ -731,7 +845,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                         CustomItem itemToUpdate = listSelectedMenu.get(position);
                         itemToUpdate.setItem17(idOrder);
                         listSelectedMenu.set(position, itemToUpdate);
-                        updateHargaTotal();
+                        updateHargaTotal();*/
                         /*if(printStatus){
 
                             printStatus = false;
@@ -742,27 +856,51 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     }else{
                         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
                     }
-                    progressDialog.dismiss();
-                    onProcess = false;
                 } catch (JSONException e) {
-                    e.printStackTrace();
-                    progressDialog.dismiss();
-                    onProcess = false;
-                    btnSimpan.setEnabled(true);
-                    Toast.makeText(context, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
-                }
 
-                btnSimpan.setEnabled(true);
+                    e.printStackTrace();
+                    showDialog(context, 2, "Gagal menyimpan " + detailOrder.getItem2() +", harap ulangi kembali ");
+                    //Toast.makeText(context, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             public void onError(String result) {
                 onProcess = false;
                 progressDialog.dismiss();
-                Toast.makeText(context, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
+                showDialog(context, 2, "Gagal menyimpan " + detailOrder.getItem2() +", harap ulangi kembali ");
+                //Toast.makeText(context, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
                 btnSimpan.setEnabled(true);
             }
         });
+    }
+
+    private static void showDialog(Context context, int state, String message){
+
+        if(state == 2){ // failed
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            LayoutInflater inflater = (LayoutInflater) ((Activity) context).getSystemService(LAYOUT_INFLATER_SERVICE);
+            View viewDialog = inflater.inflate(R.layout.layout_failed, null);
+            builder.setView(viewDialog);
+            builder.setCancelable(false);
+
+            final TextView tvText1 = (TextView) viewDialog.findViewById(R.id.tv_text1);
+            tvText1.setText(message);
+            final Button btnOK = (Button) viewDialog.findViewById(R.id.btn_ok);
+
+            final AlertDialog alert = builder.create();
+            alert.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+            btnOK.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view2) {
+
+                    if(alert != null) alert.dismiss();
+                }
+            });
+
+            alert.show();
+        }
     }
 
     private static void hapusDataPerOrder(final Context context, final String id, final int position) {
@@ -776,35 +914,35 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             @Override
             public void onSuccess(String result) {
 
+                btnSimpan.setEnabled(true);
+                progressDialog.dismiss();
+                onProcess = false;
+
                 try {
                     JSONObject response = new JSONObject(result);
                     String status = response.getJSONObject("metadata").getString("status");
                     String message = response.getJSONObject("metadata").getString("message");
                     if(iv.parseNullInteger(status) == 200){
 
-                        progressDialog.dismiss();
                         String message1 = response.getJSONObject("response").getString("message");
                         String idOrder =   response.getJSONObject("response").getString("id");
                         Toast.makeText(context, message1, Toast.LENGTH_LONG).show();
 
-                        listSelectedMenu.remove(position);
+                        /*listSelectedMenu.remove(position);
                         selectedMenuAdapter.notifyDataSetChanged();
-                        updateHargaTotal();
+                        updateHargaTotal();*/
+
+                        listSelectedMenu.clear();
+                        getListSelectedMenuOrder();
 
                     }else{
                         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
                     }
-                    progressDialog.dismiss();
                     onProcess = false;
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    progressDialog.dismiss();
-                    onProcess = false;
-                    btnSimpan.setEnabled(true);
                     Toast.makeText(context, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
                 }
-
-                btnSimpan.setEnabled(true);
             }
 
             @Override
@@ -857,6 +995,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
             @Override
             public void onSuccess(String result) {
 
+                onProcess = false;
                 try {
 
                     JSONObject response = new JSONObject(result);
@@ -881,6 +1020,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     }else{
                         Toast.makeText(DetailOrder.this, message, Toast.LENGTH_LONG).show();
                     }
+
                     progressDialog.dismiss();
                     onProcess = false;
                 } catch (JSONException e) {
@@ -890,6 +1030,8 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                     btnSimpan.setEnabled(true);
                     Toast.makeText(DetailOrder.this, "Gagal menyimpan data, harap ulangi", Toast.LENGTH_LONG).show();
                 }
+
+                btnSimpan.setEnabled(true);
             }
 
             @Override
@@ -916,6 +1058,7 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         double total = 0;
         for(CustomItem item: listSelectedMenu){
 
+            onProcess = false;
             // 1. id, 2. nama, 3. harga, 4. gambar,  5. banyak, 6. satuan, 7. diskon, 8. catatan, 9. hargaDiskon, 10. tag meja
             JSONObject jo = new JSONObject();
             try {
@@ -1815,11 +1958,14 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
     //region setting kategori
     private void getKategoriData() {
 
+        btnRefreshKategori.setVisibility(View.GONE);
         pbLoadKategori.setVisibility(View.VISIBLE);
         listKategori = new ArrayList<>();
         ApiVolley request = new ApiVolley(DetailOrder.this, new JSONObject(), "GET", serverURL.getKategori(), "", "", 0, session.getUsername(), session.getPassword(), new ApiVolley.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
+
+                btnRefreshKategori.setVisibility(View.GONE);
                 try {
 
                     JSONObject response = new JSONObject(result);
@@ -1843,12 +1989,14 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
                 } catch (JSONException e) {
                     e.printStackTrace();
                     pbLoadKategori.setVisibility(View.GONE);
+                    btnRefreshKategori.setVisibility(View.VISIBLE);
                     setKategoriTable();
                 }
             }
 
             @Override
             public void onError(String result) {
+                btnRefreshKategori.setVisibility(View.VISIBLE);
                 pbLoadKategori.setVisibility(View.GONE);
                 setKategoriTable();
             }
@@ -2966,8 +3114,6 @@ public class DetailOrder extends AppCompatActivity implements ReceiveListener{
         edtSatuan.setText(item.getItem6());
         edtDiskon.setText(item.getItem7());
         edtCatatan.setText(item.getItem8());
-
-
 
         if(item.getItem12().equals("DN")) {
             rbDN.setChecked(true);

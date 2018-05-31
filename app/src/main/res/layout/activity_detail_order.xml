@@ -38,6 +38,16 @@
                 android:layout_height="match_parent"
                 android:id="@+id/lv_kategori"></ListView>
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:id="@+id/btn_refresh_kategori"
+                android:text="refresh"
+                android:visibility="gone"
+                android:drawableTop="@mipmap/ic_refresh"
+                android:background="?attr/selectableItemBackground"/>
+
             <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -399,6 +409,16 @@
                     </LinearLayout>
                 </LinearLayout>
             </RelativeLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:id="@+id/btn_refresh_order"
+                android:text="refresh"
+                android:visibility="gone"
+                android:drawableTop="@mipmap/ic_refresh"
+                android:background="?attr/selectableItemBackground"/>
 
             <ProgressBar
                 android:layout_width="wrap_content"
