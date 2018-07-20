@@ -227,6 +227,7 @@ public class MenuByTransaksiAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         final EditText edtJumlah = (EditText) view.findViewById(R.id.edt_jumlah);
         final ImageView ivMin = (ImageView) view.findViewById(R.id.iv_jml_min);
         final ImageView ivPlus = (ImageView) view.findViewById(R.id.iv_jml_plus);
+        final TextView tvSubtitle = (TextView) view.findViewById(R.id.tv_subtitle);
         final TextView tvName = (TextView) view.findViewById(R.id.tv_name);
 
         // 1. id
@@ -248,7 +249,8 @@ public class MenuByTransaksiAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         // 17. alias
         // 18. pilihan
 
-        tvName.setText("Apakah anda yakin ingin membatalkan pesanan "+ item.getItem2()+ " ?");
+        tvSubtitle.setText("Terdapat " +jml+ " pesanan "+item.getItem2()+" yang belum release");
+        tvName.setText("Apakah anda yakin ingin membatalkan pesanan ?");
         edtJumlah.setText(jml);
 
         ivMin.setOnClickListener(new View.OnClickListener() {
