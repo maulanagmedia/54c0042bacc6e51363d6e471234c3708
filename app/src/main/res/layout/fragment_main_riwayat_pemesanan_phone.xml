@@ -472,7 +472,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Detail Pesanan"
+                    android:text="Detail Pesanan *"
                     android:layout_marginTop="@dimen/margin_default"
                     android:layout_below="@id/ll_title3"
                     android:id="@+id/tv_title2"
@@ -508,12 +508,27 @@
                         android:id="@+id/tv_total"/>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/ll_footer"
+                    android:layout_alignParentBottom="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/color_black"
+                        android:text="* Tekan pada list untuk membatalkan pesanan"/>
+                </LinearLayout>
+
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="@dimen/margin_default"
                     android:layout_below="@id/tv_title2"
-                    android:layout_above="@id/ll_total"
+                    android:layout_above="@id/ll_footer"
                     android:id="@+id/rv_list_menu"></android.support.v7.widget.RecyclerView>
 
                 <ProgressBar

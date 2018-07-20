@@ -415,6 +415,21 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/ll_footer"
+                    android:layout_above="@id/vl_bottom">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/color_black"
+                        android:text="* Tekan pada list untuk membatalkan pesanan"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:paddingTop="@dimen/margin_default"
                     android:paddingLeft="@dimen/margin_default"
@@ -506,7 +521,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="@dimen/margin_default"
                     android:layout_below="@id/tv_title2"
-                    android:layout_above="@id/vl_bottom"
+                    android:layout_above="@id/ll_footer"
                     android:id="@+id/rv_list_menu"></android.support.v7.widget.RecyclerView>
 
                 <ProgressBar

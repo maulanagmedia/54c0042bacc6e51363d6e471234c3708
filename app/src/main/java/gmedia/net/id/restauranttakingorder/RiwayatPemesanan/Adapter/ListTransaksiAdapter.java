@@ -27,6 +27,7 @@ public class ListTransaksiAdapter extends ArrayAdapter{
     private Activity context;
     private List<CustomItem> items;
     private ItemValidation iv = new ItemValidation();
+    public static CustomItem selectedItem = new CustomItem();
 
     public ListTransaksiAdapter(Activity context, List<CustomItem> items) {
         super(context, R.layout.adapter_list_transaksi, items);
@@ -109,7 +110,8 @@ public class ListTransaksiAdapter extends ArrayAdapter{
             @Override
             public void onClick(View view) {
 
-                MainRiwayatPemesanan.selectTransaksi(itemSelected);
+                selectedItem = itemSelected;
+                MainRiwayatPemesanan.selectTransaksi(selectedItem);
             }
         });
 
